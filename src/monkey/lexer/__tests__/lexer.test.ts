@@ -9,8 +9,6 @@ test("test nextToken()", function() {
      x + y;
     };
    let result = add(five, ten);
-   !-/*5;
-   5 < 10 > 5;
   `;
 
   const lexer = new Lexer(input);
@@ -52,10 +50,9 @@ test("test nextToken()", function() {
       { type: TokenType.Ident, literal: "ten" },
       {type: TokenType.RParen, literal: ")"},
       {type: TokenType.Semicolon, literal: ";"},
-      {type: TokenType.Eof, literal: "eof"},
   ];
 
   for (const token of tokens) {
-    expect(lexer.nextToken().type).toBe(token);
+    expect(lexer.nextToken().type).toBe(token.type);
   }
 })

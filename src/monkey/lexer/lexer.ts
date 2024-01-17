@@ -85,11 +85,11 @@ export class Lexer {
       const keyword = Keywords[identifier as keyof typeof Keywords];
       if (keyword) {
         return keyword;
-      } else if (isDigit(this.char)) {
-        return newToken(TokenType.Int, this.readInteger());
       } else {
         return newToken(TokenType.Ident, identifier);
       }
+    } else if (isDigit(this.char)) {
+      return newToken(TokenType.Int, this.readInteger());
     } else if (!token) {
       return newToken(TokenType.Illegal, this.char);
     }
@@ -147,8 +147,8 @@ export function isDigit(character: string): boolean {
   return _0Ch <= char && _9Ch >= char;
 } 
 
-export function newToken(type: TokenItem, literal: string): Token {
-  return { type, literal };
+export function newToken(tokenType: TokenItem, char: string): Token {
+  return { type: tokenType, literal: char };
 }
 
 
