@@ -6,8 +6,12 @@ interface Node {
 export interface Statement extends Node {
   statementNode(): void;
 }
-
-interface Expression extends Node {
+export interface LetStatementInterface extends Statement {
+  Token: Token;
+  Name: Identifier | null;
+  Value: Expression | null;
+}
+export interface Expression extends Node {
   expressionNode(): void;
 }
 
@@ -18,7 +22,7 @@ export class Program implements Node {
     this.Statements = statements;
   }
 
-  public tokenLiteral(): string {
+  tokenLiteral(): string {
     if (this.Statements.length > 0) {
       return this.Statements[0].tokenLiteral();
     } else {
@@ -27,7 +31,7 @@ export class Program implements Node {
   }
 }
 
-export class LetStatement implements Statement {
+export class LetStatement implements LetStatementInterface {
   public Token: Token;
   public Name: Identifier | null;
   public Value: Expression | null;
@@ -38,8 +42,8 @@ export class LetStatement implements Statement {
     this.Value = value;
   }
 
-  public statementNode(): void {}
-  public tokenLiteral(): string {
+  statementNode(): void {}
+  tokenLiteral(): string {
     return this.Token.literal;
   }
 }
@@ -53,8 +57,8 @@ export class Identifier implements Expression {
     this.Value = value;
   }
 
-  public expressionNode(): void {}
-  public tokenLiteral(): string {
+  expressionNode(): void {}
+  tokenLiteral(): string {
     return this.Token.literal;
   }
 }

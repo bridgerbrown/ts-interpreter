@@ -1,6 +1,6 @@
-import { Token, TokenType, TokenItem } from "../token/token";
 import { Lexer } from "../lexer/lexer";
-import { Program, Statement, LetStatement, Identifier } from "../ast/ast"; 
+import { Token, TokenType } from "../token/token";
+import { LetStatementInterface, Program, Statement, LetStatement, Identifier, Expression} from "../ast/ast";
 
 export class Parser {
   private l: Lexer;
@@ -13,16 +13,17 @@ export class Parser {
     this.nextToken();
   }
 
-  public nextToken(): void {
+  private nextToken(): void {
     this.currToken = this.peekToken;
     this.peekToken = this.l.nextToken();
   }
 
   public parseProgram(): Program {
-    const program = new Program([]);
+    const program: Program = new Program([]);
+    program.Statements = [];
 
-    while (this.currToken.type != TokenType.Eof) {
-      const statement = this.parseStatement();
+    while (this.currToken.type !== TokenType.Eof) {
+      const statement: Statement | null = this.parseStatement();
       if (statement !== null) {
         program.Statements.push(statement);
       }
@@ -32,7 +33,7 @@ export class Parser {
     return program;
   }
 
-  private parseStatement(): Statement | null {
+  public parseStatement(): Statement | null {
     switch (this.currToken.type) {
       case TokenType.Let:
         return this.parseLetStatement();
@@ -41,12 +42,12 @@ export class Parser {
     }
   }
 
-  public parseLetStatement(): LetStatement | null {
-    const statement = new LetStatement(
-      this.currToken,
-      null,
-      null
-    );
+  createLetStatement(token: Token, name: Identifier | null, value: Expression | null): LetStatementInterface {
+    return new LetStatement(token, name, value);
+  }
+
+  private parseLetStatement(): LetStatementInterface | null {
+    const statement: LetStatementInterface = this.createLetStatement(this.currToken, null, null);
 
     if (!this.expectPeek(TokenType.Ident)) return null;
 
@@ -54,26 +55,10 @@ export class Parser {
 
     if (!this.expectPeek(TokenType.Assign)) return null;
 
+    // TODO: We're skipping the expressions until we encounter a semicolon
     while (!this.currTokenIs(TokenType.Semicolon)) {
       this.nextToken();
     }
     return statement;
-  }
-
-  private currTokenIs(token: TokenItem): boolean {
-    return this.currToken.type === token;
-  }
-
-  private peekTokenIs(token: TokenItem): boolean {
-    return this.peekToken.type === token;
-  }
-
-  private expectPeek(token: TokenItem): boolean {
-    if (this.peekTokenIs(token)) {
-      this.nextToken();
-      return true;
-    } else {
-      return false;
-    }
   }
 }
