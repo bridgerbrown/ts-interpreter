@@ -1,18 +1,19 @@
 import { TokenType } from "../../token/token";
-import { Tokenizer } from "../lexer";
+import { Lexer } from "../lexer";
 
 test("test nextToken()", function() {
   const input = `
     let five = 5;
     let ten = 10;
     let add = fn(x, y) {
-      x + y;
+     x + y;
     };
-    
-    let result = add(five, ten);
+   let result = add(five, ten);
+   !-/*5;
+   5 < 10 > 5;
   `;
 
-  const lexer = new Tokenizer(input);
+  const lexer = new Lexer(input);
 
   const tokens = [
       {type: TokenType.Let, literal: "let"},

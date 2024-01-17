@@ -1,48 +1,10 @@
-import { TokenType } from "../token/token";
+import { TokenType, Keywords, Token, TokenItem } from "../token/token";
 
-type TokenItem = typeof TokenType[keyof typeof TokenType];
-
-export type Token = {
-  type: TokenItem;
-  literal: string;
-}
-
-export function newToken(type: TokenItem, literal: string): Token {
-  return { type, literal };
-}
-
-const Keywords = {
-  "fn": newToken(TokenType.Function, "fn"),
-  "let": newToken(TokenType.Function, "let"),
-  "return": newToken(TokenType.Function, "return"),
-  "true": newToken(TokenType.Function, "true"),
-  "false": newToken(TokenType.Function, "false"),
-  "if": newToken(TokenType.Function, "if"),
-  "else": newToken(TokenType.Function, "else"),
-} as const;
-
-const _0Ch = "0".charCodeAt(0);
-const _9Ch = "9".charCodeAt(0);
-const aCh = "a".charCodeAt(0);
-const zCh = "z".charCodeAt(0);
-const ACh = "A".charCodeAt(0);
-const ZCh = "Z".charCodeAt(0);
-const _Ch = "_".charCodeAt(0);
-
-export function isLetter(character: string): boolean {
-  const char = character.charCodeAt(0);
-  return aCh <= char && zCh >= char || ACh <= char && ZCh >= char || char === _Ch;
-}
-
-export function isDigit(character: string): boolean {
-  const char = character.charCodeAt(0);
-  return _0Ch <= char && _9Ch >= char;
-} 
-
-export class Tokenizer {
+export class Lexer {
   private position: number = 0;
   private readPosition: number = 0;
   private char!: string;
+
   constructor(private input: string) {
     this.readChar();
   }
@@ -53,7 +15,6 @@ export class Tokenizer {
     } else {
       this.char = this.input[this.readPosition];
     }
-
     this.position = this.readPosition;
     this.readPosition += 1;
   }
@@ -61,13 +22,40 @@ export class Tokenizer {
   public nextToken(): Token {
     let token: Token | undefined;
     this.skipWhitespace();
-    
     switch (this.char) {
       case "=":
-        token = newToken(TokenType.Assign, this.char);
+        if (this.peek() == "=") {
+          this.readChar();
+          token = newToken(TokenType.Equal, "==");
+        } else {
+          token = newToken(TokenType.Assign, this.char); 
+        }
         break;
       case "+":
         token = newToken(TokenType.Plus, this.char);
+        break;
+      case "-":
+        token = newToken(TokenType.Minus, this.char);
+        break;
+      case "!":
+        if (this.peek() == "=") {
+          this.readChar();
+          token = newToken(TokenType.NotEqual, "!=");
+        } else {
+          token = newToken(TokenType.Excl, this.char); 
+        }
+        break;
+      case "*":
+        token = newToken(TokenType.Asterisk, this.char);
+        break;
+      case "/":
+        token = newToken(TokenType.SlashF, this.char);
+        break;
+      case "<":
+        token = newToken(TokenType.Lt, this.char);
+        break;
+      case ">":
+        token = newToken(TokenType.Gt, this.char);
         break;
       case ",":
         token = newToken(TokenType.Comma, this.char);
@@ -118,6 +106,14 @@ export class Tokenizer {
     return this.input.slice(position, this.position)
   }
 
+  private peek(): string {
+    if (this.readPosition >= this.input.length) {
+      return "\0";
+    } else {
+      return this.input[this.readPosition];
+    }
+  }
+
   private skipWhitespace(): void {
     while (this.char === " " || this.char === "\t" || this.char === "\n" || this.char === "\r") {
       this.readChar();
@@ -132,3 +128,27 @@ export class Tokenizer {
     return this.input.slice(position, this.position);
   }
 }
+
+const _0Ch = "0".charCodeAt(0);
+const _9Ch = "9".charCodeAt(0);
+const aCh = "a".charCodeAt(0);
+const zCh = "z".charCodeAt(0);
+const ACh = "A".charCodeAt(0);
+const ZCh = "Z".charCodeAt(0);
+const _Ch = "_".charCodeAt(0);
+
+export function isLetter(character: string): boolean {
+  const char = character.charCodeAt(0);
+  return aCh <= char && zCh >= char || ACh <= char && ZCh >= char || char === _Ch;
+}
+
+export function isDigit(character: string): boolean {
+  const char = character.charCodeAt(0);
+  return _0Ch <= char && _9Ch >= char;
+} 
+
+export function newToken(type: TokenItem, literal: string): Token {
+  return { type, literal };
+}
+
+
