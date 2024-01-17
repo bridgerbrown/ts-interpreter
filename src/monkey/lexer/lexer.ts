@@ -11,7 +11,7 @@ export class Lexer {
 
   public readChar(): void {
     if (this.readPosition >= this.input.length) {
-      this.char + "\0";
+      this.char = "\0";
     } else {
       this.char = this.input[this.readPosition];
     }
@@ -150,5 +150,3 @@ export function isDigit(character: string): boolean {
 export function newToken(tokenType: TokenItem, char: string): Token {
   return { type: tokenType, literal: char };
 }
-
-

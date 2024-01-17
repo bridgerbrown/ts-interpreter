@@ -1,10 +1,9 @@
-import { Token } from "../lexer/lexer";
+import { Token } from "../token/token";
 
 interface Node {
-  TokenLiteral(): string;
+  tokenLiteral(): string;
 }
-
-interface Statement extends Node {
+export interface Statement extends Node {
   statementNode(): void;
 }
 
@@ -19,28 +18,33 @@ export class Program implements Node {
     this.Statements = statements;
   }
 
-  TokenLiteral(): string {
+  public tokenLiteral(): string {
     if (this.Statements.length > 0) {
-      return this.Statements[0].TokenLiteral();
+      return this.Statements[0].tokenLiteral();
     } else {
       return "";
     }
   }
 }
 
-class LetStatement implements Statement {
+export class LetStatement implements Statement {
   public Token: Token;
-  public Name: Identifier;
-  public Value: Expression;
+  public Name: Identifier | null;
+  public Value: Expression | null;
 
-  constructor(token: Token, name: Identifier, value: Expression) {
+  constructor(token: Token, name: Identifier | null, value: Expression | null) {
     this.Token = token;
     this.Name = name;
     this.Value = value;
   }
+
+  public statementNode(): void {}
+  public tokenLiteral(): string {
+    return this.Token.literal;
+  }
 }
 
-class Identifier implements Expression {
+export class Identifier implements Expression {
   public Token: Token;
   public Value: string;
 
@@ -49,8 +53,8 @@ class Identifier implements Expression {
     this.Value = value;
   }
 
-  expressionNode(): void {}
-  TokenLiteral(): string {
+  public expressionNode(): void {}
+  public tokenLiteral(): string {
     return this.Token.literal;
   }
 }
