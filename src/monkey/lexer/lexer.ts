@@ -1,11 +1,15 @@
-import { TokenType, Keywords, Token, TokenItem } from "../token/token";
+import { TokenType, keywords, Token, TokenItem, lookupIdentifier } from "../token/token";
 
 export class Lexer {
-  private position: number = 0;
-  private readPosition: number = 0;
+  private position: number;
+  private readPosition: number;
   private char!: string;
 
-  constructor(private input: string) {
+  public constructor(private input: string) {
+    this.input = input;
+    this.position = 0;
+    this.readPosition = 0;
+    this.char = '';
     this.readChar();
   }
 
@@ -78,32 +82,28 @@ export class Lexer {
       case "\0":
         token = newToken(TokenType.Eof, "eof");
         break;
-    }
-
-    if (isLetter(this.char)) {
-      const identifier = this.readIdentifier();
-      const keyword = Keywords[identifier as keyof typeof Keywords];
-      if (keyword) {
-        return keyword;
-      } else {
-        return newToken(TokenType.Ident, identifier);
+      default: {
+        if (isLetter(this.char)) {
+          return this.readIdentifier();
+        } else if (isDigit(this.char)) {
+          return newToken(TokenType.Int, this.readInteger());
+        } else if (!token) {
+          return newToken(TokenType.Illegal, this.char);
+        }
       }
-    } else if (isDigit(this.char)) {
-      return newToken(TokenType.Int, this.readInteger());
-    } else if (!token) {
-      return newToken(TokenType.Illegal, this.char);
     }
 
     this.readChar();
     return token as Token;
   }
 
-  private readIdentifier(): string {
-    const position = this.position;
+  public readIdentifier(): Token {
+    const position = this.position - 1;
     while (isLetter(this.char)) {
       this.readChar();
     }
-    return this.input.slice(position, this.position)
+    const literal = this.input.substring(position, this.position - 1);
+    return lookupIdentifier(literal);
   }
 
   private peek(): string {
@@ -147,6 +147,6 @@ export function isDigit(character: string): boolean {
   return _0Ch <= char && _9Ch >= char;
 } 
 
-export function newToken(tokenType: TokenItem, char: string): Token {
-  return { type: tokenType, literal: char };
+export function newToken(type: TokenItem, literal: string): Token {
+  return { type: type, literal: literal };
 }

@@ -1,10 +1,8 @@
-import { newToken } from "../lexer/lexer";
-
 export const TokenType = {
   Illegal: "ILLEGAL",
   Eof: "EOF",
   
-  Ident: "Ident",
+  Ident: "IDENT",
   Int: "INT",
   
   Assign: "=",
@@ -40,12 +38,20 @@ export type Token = {
   literal: string;
 }
 
-export const Keywords = {
-  "fn": newToken(TokenType.Function, "fn"),
-  "let": newToken(TokenType.Let, "let"),
-  "true": newToken(TokenType.True, "true"),
-  "false": newToken(TokenType.False, "false"),
-  "if": newToken(TokenType.If, "if"),
-  "else": newToken(TokenType.Else, "else"),
-  "return": newToken(TokenType.Return, "return")
-} as const;
+export const keywords = new Map<string, TokenItem>([
+  ["fn", TokenType.Function],
+  ["let", TokenType.Let],
+  ["true", TokenType.True],
+  ["false", TokenType.False],
+  ["if", TokenType.If],
+  ["else", TokenType.Else],
+  ["return", TokenType.Return],
+]);
+
+export const lookupIdentifier = (literal: string): Token => {
+  const type = keywords.get(literal);
+  if (type) {
+    return { type, literal };
+  }
+  return { type: TokenType.Ident, literal };
+};

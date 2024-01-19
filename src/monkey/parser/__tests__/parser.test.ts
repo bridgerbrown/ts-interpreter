@@ -1,8 +1,8 @@
 import { Lexer } from "../../lexer/lexer";
 import { Parser } from "../parser";
-import { Program, LetStatement, Statement } from "../../ast/ast";
+import { Program, Statement, LetStatement } from "../../ast/ast";
 
-test("TestLetStatements", (test) => {
+test("TestLetStatements", () => {
   const input = `
     let x = 5;
     let y = 10;
@@ -13,12 +13,8 @@ test("TestLetStatements", (test) => {
   const parser = new Parser(lexer);
   const program: Program = parser.parseProgram();
 
-  if (!program) {
-    test.fail("parseProgram() returned null");
-  }
-  if (program.Statements.length !== 3) {
-    test.fail(`program.Statements does not contain 3 statements. got=${program.Statements.length}`);
-  }
+  expect(program).not.toBeNull();
+  expect(program?.statements.length).toBe(3);
 
   const tests = [
     { expectedIdentifier: "x" },
@@ -28,31 +24,15 @@ test("TestLetStatements", (test) => {
 
   for (let i = 0; i < tests.length; i++) {
     const currTest = tests[i];
-    const statement = program.Statements[i];
-    if (!testLetStatement(test, statement, currTest.expectedIdentifier)) {
-      return;
+    const statement = program?.statements[i];
+
+    expect(statement?.tokenLiteral()).toBe("let");
+
+    if (statement instanceof LetStatement) {
+      expect(statement.name?.value).toBe(currTest.expectedIdentifier);
+      expect(statement.name?.tokenLiteral()).toBe(currTest.expectedIdentifier);
+    } else {
+      fail("statement not LetStatement");
     }
   }
 });
-
-function testLetStatement(test: any, statement: Statement, name: string): boolean {
-  if (statement.tokenLiteral() !== "let") {
-    test.fail(`statement.tokenLiteral not 'let'. got=${statement.tokenLiteral()}`);
-    return false;
-  }
-
-  if (!(statement instanceof LetStatement)) {
-    test.fail(`statement not LetStatement`);
-    return false;
-  }
-
-  if (statement.name.value !== name) {
-    test.fail(`letStatement.name.value not '${name}'. got=${statement.name.value}`);
-    return false;
-  }
-  if (statement.name.tokenLiteral() !== name) {
-    test.fail(`letStatement.name.tokenLiteral() not '${name}'. got=${statement.name.tokenLiteral()}`);
-    return false;
-  }
-  return true;
-}
