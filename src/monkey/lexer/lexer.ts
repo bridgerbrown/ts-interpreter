@@ -1,11 +1,12 @@
-import { TokenType, keywords, Token, TokenItem, lookupIdentifier } from "../token/token";
+import { TokenType, keywords, Token, lookupIdentifier } from "../token/token";
 
 export class Lexer {
+  private input: string;
   private position: number;
   private readPosition: number;
-  private char!: string;
+  private char: string;
 
-  public constructor(private input: string) {
+  constructor(input: string) {
     this.input = input;
     this.position = 0;
     this.readPosition = 0;
@@ -13,7 +14,7 @@ export class Lexer {
     this.readChar();
   }
 
-  public readChar(): void {
+  readChar(): void {
     if (this.readPosition >= this.input.length) {
       this.char = "\0";
     } else {
@@ -23,12 +24,13 @@ export class Lexer {
     this.readPosition += 1;
   }
 
-  public nextToken(): Token {
+  nextToken(): Token {
     let token: Token | undefined;
     this.skipWhitespace();
+
     switch (this.char) {
       case "=":
-        if (this.peek() == "=") {
+        if (this.peekChar() == "=") {
           this.readChar();
           token = newToken(TokenType.Equal, "==");
         } else {
@@ -42,7 +44,7 @@ export class Lexer {
         token = newToken(TokenType.Minus, this.char);
         break;
       case "!":
-        if (this.peek() == "=") {
+        if (this.peekChar() == "=") {
           this.readChar();
           token = newToken(TokenType.NotEqual, "!=");
         } else {
@@ -87,26 +89,26 @@ export class Lexer {
           return this.readIdentifier();
         } else if (isDigit(this.char)) {
           return newToken(TokenType.Int, this.readInteger());
-        } else if (!token) {
+        } else {
           return newToken(TokenType.Illegal, this.char);
         }
       }
     }
 
     this.readChar();
-    return token as Token;
+    return token;
   }
 
-  public readIdentifier(): Token {
-    const position = this.position - 1;
+  readIdentifier(): Token {
+    const position = this.position;
     while (isLetter(this.char)) {
       this.readChar();
     }
-    const literal = this.input.substring(position, this.position - 1);
+    const literal = this.input.slice(position, this.position);
     return lookupIdentifier(literal);
   }
 
-  private peek(): string {
+  peekChar(): string {
     if (this.readPosition >= this.input.length) {
       return "\0";
     } else {
@@ -114,13 +116,13 @@ export class Lexer {
     }
   }
 
-  private skipWhitespace(): void {
+  skipWhitespace(): void {
     while (this.char === " " || this.char === "\t" || this.char === "\n" || this.char === "\r") {
       this.readChar();
     }
   }
 
-  private readInteger(): string {
+  readInteger(): string {
     const position = this.position;
     while (isDigit(this.char)) {
       this.readChar();
@@ -147,6 +149,6 @@ export function isDigit(character: string): boolean {
   return _0Ch <= char && _9Ch >= char;
 } 
 
-export function newToken(type: TokenItem, literal: string): Token {
+export function newToken(type: TokenType, literal: string): Token {
   return { type: type, literal: literal };
 }

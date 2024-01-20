@@ -1,34 +1,34 @@
 import { Lexer } from "../lexer/lexer";
-import { Token, TokenType, TokenItem } from "../token/token";
+import { Token, TokenType } from "../token/token";
 import { Program, Statement, LetStatement, Identifier, Expression} from "../ast/ast";
 
-export class Parser {
-  private l: Lexer;
-  private currToken: Token;
-  private peekToken: Token;
+export interface Parser {
+  lexer: Lexer;
+  currToken: Token;
+  peekToken: Token;
+}
 
-  constructor(l: Lexer) {
-    this.l = l;
-    const firstToken = l.nextToken();
-    if (!firstToken) throw new Error("No first token.");
-    this.currToken = firstToken;
-    this.peekToken = l.nextToken();
+export class Parser implements Parser {
+  constructor(lexer: Lexer) {
+    this.lexer = lexer;
+    this.nextToken();
+    this.nextToken();
   }
 
   nextToken(): void {
     this.currToken = this.peekToken;
-    this.peekToken = this.l.nextToken();
+    this.peekToken = this.lexer.nextToken();
   }
 
-  currTokenIs(token: TokenItem): boolean {
+  currTokenIs(token: TokenType): boolean {
     return this.currToken.type == token;
   }
 
-  peekTokenIs(token: TokenItem): boolean {
+  peekTokenIs(token: TokenType): boolean {
     return this.peekToken.type == token;
   }
 
-  expectPeek(token: TokenItem): boolean {
+  expectPeek(token: TokenType): boolean {
     if (this.peekTokenIs(token)) {
       this.nextToken();
       return true;
@@ -38,10 +38,11 @@ export class Parser {
   }
 
   parseProgram(): Program {
-    const program: Program = new Program([]);
-
+    const program = new Program();
+    program.statements = [];
+    
     while (this.currToken.type !== TokenType.Eof) {
-      const statement: Statement | null = this.parseStatement();
+      const statement = this.parseStatement();
       if (statement !== null) {
         program.statements.push(statement);
       }
@@ -61,15 +62,21 @@ export class Parser {
   }
 
   parseLetStatement(): LetStatement | null {
-    const statement: LetStatement = new LetStatement(this.currToken, {} as Identifier, {} as Expression);
-    if (!this.expectPeek(TokenType.Ident)) return null;
-    statement.name = new Identifier(this.currToken, this.currToken.literal);
-    if (!this.expectPeek(TokenType.Assign)) return null;
+    const statement: LetStatement = new LetStatement(this.currToken, null, null);
 
-    while (!this.currTokenIs(TokenType.Semicolon)) {
+    if (!this.expectPeek(TokenType.Ident)) return null;
+
+    statement.name = new Identifier(this.currToken);
+
+    if (!this.expectPeek(TokenType.Assign)) return null;
+    
+    this.nextToken();
+
+    while (this.peekTokenIs(TokenType.Semicolon)) {
       this.nextToken();
     }
     return statement;
   }
 }
+
 

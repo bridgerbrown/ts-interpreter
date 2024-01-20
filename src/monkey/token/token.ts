@@ -1,44 +1,43 @@
-export const TokenType = {
-  Illegal: "ILLEGAL",
-  Eof: "EOF",
-  
-  Ident: "IDENT",
-  Int: "INT",
-  
-  Assign: "=",
-  Plus: "+",
-  Minus: "-",
-  Excl: "!",
-  Asterisk: "*",
-  SlashF: "/",
-  Equal: "==",
-  NotEqual: "!=",
-
-  Lt: "<",
-  Gt: ">",
-  Comma: ",",
-  Semicolon: ";",
-  LParen: "(",
-  RParen: ")",
-  LBrace: "{",
-  RBrace: "}",
-
-  Function: "FUNCTION",
-  Let: "LET",
-  True: "TRUE",
-  False: "FALSE",
-  If: "IF",
-  Else: "ELSE",
-  Return: "RETURN"
-} as const;
-
-export type TokenItem = typeof TokenType[keyof typeof TokenType];
-export type Token = {
-  type: TokenItem;
+export interface Token {
+  type: TokenType;
   literal: string;
 }
 
-export const keywords = new Map<string, TokenItem>([
+export enum TokenType {
+  Illegal = "ILLEGAL",
+  Eof = "EOF",
+  
+  Ident = "IDENT",
+  Int = "INT",
+  
+  Assign = "=",
+  Plus = "+",
+  Minus = "-",
+  Excl = "!",
+  Asterisk = "*",
+  SlashF = "/",
+  Equal = "==",
+  NotEqual = "!=",
+
+  Lt = "<",
+  Gt = ">",
+  Comma = ",",
+  Semicolon = ";",
+  LParen = "(",
+  RParen = ")",
+  LBrace = "{",
+  RBrace = "}",
+
+  Function = "FUNCTION",
+  Let = "LET",
+  True = "TRUE",
+  False = "FALSE",
+  If = "IF",
+  Else = "ELSE",
+  Return = "RETURN"
+};
+
+export const keywords = new Map<string, TokenType>([
   ["fn", TokenType.Function],
   ["let", TokenType.Let],
   ["true", TokenType.True],

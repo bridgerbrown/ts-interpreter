@@ -3,21 +3,21 @@ import { Token } from "../token/token";
 interface Node {
   tokenLiteral(): string;
 }
-export interface Statement extends Node {
+
+interface Statement extends Node {
   statementNode(): void;
 }
-export interface Expression extends Node {
+
+interface Expression extends Node {
   expressionNode(): void;
 }
 
-export class Program {
-  type: "program";
+interface Program {
   statements: Statement[];
-  
-  constructor(statements: Statement[]) {
-    this.type = "program";
-    this.statements = statements;
-  }
+}
+
+class Program implements Node {
+  statements: Statement[] = [];
 
   tokenLiteral(): string {
     if (this.statements.length > 0) {
@@ -28,34 +28,46 @@ export class Program {
   }
 }
 
-export class LetStatement implements Statement {
-  public token: Token;
-  public name: Identifier;
-  public value: Expression;
+class LetStatement implements Statement {
+  token: Token;
+  name: Identifier | null;
+  value: Expression;
 
-  constructor(token: Token, name: Identifier, value: Expression) {
+  constructor(token: Token, name: Identifier | null, value: Expression) {
     this.token = token;
     this.name = name;
     this.value = value;
   }
-
   statementNode(): void {}
   tokenLiteral(): string {
     return this.token.literal;
   }
 }
 
-export class Identifier implements Expression {
-  public token: Token;
-  public value: string;
+class Identifier implements Expression {
+  token: Token;
+  value: string = "";
 
-  constructor(token: Token, value: string) {
+  constructor(token: Token) {
     this.token = token;
-    this.value = value;
   }
-
   expressionNode(): void {}
   tokenLiteral(): string {
     return this.token.literal;
   }
 }
+
+class IntegerLiteral implements Expression {
+  token: Token;
+  value: number = 0; 
+
+  constructor(token: Token) {
+    this.token = token;
+  }
+  expressionNode(): void {}
+  tokenLiteral(): string {
+    return this.token.literal;
+  }
+}
+
+export { Statement, Expression, Program, LetStatement, Identifier, IntegerLiteral };
