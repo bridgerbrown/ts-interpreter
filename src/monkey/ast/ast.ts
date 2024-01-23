@@ -2,6 +2,7 @@ import { Token } from "../token/token";
 
 interface Node {
   tokenLiteral(): string;
+  string(): string;
 }
 
 interface Statement extends Node {
@@ -26,6 +27,13 @@ class Program implements Node {
       return "";
     }
   }
+  string(): string {
+    let out: string = "";
+    for (const s of this.statements) {
+      out += s.string();
+    }
+    return out;
+  }
 }
 
 class LetStatement implements Statement {
@@ -42,6 +50,17 @@ class LetStatement implements Statement {
   tokenLiteral(): string {
     return this.token.literal;
   }
+  string(): string {
+    let out: string = "";
+    out += this.tokenLiteral() + " ";
+    out += this.name ? this.name.toString() : "";
+    out += " = ";
+    if (this.value !== null) {
+      out += this.value.toString();
+    }
+    out += ";";
+    return out;
+  }
 }
 
 class ReturnStatement implements Statement {
@@ -56,6 +75,15 @@ class ReturnStatement implements Statement {
   tokenLiteral(): string {
     return this.token.literal;
   }
+  string(): string {
+    let out: string = "";
+    out += this.tokenLiteral() + " ";
+    if (this.returnValue !== null) {
+      out += this.returnValue.toString();
+    }
+    out += ";";
+    return out;
+  }
 }
 
 class Identifier implements Expression {
@@ -68,6 +96,9 @@ class Identifier implements Expression {
   expressionNode(): void {}
   tokenLiteral(): string {
     return this.token.literal;
+  }
+  string(): string {
+    return this.value;
   }
 }
 
@@ -82,6 +113,32 @@ class IntegerLiteral implements Expression {
   tokenLiteral(): string {
     return this.token.literal;
   }
+  string(): string {
+    return this.value.toString();
+  }
 }
 
-export { Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral };
+class ExpressionStatement implements Statement {
+  token: Token;
+  expression: Expression;
+
+  constructor(token: Token, expression: Expression) {
+    this.token = token;
+    this.expression = expression;
+  }
+
+  statementNode(): void {}
+  tokenLiteral(): string {
+      return this.token.literal;
+  }
+  string(): string {
+    if (this.expression !== null) {
+      return `${this.expression.toString()}`;
+    }
+    return "";
+  }
+}
+
+export { Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral,
+ExpressionStatement
+};
