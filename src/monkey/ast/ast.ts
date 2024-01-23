@@ -44,6 +44,20 @@ class LetStatement implements Statement {
   }
 }
 
+class ReturnStatement implements Statement {
+  token: Token;
+  returnValue: Expression;
+
+  constructor(token: Token, value: Expression) {
+    this.token = token;
+    this.returnValue = value;
+  }
+  statementNode(): void {}
+  tokenLiteral(): string {
+    return this.token.literal;
+  }
+}
+
 class Identifier implements Expression {
   token: Token;
   value: string = "";
@@ -70,4 +84,4 @@ class IntegerLiteral implements Expression {
   }
 }
 
-export { Statement, Expression, Program, LetStatement, Identifier, IntegerLiteral };
+export { Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral };

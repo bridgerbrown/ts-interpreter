@@ -1,11 +1,12 @@
 import { Lexer } from "../lexer/lexer";
 import { Token, TokenType } from "../token/token";
-import { Program, Statement, LetStatement, Identifier, Expression} from "../ast/ast";
+import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement} from "../ast/ast";
 
 export interface Parser {
   lexer: Lexer;
   currToken: Token;
   peekToken: Token;
+  errors: string[];
 }
 
 export class Parser implements Parser {
@@ -13,6 +14,7 @@ export class Parser implements Parser {
     this.lexer = lexer;
     this.nextToken();
     this.nextToken();
+    this.errors = [];
   }
 
   nextToken(): void {
@@ -33,6 +35,7 @@ export class Parser implements Parser {
       this.nextToken();
       return true;
     } else {
+      this.peekError(token);
       return false;
     }
   }
@@ -41,21 +44,22 @@ export class Parser implements Parser {
     const program = new Program();
     program.statements = [];
     
-    while (this.currToken.type !== TokenType.Eof) {
-      const statement = this.parseStatement();
+    while (!this.currTokenIs(TokenType.Eof)) {
+      let statement = this.parseStatement();
       if (statement !== null) {
         program.statements.push(statement);
       }
-      this.nextToken();
+      this.nextToken()
     }
-
     return program;
   }
 
   parseStatement(): Statement | null {
     switch (this.currToken.type) {
-      case TokenType.Let:
+      case (TokenType.Let):
         return this.parseLetStatement();
+      case (TokenType.Return):
+        return this.parseReturnStatement();
       default:
         return null;
     }
@@ -76,6 +80,53 @@ export class Parser implements Parser {
       this.nextToken();
     }
     return statement;
+  }
+
+  parseReturnStatement(): ReturnStatement | null {
+    const statement: ReturnStatement = new ReturnStatement(this.currToken, null);
+    this.nextToken();
+
+    while (!this.currTokenIs(TokenType.Semicolon)) {
+      this.nextToken();
+    }
+    return statement; 
+}
+
+  parseIdentifier() {
+    const identifier = newIdentifierASTNode();
+    identifier.token = this.currToken();
+    return identifier;
+  }
+
+  parseExpression() {
+    if (this.currToken() == TokenType.Int) {
+      if (this.nextToken() == TokenType.Plus) {
+        return parseOperatorExpression();
+      } else if (this.nextToken() == TokenType.Semicolon) {
+        return parseIntegerValue();
+      }
+    } else if (this.currToken() == TokenType.LParen) {
+      return parseGroupedExpression();
+    }
+  }
+
+  parseOperatorExpression() {
+    const operatorExpression = newOperatorExpression();
+    operatorExpression.left = parseIntegerLiteral();
+    this.advanceTokens();
+    operatorExpression.operatorExpression = this.currToken();
+    this.advanceTokens();
+    operatorExpression.right = this.parseExpression();
+    return operatorExpression;
+  }
+
+  checkErrors(): string[] {
+    return this.errors;
+  }
+
+  peekError(token: TokenType): void {
+    let message = `Expected next token to be ${token}, instead got ${this.peekToken.type}`;
+    this.errors.push(message);
   }
 }
 
