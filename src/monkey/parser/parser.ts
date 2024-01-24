@@ -1,6 +1,6 @@
 import { Lexer } from "../lexer/lexer";
 import { Token, TokenType } from "../token/token";
-import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement} from "../ast/ast";
+import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement} from "../ast/ast";
 
 export interface Parser {
   lexer: Lexer;
@@ -10,6 +10,7 @@ export interface Parser {
 }
 
 export class Parser implements Parser {
+  private prefixParseFns: Map<TokenType, PrefixParseFn> = new Map();
   constructor(lexer: Lexer) {
     this.lexer = lexer;
     this.nextToken();
@@ -61,7 +62,7 @@ export class Parser implements Parser {
       case (TokenType.Return):
         return this.parseReturnStatement();
       default:
-        return null;
+        return this.parseExpressionStatement();
     }
   }
 
@@ -92,35 +93,27 @@ export class Parser implements Parser {
     return statement; 
 }
 
-  parseIdentifier() {
-    const identifier = newIdentifierASTNode();
-    identifier.token = this.currToken();
-    return identifier;
+  
+  parseIdentifier(): Expression {
+    return new Identifier(this.currToken);
   }
 
-  parseExpression() {
-    if (this.currToken() == TokenType.Int) {
-      if (this.nextToken() == TokenType.Plus) {
-        return parseOperatorExpression();
-      } else if (this.nextToken() == TokenType.Semicolon) {
-        return parseIntegerValue();
-      }
-    } else if (this.currToken() == TokenType.LParen) {
-      return parseGroupedExpression();
+  parseExpressionStatement(): ExpressionStatement {
+    let statement = new ExpressionStatement(this.currToken, this.parseExpression(LOWEST));
+    if (this.peekTokenIs(TokenType.Semicolon)) {
+      this.nextToken();
     }
+    return statement;
   }
 
-  parseOperatorExpression() {
-    const operatorExpression = newOperatorExpression();
-    operatorExpression.left = parseIntegerLiteral();
-    this.advanceTokens();
-    operatorExpression.operatorExpression = this.currToken();
-    this.advanceTokens();
-    operatorExpression.right = this.parseExpression();
-    return operatorExpression;
+  parseExpression(): Expression {
+    let prefix = this.prefixParseFns.set(this.currToken.type);
+    if (prefix === null) return null;
+    let leftExp = prefix();
+    return leftExp;
   }
 
-  checkErrors(): string[] {
+  checkParserErrors(): string[] {
     return this.errors;
   }
 
@@ -128,6 +121,31 @@ export class Parser implements Parser {
     let message = `Expected next token to be ${token}, instead got ${this.peekToken.type}`;
     this.errors.push(message);
   }
+
+  registerPrefix(tokenType: TokenType, fn: PrefixParseFn): void {
+    this.prefixParseFns.set(tokenType, fn);
+  }
+
+  registerInfix (tokenType: TokenType, fn: InfixParseFn): void {
+    this.infixParseFns.set(tokenType, fn);
+  }
 }
 
+interface PrefixParseFn {
+  (): Expression;
+}
 
+interface InfixParseFn {
+  (expression: Expression): Expression;
+}
+
+enum Precedence {
+  _,
+  LOWEST,
+  EQUALS,
+  LESSGREATER,
+  SUM,
+  PRODUCT,
+  PREFIX,
+  CALL
+}

@@ -39,9 +39,9 @@ class Program implements Node {
 class LetStatement implements Statement {
   token: Token;
   name: Identifier | null;
-  value: Expression;
+  value: Expression | null;
 
-  constructor(token: Token, name: Identifier | null, value: Expression) {
+  constructor(token: Token, name: Identifier | null, value: Expression | null) {
     this.token = token;
     this.name = name;
     this.value = value;
@@ -53,10 +53,10 @@ class LetStatement implements Statement {
   string(): string {
     let out: string = "";
     out += this.tokenLiteral() + " ";
-    out += this.name ? this.name.toString() : "";
+    out += this.name ? this.name.string() : "";
     out += " = ";
     if (this.value !== null) {
-      out += this.value.toString();
+      out += this.value.string();
     }
     out += ";";
     return out;
@@ -65,9 +65,9 @@ class LetStatement implements Statement {
 
 class ReturnStatement implements Statement {
   token: Token;
-  returnValue: Expression;
+  returnValue: Expression | null;
 
-  constructor(token: Token, value: Expression) {
+  constructor(token: Token, value: Expression | null) {
     this.token = token;
     this.returnValue = value;
   }
@@ -92,13 +92,14 @@ class Identifier implements Expression {
 
   constructor(token: Token) {
     this.token = token;
+    this.value = token.literal;
   }
   expressionNode(): void {}
   tokenLiteral(): string {
     return this.token.literal;
   }
   string(): string {
-    return this.value;
+    return this.tokenLiteral();
   }
 }
 
@@ -120,9 +121,9 @@ class IntegerLiteral implements Expression {
 
 class ExpressionStatement implements Statement {
   token: Token;
-  expression: Expression;
+  expression: Expression | null;
 
-  constructor(token: Token, expression: Expression) {
+  constructor(token: Token, expression: Expression | null) {
     this.token = token;
     this.expression = expression;
   }
@@ -133,7 +134,7 @@ class ExpressionStatement implements Statement {
   }
   string(): string {
     if (this.expression !== null) {
-      return `${this.expression.toString()}`;
+      return `${this.expression.tokenLiteral()}`;
     }
     return "";
   }

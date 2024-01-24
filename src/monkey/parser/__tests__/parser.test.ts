@@ -1,10 +1,9 @@
 import { Lexer } from "../../lexer/lexer";
 import { Parser } from "../parser";
-import { Program, IntegerLiteral, Identifier, Statement, LetStatement } from "../../ast/ast";
+import { Program, IntegerLiteral, Identifier, Statement, LetStatement, ExpressionStatement } from "../../ast/ast";
 import { TokenType } from "../../token/token";
 
-test("TestLetStatements", () => {
-
+test("Let statements", () => {
   const input = `let x = 5; let y = 10; let foobar = 838383;`;
 
   const lexer = new Lexer(input);
@@ -29,3 +28,41 @@ test("TestLetStatements", () => {
   expect(program.statements.length).toBe(expected.statements.length);
 });
 
+test("Identifier expressions", () => {
+  const input = "foobar;";
+
+  const lexer = new Lexer(input);
+  const parser = new Parser(lexer);
+  const program = parser.parseProgram();
+  parser.checkParserErrors();
+
+  const expected = new Program();
+  expected.statements = [
+    new ExpressionStatement({ type: TokenType.Ident, literal: "foobar" }, 
+      new Identifier({ type: TokenType.Ident, literal: "foobar" })
+    )
+  ];
+
+  expect(program.statements.length).toBe(expected.statements.length);
+  const actual = program.statements[0] as ExpressionStatement;
+  const expectedStatement = expected.statements[0] as ExpressionStatement;
+  expect(actual).toBeInstanceOf(ExpressionStatement);
+  expect(actual.expression?.tokenLiteral()).toEqual(expectedStatement.expression?.tokenLiteral());
+});
+
+test("Integer literaal expression", () => {
+  const input = "5;";
+
+  const lexer = new Lexer(input);
+  const parser = new Parser(lexer);
+  const program = parser.parseProgram();
+  parser.checkParserErrors();
+
+  const expected = new Program();
+  expected.statements = [
+    new ExpressionStatement({ type: TokenType.Int, literal: "5" }, 
+      new Identifier({ type: TokenType.Int, literal: "5" })
+    )
+  ];
+  expect(program.statements.length).toBe(expected.statements.length);
+});
