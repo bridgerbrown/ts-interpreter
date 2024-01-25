@@ -107,8 +107,9 @@ class IntegerLiteral implements Expression {
   token: Token;
   value: number = 0; 
 
-  constructor(token: Token) {
+  constructor(token: Token, value: number) {
     this.token = token;
+    this.value = value;
   }
   expressionNode(): void {}
   tokenLiteral(): string {

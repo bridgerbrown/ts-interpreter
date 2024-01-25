@@ -61,8 +61,12 @@ test("Integer literaal expression", () => {
   const expected = new Program();
   expected.statements = [
     new ExpressionStatement({ type: TokenType.Int, literal: "5" }, 
-      new Identifier({ type: TokenType.Int, literal: "5" })
+      new IntegerLiteral({ type: TokenType.Int, literal: "5" }, 5)
     )
   ];
   expect(program.statements.length).toBe(expected.statements.length);
+  const statement = program.statements[0] as ExpressionStatement;
+  const literal = statement.expression; 
+  expect(literal).toBeInstanceOf(IntegerLiteral);
+  expect(literal).toBe(5);
 });
