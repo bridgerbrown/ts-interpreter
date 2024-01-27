@@ -1,6 +1,6 @@
 import { Lexer } from "../lexer/lexer";
 import { Token, TokenType } from "../token/token";
-import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement} from "../ast/ast";
+import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement, IntegerLiteral} from "../ast/ast";
 
 export interface Parser {
   lexer: Lexer;
@@ -111,6 +111,17 @@ export class Parser implements Parser {
     if (prefix === null) return null;
     let leftExp = prefix();
     return leftExp;
+  }
+
+  parseIntegerLiteral(): Expression {
+    const literal = new IntegerLiteral(this.currToken);
+    let value: number = parseInt(this.currToken.literal, 10);
+    if (isNaN(value)) {
+      let message = `Could not parse ${this.currToken.literal} as integer.`;
+      this.errors.push(message);
+    }
+    literal.value = value;
+    return literal;
   }
 
   checkParserErrors(): string[] {

@@ -99,17 +99,16 @@ class Identifier implements Expression {
     return this.token.literal;
   }
   string(): string {
-    return this.tokenLiteral();
+    return this.token.literal;
   }
 }
 
 class IntegerLiteral implements Expression {
   token: Token;
-  value: number = 0; 
+  value: number | undefined = 0; 
 
-  constructor(token: Token, value: number) {
+  constructor(token: Token) {
     this.token = token;
-    this.value = value;
   }
   expressionNode(): void {}
   tokenLiteral(): string {
