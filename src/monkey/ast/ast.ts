@@ -1,4 +1,4 @@
-import { Token } from "../token/token";
+import { Token, TokenType } from "../token/token";
 
 interface Node {
   tokenLiteral(): string;
@@ -115,7 +115,11 @@ class IntegerLiteral implements Expression {
     return this.token.literal;
   }
   string(): string {
-    return this.value.toString();
+    if (this.value) {
+      return this.value.toString();
+    } else {
+      return "";
+    }
   }
 }
 
@@ -140,6 +144,53 @@ class ExpressionStatement implements Statement {
   }
 }
 
+class PrefixExpression implements Expression {
+  token: Token;
+  operator: string;
+  right: Expression | null;
+
+  constructor(token: Token, operator: string, right: Expression | null) {
+    this.token = token;
+    this.operator = operator;
+    this.right = right;
+  }
+
+  expressionNode(): void {
+      
+  }
+  tokenLiteral(): string {
+      return this.token.literal;
+  }
+  string(): string {
+    return "(" + this.operator + this.right?.toString() + ")";
+  }
+}
+
+class InfixExpression implements Expression {
+  token: Token;
+  operator: string;
+  left: Expression;
+  right: Expression | null;
+
+  constructor(token: Token, operator: string, left: Expression, right: Expression | null) {
+    this.token = token;
+    this.operator = operator;
+    this.left = left;
+    this.right = right;
+  }
+
+  expressionNode(): void {
+      
+  }
+  tokenLiteral(): string {
+      return this.token.literal;
+  }
+  string(): string {
+    return "(" + this.left.toString() + " " + this.operator + " " + this.right?.toString() + ")";
+  }
+}
+
 export { Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral,
-ExpressionStatement
+ExpressionStatement, PrefixExpression, InfixExpression
 };
+
