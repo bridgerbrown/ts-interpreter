@@ -190,7 +190,114 @@ class InfixExpression implements Expression {
   }
 }
 
+class Boolean implements Expression {
+  token: Token;
+  value: boolean;
+
+  constructor(token: Token, value: boolean) {
+    this.token = token;
+    this.value = value;
+  }
+
+  expressionNode(): void {
+      
+  }
+  tokenLiteral(): string {
+      return this.token.literal;
+  }
+  string(): string {
+    return this.token.literal;
+  }
+}
+
+class IfExpression implements Expression {
+  token: Token;
+  condition: Expression | null;
+  consequence: BlockStatement | null;
+  alternative: BlockStatement | null;
+
+  constructor(token: Token, condition: Expression | null, 
+    consequence: BlockStatement | null, alternative: BlockStatement | null) {
+    this.token = token;
+    this.condition = condition;
+    this.consequence = consequence;
+    this.alternative = alternative;
+  }
+
+  expressionNode(): void {
+      
+  }
+  tokenLiteral(): string {
+      return this.token.literal;
+  }
+  string(): string {
+    let expression: string = "if" + this.condition?.string() + " " + this.consequence?.string();
+    if (this.alternative !== null) {
+      expression += "else " + this.alternative.string();
+    }
+    return expression;
+  }
+}
+
+class BlockStatement implements Statement {
+  token: Token;
+  statements: Statement[];
+
+  constructor(token: Token, statements: Statement[]) {
+    this.token = token;
+    this.statements = statements; 
+  }
+
+  statementNode(): void {
+      
+  }
+  tokenLiteral(): string {
+      return this.token.literal;
+  }
+  string(): string {
+    let statements = "";
+    for (let s of this.statements) {
+      statements += s.string();
+    }
+    return statements;
+  }
+}
+
+class FunctionLiteral implements Expression {
+  token: Token;
+  parameters: Identifier[] | null;
+  body: BlockStatement | null
+
+  constructor(token: Token, parameters: Identifier[] | null, body: BlockStatement | null) {
+    this.token = token;
+    this.parameters = parameters;
+    this.body = body;
+  }
+
+  expressionNode(): void {
+      
+  }
+  tokenLiteral(): string {
+      return this.token.literal;
+  }
+  string(): string {
+    let params = [];
+    if (this.parameters) {
+      for (const p of this.parameters) {
+        params.push(p.string());
+      }
+    }
+    let body = "";
+    if (this.body) {
+      body = this.body.toString();
+    }
+    let str = this.tokenLiteral() + "(" + params.join(", ") + ") " + body;
+    return str;
+  }
+}
+
+
 export { Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral,
-ExpressionStatement, PrefixExpression, InfixExpression
+ExpressionStatement, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral
 };
 
