@@ -1,6 +1,6 @@
 import { Lexer } from "../lexer/lexer";
 import { Token, TokenType } from "../token/token";
-import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement, IntegerLiteral, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement} from "../ast/ast";
+import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement, IntegerLiteral, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral, CallExpression} from "../ast/ast";
 
 export interface Parser {
   lexer: Lexer;
@@ -24,6 +24,7 @@ export class Parser implements Parser {
     this.registerPrefix(TokenType.True, this.parseBoolean);
     this.registerPrefix(TokenType.False, this.parseBoolean);
     this.registerPrefix(TokenType.If, this.parseIfExpression);
+    this.registerPrefix(TokenType.Function, this.parseFunctionLiteral)
 
     this.infixParseFns = new Map<TokenType, InfixParseFn>;
     this.registerInfix(TokenType.Plus, this.parseInfixExpression);
@@ -34,6 +35,7 @@ export class Parser implements Parser {
     this.registerInfix(TokenType.NotEqual, this.parseInfixExpression);
     this.registerInfix(TokenType.Lt, this.parseInfixExpression);
     this.registerInfix(TokenType.Gt, this.parseInfixExpression);
+    this.registerInfix(TokenType.LParen, this.parseCallExpression);
 
     this.nextToken();
     this.nextToken();
@@ -98,17 +100,22 @@ export class Parser implements Parser {
     
     this.nextToken();
 
-    while (this.peekTokenIs(TokenType.Semicolon)) {
+    statement.value = this.parseExpression(Precedence.LOWEST);
+
+    if (this.peekTokenIs(TokenType.Semicolon)) {
       this.nextToken();
     }
+
     return statement;
   }
 
   parseReturnStatement(): ReturnStatement | null {
     const statement: ReturnStatement = new ReturnStatement(this.currToken, null);
     this.nextToken();
+    
+    statement.returnValue = this.parseExpression(Precedence.LOWEST);
 
-    while (!this.currTokenIs(TokenType.Semicolon)) {
+    while (this.peekTokenIs(TokenType.Semicolon)) {
       this.nextToken();
     }
     return statement; 
@@ -240,10 +247,67 @@ export class Parser implements Parser {
     }
     return block;
   }
+
+  parseFunctionLiteral(): Expression | null {
+    let literal = new FunctionLiteral(this.currToken, null, null);
+    if (!this.expectPeek(TokenType.LParen)) return null;
+    literal.parameters = this.parseFunctionParameters();
+    if (!this.expectPeek(TokenType.LBrace)) return null;
+    literal.body = this.parseBlockStatement();
+    return literal;
+  }
+
+  parseFunctionParameters(): Identifier[] | null {
+    const identifiers: Identifier[] = [];
+
+    if (this.peekTokenIs(TokenType.RParen)) {
+      this.nextToken();
+      return identifiers;
+    }
+
+    this.nextToken();
+    let ident = new Identifier(this.currToken);
+    identifiers.push(ident);
+
+    while (this.peekTokenIs(TokenType.Comma)) {
+      this.nextToken();
+      this.nextToken();
+      ident = new Identifier(this.currToken);
+      identifiers.push(ident);
+    }
+
+    if (!this.expectPeek(TokenType.RParen)) return null;
+    return identifiers;
+  }
+
+  parseCallExpression(fn: Expression): Expression {
+    let exp = new CallExpression(this.currToken, fn, this.parseCallArguments());
+    return exp;
+  }
+
+  parseCallArguments(): (Expression | null)[] | null {
+    let args: (Expression | null)[] = [];
+    if (this.peekTokenIs(TokenType.RParen)) {
+      this.nextToken();
+      return args;
+    }
+
+    this.nextToken();
+    args.push(this.parseExpression(Precedence.LOWEST));
+
+    while (this.peekTokenIs(TokenType.Comma)) {
+      this.nextToken();
+      this.nextToken();
+      args.push(this.parseExpression(Precedence.LOWEST));
+    }
+    
+    if (!this.expectPeek(TokenType.RParen)) return null;
+    return args;
+  }
 }
 
 interface PrefixParseFn {
-  (): Expression;
+  (): Expression | null;
 }
 
 interface InfixParseFn {
@@ -269,5 +333,6 @@ const precedences = new Map<TokenType, Precedence>([
   [TokenType.Plus, Precedence.SUM],
   [TokenType.Minus, Precedence.SUM],
   [TokenType.SlashF, Precedence.PRODUCT],
-  [TokenType.Asterisk, Precedence.PRODUCT]
+  [TokenType.Asterisk, Precedence.PRODUCT],
+  [TokenType.LParen, Precedence.CALL],
 ])

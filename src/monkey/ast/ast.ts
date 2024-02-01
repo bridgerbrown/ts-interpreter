@@ -266,7 +266,7 @@ class BlockStatement implements Statement {
 class FunctionLiteral implements Expression {
   token: Token;
   parameters: Identifier[] | null;
-  body: BlockStatement | null
+  body: BlockStatement | null;
 
   constructor(token: Token, parameters: Identifier[] | null, body: BlockStatement | null) {
     this.token = token;
@@ -296,8 +296,38 @@ class FunctionLiteral implements Expression {
   }
 }
 
+class CallExpression implements Expression {
+  token: Token;
+  fn: Expression;
+  args: (Expression | null)[] | null;
+
+  constructor(token: Token, fn: Expression, args: (Expression | null)[] | null) {
+    this.token = token;
+    this.fn= fn;
+    this.args = args;
+  }
+
+  expressionNode(): void {
+      
+  }
+  tokenLiteral(): string {
+    return this.token.literal;
+  }
+  string(): string {
+    let args = [];
+    if (this.args) {
+      for (let arg of this.args) {
+        args.push(arg?.string());
+      }
+      return this.fn.string() + "(" + this.args.join(", ") + ")";
+    }
+    return "";
+  }
+}
+
 
 export { Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral,
-ExpressionStatement, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral
+ExpressionStatement, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral,
+CallExpression
 };
 
