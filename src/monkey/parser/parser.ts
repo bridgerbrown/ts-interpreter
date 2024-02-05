@@ -10,13 +10,13 @@ export interface Parser {
 }
 
 export class Parser implements Parser {
-  private prefixParseFns: Map<TokenType, PrefixParseFn> = new Map();
-  private infixParseFns: Map<TokenType, InfixParseFn> = new Map();
+  private prefixParseFns: Map<TokenType, PrefixParseFn>;
+  private infixParseFns: Map<TokenType, InfixParseFn>;
   constructor(lexer: Lexer) {
     this.lexer = lexer;
     this.errors = [];
 
-    this.prefixParseFns= new Map<TokenType, PrefixParseFn>;
+    this.prefixParseFns = new Map<TokenType, PrefixParseFn>;
     this.registerPrefix(TokenType.Ident, this.parseIdentifier);
     this.registerPrefix(TokenType.Int, this.parseIntegerLiteral);
     this.registerPrefix(TokenType.Excl, this.parsePrefixExpression);
@@ -37,11 +37,14 @@ export class Parser implements Parser {
     this.registerInfix(TokenType.Gt, this.parseInfixExpression);
     this.registerInfix(TokenType.LParen, this.parseCallExpression);
 
-    this.nextToken();
-    this.nextToken();
+    const firstToken = lexer.nextToken();
+    if (!firstToken) throw new Error("No token.");
+    this.currToken = firstToken;
+    this.peekToken = lexer.nextToken();
   }
 
-  nextToken(): void {
+  nextToken() {
+    if (!this.peekToken) throw new Error("No more tokens.");
     this.currToken = this.peekToken;
     this.peekToken = this.lexer.nextToken();
   }
@@ -102,7 +105,7 @@ export class Parser implements Parser {
 
     statement.value = this.parseExpression(Precedence.LOWEST);
 
-    if (this.peekTokenIs(TokenType.Semicolon)) {
+    if (!this.currTokenIs(TokenType.Semicolon)) {
       this.nextToken();
     }
 
@@ -115,7 +118,7 @@ export class Parser implements Parser {
     
     statement.returnValue = this.parseExpression(Precedence.LOWEST);
 
-    while (this.peekTokenIs(TokenType.Semicolon)) {
+    while (!this.currTokenIs(TokenType.Semicolon)) {
       this.nextToken();
     }
     return statement; 
@@ -126,9 +129,9 @@ export class Parser implements Parser {
     return new Identifier(this.currToken);
   }
 
-  parseExpressionStatement(): ExpressionStatement {
+  parseExpressionStatement(): ExpressionStatement | undefined {
     let statement = new ExpressionStatement(this.currToken, this.parseExpression(Precedence.LOWEST));
-    if (this.peekTokenIs(TokenType.Semicolon)) {
+    if (!this.currTokenIs(TokenType.Semicolon)) {
       this.nextToken();
     }
     return statement;
@@ -157,13 +160,12 @@ export class Parser implements Parser {
   }
 
   parseIntegerLiteral(): Expression {
-    const literal = new IntegerLiteral(this.currToken);
     let value: number = parseInt(this.currToken.literal, 10);
+    const literal = new IntegerLiteral(this.currToken, value);
     if (isNaN(value)) {
       let message = `Could not parse ${this.currToken.literal} as integer.`;
       this.errors.push(message);
     }
-    literal.value = value;
     return literal;
   }
 

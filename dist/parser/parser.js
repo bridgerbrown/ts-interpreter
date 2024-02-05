@@ -28,10 +28,15 @@ var Parser = /** @class */ (function () {
         this.registerInfix(token_1.TokenType.Lt, this.parseInfixExpression);
         this.registerInfix(token_1.TokenType.Gt, this.parseInfixExpression);
         this.registerInfix(token_1.TokenType.LParen, this.parseCallExpression);
-        this.nextToken();
-        this.nextToken();
+        var firstToken = lexer.nextToken();
+        if (!firstToken)
+            throw new Error("No token.");
+        this.currToken = firstToken;
+        this.peekToken = lexer.nextToken();
     }
     Parser.prototype.nextToken = function () {
+        if (!this.peekToken)
+            throw new Error("No more tokens.");
         this.currToken = this.peekToken;
         this.peekToken = this.lexer.nextToken();
     };
@@ -82,7 +87,7 @@ var Parser = /** @class */ (function () {
             return null;
         this.nextToken();
         statement.value = this.parseExpression(Precedence.LOWEST);
-        if (this.peekTokenIs(token_1.TokenType.Semicolon)) {
+        if (!this.currTokenIs(token_1.TokenType.Semicolon)) {
             this.nextToken();
         }
         return statement;
@@ -91,7 +96,7 @@ var Parser = /** @class */ (function () {
         var statement = new ast_1.ReturnStatement(this.currToken, null);
         this.nextToken();
         statement.returnValue = this.parseExpression(Precedence.LOWEST);
-        while (this.peekTokenIs(token_1.TokenType.Semicolon)) {
+        while (!this.currTokenIs(token_1.TokenType.Semicolon)) {
             this.nextToken();
         }
         return statement;
@@ -101,7 +106,7 @@ var Parser = /** @class */ (function () {
     };
     Parser.prototype.parseExpressionStatement = function () {
         var statement = new ast_1.ExpressionStatement(this.currToken, this.parseExpression(Precedence.LOWEST));
-        if (this.peekTokenIs(token_1.TokenType.Semicolon)) {
+        if (!this.currTokenIs(token_1.TokenType.Semicolon)) {
             this.nextToken();
         }
         return statement;
@@ -127,13 +132,12 @@ var Parser = /** @class */ (function () {
         return leftExp;
     };
     Parser.prototype.parseIntegerLiteral = function () {
-        var literal = new ast_1.IntegerLiteral(this.currToken);
         var value = parseInt(this.currToken.literal, 10);
+        var literal = new ast_1.IntegerLiteral(this.currToken, value);
         if (isNaN(value)) {
             var message = "Could not parse ".concat(this.currToken.literal, " as integer.");
             this.errors.push(message);
         }
-        literal.value = value;
         return literal;
     };
     Parser.prototype.parsePrefixExpression = function () {

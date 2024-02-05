@@ -105,10 +105,11 @@ class Identifier implements Expression {
 
 class IntegerLiteral implements Expression {
   token: Token;
-  value: number | undefined = 0; 
+  value: number; 
 
-  constructor(token: Token) {
+  constructor(token: Token, value: number) {
     this.token = token;
+    this.value = value;
   }
   expressionNode(): void {}
   tokenLiteral(): string {

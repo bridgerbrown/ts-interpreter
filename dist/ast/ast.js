@@ -86,9 +86,9 @@ var Identifier = /** @class */ (function () {
 }());
 exports.Identifier = Identifier;
 var IntegerLiteral = /** @class */ (function () {
-    function IntegerLiteral(token) {
-        this.value = 0;
+    function IntegerLiteral(token, value) {
         this.token = token;
+        this.value = value;
     }
     IntegerLiteral.prototype.expressionNode = function () { };
     IntegerLiteral.prototype.tokenLiteral = function () {
