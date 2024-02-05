@@ -189,10 +189,10 @@ var IfExpression = /** @class */ (function () {
         return this.token.literal;
     };
     IfExpression.prototype.string = function () {
-        var _a, _b;
+        var _a, _b, _c;
         var expression = "if" + ((_a = this.condition) === null || _a === void 0 ? void 0 : _a.string()) + " " + ((_b = this.consequence) === null || _b === void 0 ? void 0 : _b.string());
         if (this.alternative !== null) {
-            expression += "else " + this.alternative.string();
+            expression += "else " + ((_c = this.alternative) === null || _c === void 0 ? void 0 : _c.string());
         }
         return expression;
     };

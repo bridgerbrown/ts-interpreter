@@ -214,11 +214,11 @@ class Boolean implements Expression {
 class IfExpression implements Expression {
   token: Token;
   condition: Expression | null;
-  consequence: BlockStatement | null;
-  alternative: BlockStatement | null;
+  consequence: BlockStatement;
+  alternative: BlockStatement | undefined;
 
   constructor(token: Token, condition: Expression | null, 
-    consequence: BlockStatement | null, alternative: BlockStatement | null) {
+    consequence: BlockStatement, alternative: BlockStatement | undefined) {
     this.token = token;
     this.condition = condition;
     this.consequence = consequence;
@@ -234,7 +234,7 @@ class IfExpression implements Expression {
   string(): string {
     let expression: string = "if" + this.condition?.string() + " " + this.consequence?.string();
     if (this.alternative !== null) {
-      expression += "else " + this.alternative.string();
+      expression += "else " + this.alternative?.string();
     }
     return expression;
   }
