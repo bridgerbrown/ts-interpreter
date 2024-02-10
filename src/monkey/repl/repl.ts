@@ -27,7 +27,7 @@ export function start(): void {
     if (parser.errors.length !== 0) {
       printParserErrors(parser.errors)
     } else {
-      console.log(program.string());
+      process.stdout.write(program.string() + '\n');
     }
 
     rl.prompt();

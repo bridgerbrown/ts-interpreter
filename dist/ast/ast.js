@@ -4,6 +4,7 @@ exports.CallExpression = exports.FunctionLiteral = exports.BlockStatement = expo
 var Program = /** @class */ (function () {
     function Program() {
         this.statements = [];
+        this.statements = [];
     }
     Program.prototype.tokenLiteral = function () {
         if (this.statements.length > 0) {
@@ -35,14 +36,8 @@ var LetStatement = /** @class */ (function () {
         return this.token.literal;
     };
     LetStatement.prototype.string = function () {
-        var out = "";
-        out += this.tokenLiteral() + " ";
-        out += this.name ? this.name.string() : "";
-        out += " = ";
-        if (this.value !== null) {
-            out += this.value.string();
-        }
-        out += ";";
+        var _a, _b;
+        var out = "let ".concat((_a = this.name) === null || _a === void 0 ? void 0 : _a.value, " = ").concat((_b = this.value) === null || _b === void 0 ? void 0 : _b.string(), ";");
         return out;
     };
     return LetStatement;
@@ -80,7 +75,7 @@ var Identifier = /** @class */ (function () {
         return this.token.literal;
     };
     Identifier.prototype.string = function () {
-        return this.token.literal;
+        return this.value.toString();
     };
     return Identifier;
 }());
@@ -155,7 +150,7 @@ var InfixExpression = /** @class */ (function () {
     };
     InfixExpression.prototype.string = function () {
         var _a;
-        return "(" + this.left.toString() + " " + this.operator + " " + ((_a = this.right) === null || _a === void 0 ? void 0 : _a.toString()) + ")";
+        return "(".concat(this.left.string(), " ").concat(this.operator.toString(), " ").concat((_a = this.right) === null || _a === void 0 ? void 0 : _a.string(), ") ");
     };
     return InfixExpression;
 }());

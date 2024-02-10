@@ -26,7 +26,7 @@ function start() {
             printParserErrors(parser.errors);
         }
         else {
-            console.log(program.string());
+            process.stdout.write(program.string() + '\n');
         }
         rl.prompt();
     }).on("close", function () {

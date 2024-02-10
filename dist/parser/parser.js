@@ -13,7 +13,8 @@ var Parser = /** @class */ (function () {
             [token_1.TokenType.True, this.parseBoolean.bind(this)],
             [token_1.TokenType.False, this.parseBoolean.bind(this)],
             [token_1.TokenType.If, this.parseIfExpression.bind(this)],
-            [token_1.TokenType.Function, this.parseFunctionLiteral.bind(this)]
+            [token_1.TokenType.Function, this.parseFunctionLiteral.bind(this)],
+            [token_1.TokenType.LParen, this.parseGroupedExpression.bind(this)]
         ]);
         this.infixParseFns = new Map([
             [token_1.TokenType.Plus, this.parseInfixExpression.bind(this)],
@@ -28,23 +29,18 @@ var Parser = /** @class */ (function () {
         ]);
         this.lexer = lexer;
         this.errors = [];
-        var firstToken = this.lexer.nextToken();
-        if (!firstToken)
-            throw new Error("No token.");
-        this.currToken = firstToken;
-        this.peekToken = this.lexer.nextToken();
+        this.nextToken();
+        this.nextToken();
     }
     Parser.prototype.nextToken = function () {
-        if (!this.peekToken)
-            throw new Error("No more tokens.");
         this.currToken = this.peekToken;
         this.peekToken = this.lexer.nextToken();
     };
     Parser.prototype.currTokenIs = function (token) {
-        return this.currToken.type == token;
+        return this.currToken.type === token;
     };
     Parser.prototype.peekTokenIs = function (token) {
-        return this.peekToken.type == token;
+        return this.peekToken.type === token;
     };
     Parser.prototype.expectPeek = function (token) {
         if (this.peekTokenIs(token)) {
@@ -56,9 +52,12 @@ var Parser = /** @class */ (function () {
             return false;
         }
     };
+    Parser.prototype.peekError = function (token) {
+        var message = "Expected next token to be ".concat(token, ", instead got ").concat(this.peekToken.type);
+        this.errors.push(message);
+    };
     Parser.prototype.parseProgram = function () {
         var program = new ast_1.Program();
-        program.statements = [];
         while (!this.currTokenIs(token_1.TokenType.Eof)) {
             var statement = this.parseStatement();
             if (statement !== null) {
@@ -104,7 +103,7 @@ var Parser = /** @class */ (function () {
     };
     Parser.prototype.parseExpressionStatement = function () {
         var statement = new ast_1.ExpressionStatement(this.currToken, this.parseExpression(Precedence.LOWEST));
-        if (!this.currTokenIs(token_1.TokenType.Semicolon)) {
+        if (this.peekTokenIs(token_1.TokenType.Semicolon)) {
             this.nextToken();
         }
         return statement;
@@ -115,17 +114,22 @@ var Parser = /** @class */ (function () {
     };
     Parser.prototype.parseExpression = function (precedence) {
         var prefix = this.prefixParseFns.get(this.currToken.type);
-        if (prefix === undefined) {
+        if (!prefix) {
             this.noPrefixParseFnError(this.currToken.type);
             return null;
         }
         var leftExp = prefix();
         while (!this.peekTokenIs(token_1.TokenType.Semicolon) && precedence < this.peekPrecedence()) {
-            var infix = this.infixParseFns.get(this.peekToken.type);
-            if (infix === undefined)
+            console.log("Current Token: ".concat(this.peekToken.type));
+            console.log("Current Precedence: ".concat(this.peekPrecedence()));
+            var infix = this.infixParseFns.get(this.currToken.type);
+            if (!infix) {
                 return leftExp;
+            }
+            ;
             this.nextToken();
             leftExp = infix(leftExp);
+            console.log("Parsed Expression: ".concat(leftExp.string()));
         }
         return leftExp;
     };
@@ -137,17 +141,8 @@ var Parser = /** @class */ (function () {
         }
         return new ast_1.IntegerLiteral(this.currToken, value);
     };
-    Parser.prototype.parsePrefixExpression = function () {
-        this.nextToken();
-        var right = this.parseExpression(Precedence.PREFIX);
-        return new ast_1.PrefixExpression(this.currToken, this.currToken.literal, right);
-    };
     Parser.prototype.checkParserErrors = function () {
         return this.errors;
-    };
-    Parser.prototype.peekError = function (token) {
-        var message = "Expected next token to be ".concat(token, ", instead got ").concat(this.peekToken.type);
-        this.errors.push(message);
     };
     Parser.prototype.registerPrefix = function (tokenType, fn) {
         this.prefixParseFns.set(tokenType, fn);
@@ -167,11 +162,17 @@ var Parser = /** @class */ (function () {
             return precedence;
         return Precedence.LOWEST;
     };
-    Parser.prototype.parseInfixExpression = function (left) {
-        var precedence = this.currPrecedence();
-        var right = this.parseExpression(precedence);
-        var expression = new ast_1.InfixExpression(this.currToken, this.currToken.literal, left, right);
+    Parser.prototype.parsePrefixExpression = function () {
+        var expression = new ast_1.PrefixExpression(this.currToken, this.currToken.literal, null);
         this.nextToken();
+        expression.right = this.parseExpression(Precedence.PREFIX);
+        return expression;
+    };
+    Parser.prototype.parseInfixExpression = function (left) {
+        var expression = new ast_1.InfixExpression(this.currToken, this.currToken.literal, left, null);
+        var precedence = this.currPrecedence();
+        this.nextToken();
+        expression.right = this.parseExpression(precedence);
         return expression;
     };
     Parser.prototype.parseBoolean = function () {
@@ -257,19 +258,25 @@ var Parser = /** @class */ (function () {
             return null;
         return args;
     };
+    Parser.prototype.parseGroupedExpression = function () {
+        this.nextToken();
+        var exp = this.parseExpression(Precedence.LOWEST);
+        if (!this.expectPeek(token_1.TokenType.RParen))
+            return null;
+        return exp;
+    };
     return Parser;
 }());
 exports.Parser = Parser;
 var Precedence;
 (function (Precedence) {
-    Precedence[Precedence["_"] = 0] = "_";
-    Precedence[Precedence["LOWEST"] = 1] = "LOWEST";
-    Precedence[Precedence["EQUALS"] = 2] = "EQUALS";
-    Precedence[Precedence["LESSGREATER"] = 3] = "LESSGREATER";
-    Precedence[Precedence["SUM"] = 4] = "SUM";
-    Precedence[Precedence["PRODUCT"] = 5] = "PRODUCT";
-    Precedence[Precedence["PREFIX"] = 6] = "PREFIX";
-    Precedence[Precedence["CALL"] = 7] = "CALL";
+    Precedence[Precedence["LOWEST"] = 0] = "LOWEST";
+    Precedence[Precedence["EQUALS"] = 1] = "EQUALS";
+    Precedence[Precedence["LESSGREATER"] = 2] = "LESSGREATER";
+    Precedence[Precedence["SUM"] = 3] = "SUM";
+    Precedence[Precedence["PRODUCT"] = 4] = "PRODUCT";
+    Precedence[Precedence["PREFIX"] = 5] = "PREFIX";
+    Precedence[Precedence["CALL"] = 6] = "CALL";
 })(Precedence || (Precedence = {}));
 var precedences = new Map([
     [token_1.TokenType.Equal, Precedence.EQUALS],

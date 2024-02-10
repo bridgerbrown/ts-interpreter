@@ -20,6 +20,10 @@ interface Program {
 class Program implements Node {
   statements: Statement[] = [];
 
+  constructor() {
+    this.statements = [];
+  }
+
   tokenLiteral(): string {
     if (this.statements.length > 0) {
       return this.statements[0].tokenLiteral();
@@ -51,14 +55,7 @@ class LetStatement implements Statement {
     return this.token.literal;
   }
   string(): string {
-    let out: string = "";
-    out += this.tokenLiteral() + " ";
-    out += this.name ? this.name.string() : "";
-    out += " = ";
-    if (this.value !== null) {
-      out += this.value.string();
-    }
-    out += ";";
+    let out: string = `let ${this.name?.value} = ${this.value?.string()};`
     return out;
   }
 }
@@ -99,7 +96,7 @@ class Identifier implements Expression {
     return this.token.literal;
   }
   string(): string {
-    return this.token.literal;
+    return this.value.toString();
   }
 }
 
@@ -187,7 +184,7 @@ class InfixExpression implements Expression {
       return this.token.literal;
   }
   string(): string {
-    return "(" + this.left.toString() + " " + this.operator + " " + this.right?.toString() + ")";
+    return `(${this.left.string()} ${this.operator.toString()} ${this.right?.string()}) `
   }
 }
 
