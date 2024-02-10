@@ -1,4 +1,8 @@
 "use strict";
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.start = void 0;
 var lexer_1 = require("../lexer/lexer");
@@ -6,11 +10,15 @@ var parser_1 = require("../parser/parser");
 var readline = require("node:readline/promises");
 var prompt = '>> ';
 function printParserErrors(errors) {
+    console.log(monkeyFaceAscii);
+    console.log("Whoops! We ran into some monkey business here!\n");
+    console.log(" parser errors:\n");
     for (var _i = 0, errors_1 = errors; _i < errors_1.length; _i++) {
         var message = errors_1[_i];
-        console.log("\t".concat(message));
+        console.log("\t".concat(message, "\n"));
     }
 }
+var monkeyFaceAscii = String.raw(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n          __,__\n  .--.  .-\"    \"-.  .--.\n //..\\// .-..-. \\//..\\\n|||| '||//  Y   \\||'|| ||\n||\\  \\\\0 | 0// // // ||\n\\ '- ,\\-\"\"\"\"\"\"-//, -'//\n ''-'  //  ^  ^  \\ '-''\n      || \\_  _.// ||\n      \\  \\'~'// //\n       '._ '-=-'_.' \n          '----'\n"], ["\n          __,__\n  .--.  .-\"    \"-.  .--.\n //..\\\\// .-..-. \\\\//..\\\\\n|||| '||//  Y   \\\\||'|| ||\n||\\\\  \\\\\\\\0 | 0// // // ||\n\\\\ '- ,\\\\-\"\"\"\"\"\"-//, -'//\n ''-'  //  ^  ^  \\\\ '-''\n      || \\\\_  _.// ||\n      \\\\  \\\\'~'// //\n       '._ '-=-'_.' \n          '----'\n"])));
 function start() {
     var rl = readline.createInterface({
         input: process.stdin,
@@ -34,3 +42,4 @@ function start() {
     });
 }
 exports.start = start;
+var templateObject_1;

@@ -131,7 +131,7 @@ var PrefixExpression = /** @class */ (function () {
     };
     PrefixExpression.prototype.string = function () {
         var _a;
-        return "(" + this.operator + ((_a = this.right) === null || _a === void 0 ? void 0 : _a.toString()) + ")";
+        return "(".concat(this.operator).concat((_a = this.right) === null || _a === void 0 ? void 0 : _a.string(), ")");
     };
     return PrefixExpression;
 }());
