@@ -113,20 +113,26 @@ var Parser = /** @class */ (function () {
         this.errors.push(msg);
     };
     Parser.prototype.parseExpression = function (precedence) {
-        var tokenType = this.currToken.type;
-        // Check if the token represents a prefix operator
-        if (this.prefixParseFns.has(tokenType)) {
-            var prefix = this.prefixParseFns.get(tokenType); // Non-null assertion due to type checking
-            return prefix();
+        var prefix = this.prefixParseFns.get(this.currToken.type);
+        if (!prefix) {
+            this.noPrefixParseFnError(this.currToken.type);
+            return null;
         }
-        // Check if the token represents an infix operator
-        if (this.infixParseFns.has(tokenType)) {
-            var infix = this.infixParseFns.get(tokenType); // Non-null assertion due to type checking
-            return infix(this.parseExpression(precedence));
+        var leftExp = prefix();
+        while (!this.peekTokenIs(token_1.TokenType.Semicolon) && precedence < this.peekPrecedence()) {
+            console.log("Current Token: ".concat(this.peekToken.type));
+            console.log("Current Precedence: ".concat(this.peekPrecedence()));
+            var infix = this.infixParseFns.get(this.peekToken.type);
+            if (!infix) {
+                console.log("No infix");
+                return leftExp;
+            }
+            ;
+            this.nextToken();
+            leftExp = infix(leftExp);
+            console.log("Parsed Expression: ".concat(leftExp.string()));
         }
-        // Handle the case when no prefix or infix parse function is found
-        this.noPrefixParseFnError(tokenType);
-        return null;
+        return leftExp;
     };
     Parser.prototype.parseIntegerLiteral = function () {
         var value = parseInt(this.currToken.literal, 10);

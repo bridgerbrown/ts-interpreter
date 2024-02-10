@@ -150,17 +150,19 @@ export class Parser implements Parser {
     } 
     let leftExp = prefix();
 
+    if (prefix) {
+      console.log(`Parsed Prefix Expression: ${leftExp.string()}`);
+    }
+
     while (!this.peekTokenIs(TokenType.Semicolon) && precedence < this.peekPrecedence()) {
-      console.log(`Current Token: ${this.peekToken.type}`);
-      console.log(`Current Precedence: ${this.peekPrecedence()}`);
       const infix = this.infixParseFns.get(this.peekToken.type)!;
       if (!infix) {
-        console.log("No infix")
-        return leftExp
+        console.log("No infix");
+        return leftExp;
       };
       this.nextToken();
       leftExp = infix(leftExp);
-      console.log(`Parsed Expression: ${leftExp.string()}`);
+      console.log(`Parsed Infix Expression: ${leftExp.string()}`);
     }
     return leftExp;
   }

@@ -184,7 +184,7 @@ class InfixExpression implements Expression {
       return this.token.literal;
   }
   string(): string {
-    return `(${this.left.string()} ${this.operator} ${this.right?.string()}) `
+    return `(${this.left.string()} ${this.operator} ${this.right?.string()})`;
   }
 }
 
