@@ -111,7 +111,7 @@ var ExpressionStatement = /** @class */ (function () {
     };
     ExpressionStatement.prototype.string = function () {
         if (this.expression !== null) {
-            return "".concat(this.expression.tokenLiteral());
+            return "".concat(this.expression.string());
         }
         return "";
     };
@@ -150,7 +150,7 @@ var InfixExpression = /** @class */ (function () {
     };
     InfixExpression.prototype.string = function () {
         var _a;
-        return "(".concat(this.left.string(), " ").concat(this.operator, " ").concat((_a = this.right) === null || _a === void 0 ? void 0 : _a.string(), ") ");
+        return "(".concat(this.left.string(), " ").concat(this.operator, " ").concat((_a = this.right) === null || _a === void 0 ? void 0 : _a.string(), ")");
     };
     return InfixExpression;
 }());

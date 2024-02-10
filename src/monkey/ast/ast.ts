@@ -136,7 +136,7 @@ class ExpressionStatement implements Statement {
   }
   string(): string {
     if (this.expression !== null) {
-      return `${this.expression.tokenLiteral()}`;
+      return `${this.expression.string()}`;
     }
     return "";
   }
@@ -154,13 +154,12 @@ class PrefixExpression implements Expression {
   }
 
   expressionNode(): void {
-      
   }
   tokenLiteral(): string {
       return this.token.literal;
   }
   string(): string {
-    return "(" + this.operator + this.right?.toString() + ")";
+    return `(${this.operator}${this.right?.string()})`;
   }
 }
 

@@ -119,9 +119,10 @@ var Parser = /** @class */ (function () {
             return null;
         }
         var leftExp = prefix();
+        if (prefix) {
+            console.log("Parsed Prefix Expression: ".concat(leftExp.string()));
+        }
         while (!this.peekTokenIs(token_1.TokenType.Semicolon) && precedence < this.peekPrecedence()) {
-            console.log("Current Token: ".concat(this.peekToken.type));
-            console.log("Current Precedence: ".concat(this.peekPrecedence()));
             var infix = this.infixParseFns.get(this.peekToken.type);
             if (!infix) {
                 console.log("No infix");
@@ -130,7 +131,7 @@ var Parser = /** @class */ (function () {
             ;
             this.nextToken();
             leftExp = infix(leftExp);
-            console.log("Parsed Expression: ".concat(leftExp.string()));
+            console.log("Parsed Infix Expression: ".concat(leftExp.string()));
         }
         return leftExp;
     };
