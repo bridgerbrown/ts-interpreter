@@ -113,25 +113,20 @@ var Parser = /** @class */ (function () {
         this.errors.push(msg);
     };
     Parser.prototype.parseExpression = function (precedence) {
-        var prefix = this.prefixParseFns.get(this.currToken.type);
-        if (!prefix) {
-            this.noPrefixParseFnError(this.currToken.type);
-            return null;
+        var tokenType = this.currToken.type;
+        // Check if the token represents a prefix operator
+        if (this.prefixParseFns.has(tokenType)) {
+            var prefix = this.prefixParseFns.get(tokenType); // Non-null assertion due to type checking
+            return prefix();
         }
-        var leftExp = prefix();
-        while (!this.peekTokenIs(token_1.TokenType.Semicolon) && precedence < this.peekPrecedence()) {
-            console.log("Current Token: ".concat(this.peekToken.type));
-            console.log("Current Precedence: ".concat(this.peekPrecedence()));
-            var infix = this.infixParseFns.get(this.currToken.type);
-            if (!infix) {
-                return leftExp;
-            }
-            ;
-            this.nextToken();
-            leftExp = infix(leftExp);
-            console.log("Parsed Expression: ".concat(leftExp.string()));
+        // Check if the token represents an infix operator
+        if (this.infixParseFns.has(tokenType)) {
+            var infix = this.infixParseFns.get(tokenType); // Non-null assertion due to type checking
+            return infix(this.parseExpression(precedence));
         }
-        return leftExp;
+        // Handle the case when no prefix or infix parse function is found
+        this.noPrefixParseFnError(tokenType);
+        return null;
     };
     Parser.prototype.parseIntegerLiteral = function () {
         var value = parseInt(this.currToken.literal, 10);
@@ -169,11 +164,11 @@ var Parser = /** @class */ (function () {
         return expression;
     };
     Parser.prototype.parseInfixExpression = function (left) {
-        var expression = new ast_1.InfixExpression(this.currToken, this.currToken.literal, left, null);
+        var operator = this.currToken.literal;
         var precedence = this.currPrecedence();
         this.nextToken();
-        expression.right = this.parseExpression(precedence);
-        return expression;
+        var right = this.parseExpression(precedence);
+        return new ast_1.InfixExpression(this.currToken, operator, left, right);
     };
     Parser.prototype.parseBoolean = function () {
         var expression = new ast_1.Boolean(this.currToken, this.currTokenIs(token_1.TokenType.True));

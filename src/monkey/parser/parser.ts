@@ -143,7 +143,7 @@ export class Parser implements Parser {
   }
 
   parseExpression(precedence: Precedence): Expression | null {
-    const prefix: any = this.prefixParseFns.get(this.currToken.type);
+    const prefix: any = this.prefixParseFns.get(this.currToken.type)!;
     if (!prefix) {
       this.noPrefixParseFnError(this.currToken.type);
       return null;
@@ -153,8 +153,9 @@ export class Parser implements Parser {
     while (!this.peekTokenIs(TokenType.Semicolon) && precedence < this.peekPrecedence()) {
       console.log(`Current Token: ${this.peekToken.type}`);
       console.log(`Current Precedence: ${this.peekPrecedence()}`);
-      const infix = this.infixParseFns.get(this.currToken.type);
+      const infix = this.infixParseFns.get(this.peekToken.type)!;
       if (!infix) {
+        console.log("No infix")
         return leftExp
       };
       this.nextToken();
@@ -205,11 +206,11 @@ export class Parser implements Parser {
   }
 
   parseInfixExpression(left: Expression): Expression {
-    const expression = new InfixExpression(this.currToken, this.currToken.literal, left, null);
+    const operator = this.currToken.literal;
     const precedence = this.currPrecedence();
     this.nextToken();
-    expression.right = this.parseExpression(precedence);
-    return expression;
+    const right = this.parseExpression(precedence);
+    return new InfixExpression(this.currToken, operator, left, right);
   }
 
   parseBoolean(): Expression {
