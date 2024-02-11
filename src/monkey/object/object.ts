@@ -33,8 +33,8 @@ class BooleanVal {
 }
 
 class NullVal {
-  Type(): ObjectType { return Objects.Null_Obj; }
+  type(): ObjectType { return Objects.Null_Obj; }
   inspect(): string { return "null"; }
 }
 
-export { Object, IntegerVal, BooleanVal, NullVal }
+export { Object, Objects, IntegerVal, BooleanVal, NullVal };

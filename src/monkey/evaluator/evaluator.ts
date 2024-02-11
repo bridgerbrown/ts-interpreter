@@ -1,5 +1,5 @@
-import { Boolean, Expression, ExpressionStatement, IntegerLiteral, Program, Statement } from "../ast/ast";
-import { BooleanVal, IntegerVal, NullVal, Object } from "../object/object";
+import { Boolean, Expression, ExpressionStatement, IntegerLiteral, PrefixExpression, Program, Statement } from "../ast/ast";
+import { BooleanVal, IntegerVal, NullVal, Object, Objects } from "../object/object";
 
 export function evaluate(node: any): Object | null {
   switch (true) {
@@ -11,6 +11,9 @@ export function evaluate(node: any): Object | null {
       return new IntegerVal(node.value);
     case node instanceof Boolean:
       return nativeBoolToBooleanObject(node.value);
+    case node instanceof PrefixExpression:
+      const right = evaluate(node.right);
+      return evalPrefixExpression(node.operator, right);
     default:
       return null;
   }
@@ -35,3 +38,34 @@ function nativeBoolToBooleanObject(input: boolean): BooleanVal {
   if (input) return primitives.TRUE;
   return primitives.FALSE;
 }
+
+function evalPrefixExpression(operator: string, right: Object | null): Object | null {
+  switch (operator) {
+    case "!":
+      return evalExclOperatorExpression(right);
+    case "-":
+      return evalMinusPrefixOperatorExpression(right);
+    default:
+      return primitives.NULL;
+  }
+}
+
+function evalExclOperatorExpression(right: Object | null): Object {
+  const { TRUE, FALSE, NULL } = primitives;
+  switch (right) {
+    case TRUE:
+      return FALSE;
+    case FALSE:
+      return TRUE;
+    case NULL:
+      return TRUE;
+    default:
+      return FALSE;
+  }
+}
+
+function evalMinusPrefixOperatorExpression(right: Object | null): Object | null {
+  if (right?.type() !== Objects.Integer_Obj) return null;
+  return new IntegerVal(-(right as IntegerVal).value);
+}
+
