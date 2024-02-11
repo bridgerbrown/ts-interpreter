@@ -13,17 +13,17 @@ interface Object {
 }
 
 class IntegerVal {
-  private value: number;
+  public value: number;
   constructor(value: number) {
     this.value = value;
   }
 
-  Type(): ObjectType { return Objects.Integer_Obj; }
+  type(): ObjectType { return Objects.Integer_Obj; }
   inspect(): string { return this.value.toString(); }
 }
 
 class BooleanVal {
-  private value: boolean;
+  public value: boolean;
   constructor(value: boolean) {
     this.value = value;
   }

@@ -323,7 +323,7 @@ class CallExpression implements Expression {
 }
 
 
-export { Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral,
+export { Node, Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral,
 ExpressionStatement, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral,
 CallExpression
 };

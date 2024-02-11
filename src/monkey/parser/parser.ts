@@ -151,7 +151,7 @@ export class Parser implements Parser {
     let leftExp = prefix();
 
     if (prefix) {
-      console.log(`Parsed Prefix Expression: ${leftExp.string()}`);
+      // console.log(`Parsed Prefix Expression: ${leftExp.string()}`);
     }
 
     while (!this.peekTokenIs(TokenType.Semicolon) && precedence < this.peekPrecedence()) {
@@ -162,7 +162,7 @@ export class Parser implements Parser {
       };
       this.nextToken();
       leftExp = infix(leftExp);
-      console.log(`Parsed Infix Expression: ${leftExp.string()}`);
+      // console.log(`Parsed Infix Expression: ${leftExp.string()}`);
     }
     return leftExp;
   }

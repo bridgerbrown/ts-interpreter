@@ -1,3 +1,4 @@
+import { evaluate } from "../evaluator/evaluator";
 import { Lexer } from "../lexer/lexer";
 import { Parser } from "../parser/parser";
 import * as readline from 'node:readline/promises';
@@ -43,8 +44,10 @@ export function start(): void {
 
     if (parser.errors.length !== 0) {
       printParserErrors(parser.errors)
-    } else {
-      process.stdout.write(program.string() + '\n');
+    } 
+    const evaluated = evaluate(program);
+    if (evaluated !== null) {
+      process.stdout.write(evaluated.inspect() + '\n');
     }
 
     rl.prompt();

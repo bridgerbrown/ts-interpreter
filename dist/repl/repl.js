@@ -5,6 +5,7 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.start = void 0;
+var evaluator_1 = require("../evaluator/evaluator");
 var lexer_1 = require("../lexer/lexer");
 var parser_1 = require("../parser/parser");
 var readline = require("node:readline/promises");
@@ -33,8 +34,9 @@ function start() {
         if (parser.errors.length !== 0) {
             printParserErrors(parser.errors);
         }
-        else {
-            process.stdout.write(program.string() + '\n');
+        var evaluated = (0, evaluator_1.evaluate)(program);
+        if (evaluated !== null) {
+            process.stdout.write(evaluated.inspect() + '\n');
         }
         rl.prompt();
     }).on("close", function () {
