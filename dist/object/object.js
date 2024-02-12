@@ -22,7 +22,7 @@ exports.BooleanVal = BooleanVal;
 var NullVal = /** @class */ (function () {
     function NullVal() {
     }
-    NullVal.prototype.Type = function () { return "NULL" /* Objects.Null_Obj */; };
+    NullVal.prototype.type = function () { return "NULL" /* Objects.Null_Obj */; };
     NullVal.prototype.inspect = function () { return "null"; };
     return NullVal;
 }());
