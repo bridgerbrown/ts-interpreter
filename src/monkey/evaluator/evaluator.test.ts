@@ -131,3 +131,28 @@ function testNullObject(obj: Object | null): boolean {
   }
   return true;
 }
+
+describe("Evaluate return statements", () => {
+  const tests = [
+    { input: "return 10;", expected: 10 },
+    { input: "return 10; 9;", expected: 10 },
+    { input: "return 2 * 5; 9;", expected: 10 },
+    { input: "9; return 2 * 5; 9;", expected: 10 },
+    { input:
+      ` if (10 > 1) {
+           if (10 > 1) {
+             return 10;
+      }
+      return 1; }
+      `, expected: 10
+    },
+  ];
+
+  for (const { input, expected } of tests) {
+    it(`should evaluate ${input} to ${expected}`, () => {
+      const evaluated = testEval(input); 
+      testIntegerObject(evaluated, expected);
+    });
+  };
+});
+

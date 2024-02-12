@@ -1,5 +1,5 @@
-import { BlockStatement, Boolean, Expression, ExpressionStatement, IfExpression, InfixExpression, IntegerLiteral, PrefixExpression, Program, Statement } from "../ast/ast";
-import { BooleanVal, IntegerVal, NullVal, Object, Objects } from "../object/object";
+import { BlockStatement, Boolean, Expression, ExpressionStatement, IfExpression, InfixExpression, IntegerLiteral, PrefixExpression, Program, ReturnStatement, Statement } from "../ast/ast";
+import { BooleanVal, IntegerVal, NullVal, Object, Objects, ReturnVal } from "../object/object";
 
 export function evaluate(node: any): Object | null {
   let right: Object | null;
@@ -7,7 +7,7 @@ export function evaluate(node: any): Object | null {
 
   switch (true) {
     case node instanceof Program:
-      return evalStatements(node.statements);
+      return evalProgram(node.statements);
     case node instanceof ExpressionStatement:
       return evaluate(node.expression);
     case node instanceof IntegerLiteral:
@@ -22,19 +22,24 @@ export function evaluate(node: any): Object | null {
       right = evaluate(node.right);
       return evalInfixExpression(node.operator, left, right);
     case node instanceof BlockStatement:
-      return evalStatements(node.statements);
+      return evalBlockStatement(node);
     case node instanceof IfExpression:
       return evalIfExpression(node);
+    case node instanceof ReturnStatement:
+      let val = evaluate(node.returnValue);
+      return new ReturnVal(val);
     default:
       return null;
   }
 }
 
-function evalStatements(statements: Statement[]): Object | null {
+function evalProgram(statements: Statement[]): Object | null {
   let result: Object | null = null;
   for (const statement of statements) {
     result = evaluate(statement);
-    return result;
+    if (result instanceof ReturnVal) {
+      return result.value;
+    }
   }
   return result;
 }
@@ -143,4 +148,17 @@ function isTruthy(obj: Object | null): boolean {
     default:
       return true;
   }
+}
+
+function evalBlockStatement(block: BlockStatement | null): Object | null {
+  let result: Object | null = null;
+  if (block && block.statements) {
+    for (let statement of block.statements) {
+      result = evaluate(statement);
+      if (result !== null && result.type() == Objects.Return_Value_Obj) {
+        return result;
+      }
+    }
+  }
+  return result;
 }

@@ -4,12 +4,13 @@ type ObjectType = string;
 const enum Objects {
   Integer_Obj = "INTEGER",
   Boolean_Obj = "BOOLEAN",
-  Null_Obj = "NULL"
+  Null_Obj = "NULL",
+  Return_Value_Obj = "RETURN_VALUE"
 }
 
 interface Object {
   type(): ObjectType;
-  inspect(): string;
+  inspect(obj: Object): string;
 }
 
 class IntegerVal {
@@ -37,4 +38,18 @@ class NullVal {
   inspect(): string { return "null"; }
 }
 
-export { Object, Objects, IntegerVal, BooleanVal, NullVal };
+class ReturnVal {
+  public value: Object | null;
+  constructor(value: Object | null) {
+    this.value = value;
+  }
+  type(): ObjectType { return Objects.Return_Value_Obj; }
+  inspect(): string { 
+    if (this.value) {
+      return this.value.toString()
+    }
+    return "";
+  }
+}
+
+export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal };
