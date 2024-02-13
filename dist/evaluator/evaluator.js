@@ -43,6 +43,7 @@ function evaluate(node, env) {
             if (isError(val))
                 return val;
             env.set(node.name.value, val);
+            return val;
         case node instanceof ast_1.Identifier:
             return evalIdentifier(node, env);
         default:
@@ -201,8 +202,8 @@ function isError(obj) {
     return false;
 }
 function evalIdentifier(node, env) {
-    var val = env.get(node.name.value);
+    var val = env.get(node.value);
     if (!val)
-        return newError("identifier not found: " + (node === null || node === void 0 ? void 0 : node.name.value));
+        return newError("identifier not found: " + node.value);
     return val;
 }

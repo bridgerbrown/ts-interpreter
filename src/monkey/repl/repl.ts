@@ -30,6 +30,7 @@ const monkeyFaceAscii = String.raw`
 
 
 export function start(): void {
+  const env = new Environment();
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -42,7 +43,6 @@ export function start(): void {
     const lexer = new Lexer(line);
     const parser = new Parser(lexer);
     const program = parser.parseProgram();
-    const env = new Environment();
 
     if (parser.errors.length !== 0) {
       printParserErrors(parser.errors)

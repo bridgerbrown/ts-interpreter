@@ -22,6 +22,7 @@ function printParserErrors(errors) {
 }
 var monkeyFaceAscii = String.raw(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n          __,__\n  .--.  .-\"    \"-.  .--.\n //..\\// .-..-. \\//..\\\n|||| '||//  Y   \\||'|| ||\n||\\  \\\\0 | 0// // // ||\n\\ '- ,\\-\"\"\"\"\"\"-//, -'//\n ''-'  //  ^  ^  \\ '-''\n      || \\_  _.// ||\n      \\  \\'~'// //\n       '._ '-=-'_.' \n          '----'\n"], ["\n          __,__\n  .--.  .-\"    \"-.  .--.\n //..\\\\// .-..-. \\\\//..\\\\\n|||| '||//  Y   \\\\||'|| ||\n||\\\\  \\\\\\\\0 | 0// // // ||\n\\\\ '- ,\\\\-\"\"\"\"\"\"-//, -'//\n ''-'  //  ^  ^  \\\\ '-''\n      || \\\\_  _.// ||\n      \\\\  \\\\'~'// //\n       '._ '-=-'_.' \n          '----'\n"])));
 function start() {
+    var env = new environment_1.Environment();
     var rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
@@ -32,7 +33,6 @@ function start() {
         var lexer = new lexer_1.Lexer(line);
         var parser = new parser_1.Parser(lexer);
         var program = parser.parseProgram();
-        var env = new environment_1.Environment();
         if (parser.errors.length !== 0) {
             printParserErrors(parser.errors);
         }

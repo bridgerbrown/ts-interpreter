@@ -38,6 +38,7 @@ export function evaluate(node: any, env: Environment): Object | null {
       val = evaluate(node.value, env);
       if (isError(val)) return val;
       env.set(node.name!.value, val);
+      return val;
     case node instanceof Identifier:
       return evalIdentifier(node, env);
     default:
@@ -203,7 +204,7 @@ function isError(obj: Object | null): boolean {
 }
 
 function evalIdentifier(node: any, env: Environment) {
-  const val = env.get(node.name.value);
-  if (!val) return newError("identifier not found: " + node?.name.value);
+  const val = env.get(node.value);
+  if (!val) return newError("identifier not found: " + node.value);
   return val;
 }
