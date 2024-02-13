@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.start = void 0;
 var evaluator_1 = require("../evaluator/evaluator");
 var lexer_1 = require("../lexer/lexer");
+var environment_1 = require("../object/environment");
 var parser_1 = require("../parser/parser");
 var readline = require("node:readline/promises");
 var prompt = '>> ';
@@ -31,10 +32,11 @@ function start() {
         var lexer = new lexer_1.Lexer(line);
         var parser = new parser_1.Parser(lexer);
         var program = parser.parseProgram();
+        var env = new environment_1.Environment();
         if (parser.errors.length !== 0) {
             printParserErrors(parser.errors);
         }
-        var evaluated = (0, evaluator_1.evaluate)(program);
+        var evaluated = (0, evaluator_1.evaluate)(program, env);
         if (evaluated !== null) {
             process.stdout.write(evaluated.inspect() + '\n');
         }

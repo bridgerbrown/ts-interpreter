@@ -1,5 +1,6 @@
 import { evaluate } from "../evaluator/evaluator";
 import { Lexer } from "../lexer/lexer";
+import { Environment } from "../object/environment";
 import { Parser } from "../parser/parser";
 import * as readline from 'node:readline/promises';
 
@@ -41,11 +42,12 @@ export function start(): void {
     const lexer = new Lexer(line);
     const parser = new Parser(lexer);
     const program = parser.parseProgram();
+    const env = new Environment();
 
     if (parser.errors.length !== 0) {
       printParserErrors(parser.errors)
     } 
-    const evaluated = evaluate(program);
+    const evaluated = evaluate(program, env);
     if (evaluated !== null) {
       process.stdout.write(evaluated.inspect() + '\n');
     }

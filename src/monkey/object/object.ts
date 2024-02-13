@@ -11,7 +11,7 @@ const enum Objects {
 
 interface Object {
   type(): ObjectType;
-  inspect(obj: Object): string;
+  inspect(): string;
 }
 
 class IntegerVal {
@@ -60,7 +60,7 @@ class ErrorVal {
   }
 
   type(): ObjectType { return Objects.Error_Obj; }
-  inspect(e: ErrorVal): string { return "ERROR: " + e.message; }
+  inspect(): string { return "ERROR: " + this.message; }
 }
 
 export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal };

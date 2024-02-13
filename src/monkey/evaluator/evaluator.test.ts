@@ -1,5 +1,6 @@
 import { Lexer } from "../lexer/lexer";
 import { BooleanVal, ErrorVal, IntegerVal, Objects } from "../object/object";
+import { Environment } from "../object/environment";
 import { Parser } from "../parser/parser";
 import { evaluate } from "./evaluator";
 
@@ -7,7 +8,8 @@ function testEval(input: string) {
   const lexer = new Lexer(input);
   const parser = new Parser(lexer);
   const program = parser.parseProgram();
-  return evaluate(program);
+  const env = new Environment();
+  return evaluate(program, env);
 }
 
 describe("Evaluate integer expression", () => {
@@ -188,7 +190,8 @@ describe("Error handling", () => {
         }
         return 1; }`, 
       expected: "unknown operator: BOOLEAN + BOOLEAN"
-    }
+    },
+    { input: "foobar", expected: "identifier not found: foobar" }
   ];
 
   for (const { input, expected } of tests) {
@@ -205,4 +208,20 @@ describe("Error handling", () => {
   };
 });
 
+describe("Evaluate let statements", () => {
+  const tests = [
+    { input: "let a = 5; a;", expected: 5 },
+    { input: "let a = 5 * 5; a;", expected: 25},
+    { input: "let a = 5; let b = a; b;", expected: 5 },
+    { input: "let a = 5; let b = a; let c = a + b + 5; c;", expected: 15},
+  ];
+
+  tests.forEach((test) => {
+    it(`should evaluate ${test.input} to ${test.expected}`, () => {
+      const evaluated = testEval(test.input); 
+      expect(evaluated).toBeInstanceOf(IntegerVal);
+      testIntegerObject(evaluated, test.expected);
+    });
+  });
+});
 

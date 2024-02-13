@@ -1,46 +1,58 @@
-import { BlockStatement, Boolean, Expression, ExpressionStatement, IfExpression, InfixExpression, IntegerLiteral, PrefixExpression, Program, ReturnStatement, Statement } from "../ast/ast";
+import { BlockStatement, Boolean, Expression, ExpressionStatement, Identifier, IfExpression, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement, Statement } from "../ast/ast";
 import { BooleanVal, ErrorVal, IntegerVal, NullVal, Object, Objects, ReturnVal } from "../object/object";
+import { Environment } from "../object/environment";
 
-export function evaluate(node: any): Object | null {
+export function evaluate(node: any, env: Environment): Object | null {
   let right: Object | null;
   let left: Object | null;
+  let val;
 
   switch (true) {
     case node instanceof Program:
-      return evalProgram(node.statements);
+      return evalProgram(node.statements, env);
     case node instanceof ExpressionStatement:
-      return evaluate(node.expression);
+      return evaluate(node.expression, env);
     case node instanceof IntegerLiteral:
       return new IntegerVal(node.value);
     case node instanceof Boolean:
       return nativeBoolToBooleanObject(node.value);
     case node instanceof PrefixExpression:
-      right = evaluate(node.right);
+      right = evaluate(node.right, env);
+      if (isError(right)) return right;
       return evalPrefixExpression(node.operator, right);
     case node instanceof InfixExpression:
-      left = evaluate(node.left);
-      right = evaluate(node.right);
+      left = evaluate(node.left, env);
+      if (isError(left)) return left;
+      right = evaluate(node.right, env);
+      if (isError(right)) return right;
       return evalInfixExpression(node.operator, left, right);
     case node instanceof BlockStatement:
-      return evalBlockStatement(node);
+      return evalBlockStatement(node, env);
     case node instanceof IfExpression:
-      return evalIfExpression(node);
+      return evalIfExpression(node, env);
     case node instanceof ReturnStatement:
-      let val = evaluate(node.returnValue);
+      val = evaluate(node.returnValue, env);
+      if (isError(val)) return val;
       return new ReturnVal(val);
+    case node instanceof LetStatement:
+      val = evaluate(node.value, env);
+      if (isError(val)) return val;
+      env.set(node.name!.value, val);
+    case node instanceof Identifier:
+      return evalIdentifier(node, env);
     default:
-      return null;
+      return primitives.NULL;
   }
 }
 
-function evalProgram(statements: Statement[]): Object | null {
+function evalProgram(statements: Statement[], env: Environment): Object | null {
   let result: Object | null = null;
 
   for (const statement of statements) {
-    result = evaluate(statement);
+    result = evaluate(statement, env);
     switch (true) {
       case (result instanceof ReturnVal):
-        return result.value;
+        return (result as ReturnVal).value;
       case (result instanceof ErrorVal):
         return result;
     }
@@ -132,13 +144,14 @@ function evalIntegerInfixExpression(operator: string, left: any, right: Object |
   }
 }
 
-function evalIfExpression(ie: IfExpression | null): Object | null {
-  const condition = evaluate(ie?.condition);
+function evalIfExpression(ie: IfExpression | null, env: Environment): Object | null {
+  const condition = evaluate(ie?.condition, env);
+  if (isError(condition)) return condition;
 
   if (isTruthy(condition)) {
-    return evaluate(ie?.consequence);
+    return evaluate(ie?.consequence, env);
   } else if (ie?.alternative != null) {
-    return evaluate(ie.alternative);
+    return evaluate(ie.alternative, env);
   } else {
     return primitives.NULL;
   }
@@ -158,12 +171,12 @@ function isTruthy(obj: Object | null): boolean {
   }
 }
 
-function evalBlockStatement(block: BlockStatement | null): Object | null {
+function evalBlockStatement(block: BlockStatement | null, env: Environment): Object | null {
   let result: Object | null = null;
 
   if (block && block.statements) {
     for (let statement of block.statements) {
-      result = evaluate(statement);
+      result = evaluate(statement, env);
       if (result !== null) {
         const rt = result.type();
         if (rt == Objects.Return_Value_Obj || rt == Objects.Error_Obj) {
@@ -180,4 +193,17 @@ function newError(format: string, ...a: any[]): ErrorVal | null {
     return typeof a[number] !== 'undefined' ? a[number] : match;
   });
   return new ErrorVal(error);
+}
+
+function isError(obj: Object | null): boolean {
+  if (obj !== null) {
+    return obj.type() == Objects.Error_Obj;
+  }
+  return false;
+}
+
+function evalIdentifier(node: any, env: Environment) {
+  const val = env.get(node.name.value);
+  if (!val) return newError("identifier not found: " + node?.name.value);
+  return val;
 }
