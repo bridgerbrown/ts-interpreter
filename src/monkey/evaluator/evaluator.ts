@@ -1,5 +1,5 @@
 import { BlockStatement, Boolean, Expression, ExpressionStatement, IfExpression, InfixExpression, IntegerLiteral, PrefixExpression, Program, ReturnStatement, Statement } from "../ast/ast";
-import { BooleanVal, IntegerVal, NullVal, Object, Objects, ReturnVal } from "../object/object";
+import { BooleanVal, ErrorVal, IntegerVal, NullVal, Object, Objects, ReturnVal } from "../object/object";
 
 export function evaluate(node: any): Object | null {
   let right: Object | null;
@@ -35,10 +35,14 @@ export function evaluate(node: any): Object | null {
 
 function evalProgram(statements: Statement[]): Object | null {
   let result: Object | null = null;
+
   for (const statement of statements) {
     result = evaluate(statement);
-    if (result instanceof ReturnVal) {
-      return result.value;
+    switch (true) {
+      case (result instanceof ReturnVal):
+        return result.value;
+      case (result instanceof ErrorVal):
+        return result;
     }
   }
   return result;
@@ -62,7 +66,7 @@ function evalPrefixExpression(operator: string, right: Object | null): Object | 
     case "-":
       return evalMinusPrefixOperatorExpression(right);
     default:
-      return primitives.NULL;
+      return newError("unknown operator:", operator, right?.type());
   }
 }
 
@@ -81,7 +85,9 @@ function evalExclOperatorExpression(right: Object | null): Object {
 }
 
 function evalMinusPrefixOperatorExpression(right: Object | null): Object | null {
-  if (right?.type() !== Objects.Integer_Obj) return primitives.NULL;
+  if (right?.type() !== Objects.Integer_Obj) {
+    return newError("unknown operator: ", right?.type());
+  }
   return new IntegerVal(-(right as IntegerVal).value);
 }
 
@@ -93,8 +99,10 @@ function evalInfixExpression(operator: string, left: any, right: Object | null):
       return nativeBoolToBooleanObject(left == right);
     case (operator == "!="):
       return nativeBoolToBooleanObject(left != right);
+    case (left.type() != right?.type()):
+      return newError("type mismatch:", left.type(), operator, right?.type());
     default:
-      return primitives.NULL;
+      return newError("unknown operator:", left.type(), operator, right?.type());
   }
 }
 
@@ -120,7 +128,7 @@ function evalIntegerInfixExpression(operator: string, left: any, right: Object |
     case "!=":
       return nativeBoolToBooleanObject(leftVal != rightVal);
     default:
-      return primitives.NULL;
+      return newError("unknown operator: ", left.type(), operator, right?.type());
   }
 }
 
@@ -152,13 +160,24 @@ function isTruthy(obj: Object | null): boolean {
 
 function evalBlockStatement(block: BlockStatement | null): Object | null {
   let result: Object | null = null;
+
   if (block && block.statements) {
     for (let statement of block.statements) {
       result = evaluate(statement);
-      if (result !== null && result.type() == Objects.Return_Value_Obj) {
-        return result;
+      if (result !== null) {
+        const rt = result.type();
+        if (rt == Objects.Return_Value_Obj || rt == Objects.Error_Obj) {
+          return result;
+        }
       }
     }
   }
   return result;
+}
+
+function newError(format: string, ...a: any[]): ErrorVal | null {
+  const error = format.replace(/{(\d+)}/g, (match, number) => {
+    return typeof a[number] !== 'undefined' ? a[number] : match;
+  });
+  return new ErrorVal(error);
 }

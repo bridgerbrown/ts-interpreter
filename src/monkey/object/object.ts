@@ -5,7 +5,8 @@ const enum Objects {
   Integer_Obj = "INTEGER",
   Boolean_Obj = "BOOLEAN",
   Null_Obj = "NULL",
-  Return_Value_Obj = "RETURN_VALUE"
+  Return_Value_Obj = "RETURN_VALUE",
+  Error_Obj = "ERROR"
 }
 
 interface Object {
@@ -52,4 +53,14 @@ class ReturnVal {
   }
 }
 
-export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal };
+class ErrorVal {
+  message: string;
+  constructor(message: string) {
+    this.message = message;
+  }
+
+  type(): ObjectType { return Objects.Error_Obj; }
+  inspect(e: ErrorVal): string { return "ERROR: " + e.message; }
+}
+
+export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal };

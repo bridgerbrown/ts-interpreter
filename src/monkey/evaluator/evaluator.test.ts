@@ -1,5 +1,5 @@
 import { Lexer } from "../lexer/lexer";
-import { BooleanVal, IntegerVal } from "../object/object";
+import { BooleanVal, ErrorVal, IntegerVal, Objects } from "../object/object";
 import { Parser } from "../parser/parser";
 import { evaluate } from "./evaluator";
 
@@ -155,4 +155,54 @@ describe("Evaluate return statements", () => {
     });
   };
 });
+
+describe("Error handling", () => {
+  const tests = [
+    {
+      input: "5 + true;",
+      expected: "type mismatch: INTEGER + BOOLEAN",
+    },
+    {
+      input: "5 + true; 5;",
+      expected: "type mismatch: INTEGER + BOOLEAN",
+    },
+    {
+      input: "-true",
+      expected: "unknown operator: -BOOLEAN",
+    },
+    {
+      input: "true + false;",
+      expected: "unknown operator: BOOLEAN + BOOLEAN",
+    }, {
+      input: "5; true + false; 5",
+      expected: "unknown operator: BOOLEAN + BOOLEAN",
+    },
+    {
+      input: "if (10 > 1) { true + false; }",
+      expected: "unknown operator: BOOLEAN + BOOLEAN", }, 
+    {
+      input:
+        ` if (10 > 1) {
+          if (10 > 1) {
+            return true + false;
+        }
+        return 1; }`, 
+      expected: "unknown operator: BOOLEAN + BOOLEAN"
+    }
+  ];
+
+  for (const { input, expected } of tests) {
+    it(`should evaluate ${input} to ${expected}`, () => {
+      const evaluated = testEval(input); 
+      const errObj = evaluated as ErrorVal;
+      if (!errObj) {
+        console.error(`No error object returned. Got=${typeof evaluated}(${evaluated})`);
+      }
+      if (errObj.message !== expected) {
+        console.error(`Wrong error message. Expected=${expected}, got=${errObj.message}`);
+      }
+    });
+  };
+});
+
 
