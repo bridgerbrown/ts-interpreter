@@ -2,8 +2,8 @@ import { Object } from "./object";
 
 export class Environment {
   store: Map<string, Object | null>;
-  outer?: Environment;
-  constructor(outer?: Environment) {
+  outer?: Environment | null;
+  constructor(outer?: Environment | null) {
     this.store = new Map();
     this.outer = outer;
   }

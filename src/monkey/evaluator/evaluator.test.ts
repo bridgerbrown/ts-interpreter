@@ -236,7 +236,10 @@ describe("Evaluate function object", () => {
   expect(fn.parameters![0].string()).toBe("x");
 
   const expected = "(x + 2)";
-  expect(fn.body?.string()).toBe(expected);
+
+  it(`should evaluate ${input} to ${expected}`, () => {
+    expect(fn.body?.string()).toBe(expected);
+  });
 });
 
 describe("Evaluate function application", () => {
@@ -250,8 +253,24 @@ describe("Evaluate function application", () => {
   ];
 
   for (let { input, expected } of tests) {
-    const evaluated = testEval(input); 
-    testIntegerObject(evaluated, expected);
+    it(`should evaluate ${input} to ${expected}`, () => {
+      const evaluated = testEval(input); 
+      testIntegerObject(evaluated, expected);
+    });
   }
+});
+
+describe("Function closures", () => {
+  const input = `
+   let newAdder = fn(x) {
+     fn(y) { x + y };
+   };
+   let addTwo = newAdder(2);
+   addTwo(2);`
+
+  it(`should evaluate ${input} to ${4}`, () => {
+    const evaluated = testEval(input); 
+    testIntegerObject(evaluated, 4);
+  });
 });
 

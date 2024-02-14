@@ -84,6 +84,9 @@ export class Lexer {
       case "\0":
         token = newToken(TokenType.Eof, "eof");
         break;
+      case '"':
+        token = newToken(TokenType.String, this.readString());
+        break;
       default: {
         if (isLetter(this.char)) {
           return this.readIdentifier();
@@ -128,6 +131,15 @@ export class Lexer {
       this.readChar();
     }
     return this.input.slice(position, this.position);
+  }
+
+  readString(): string {
+    const position = this.position + 1;
+    while (true) {
+      this.readChar();
+      if (this.char === '"' || this.char === "\0") break;
+    }
+    return this.input.slice(position, this.position)
   }
 }
 

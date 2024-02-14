@@ -8,6 +8,7 @@ export enum TokenType {
   Eof = "EOF",
   
   Ident = "IDENT",
+  String = "STRING",
   Int = "INT",
   
   Assign = "=",

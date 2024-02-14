@@ -50,6 +50,7 @@ export function evaluate(node: any, env: Environment): Object | null {
       if (isError(fn)) return fn;
       const args = evalExpressions(node.args, env);
       if (args.length == 1 && isError(args[0])) return args[0];
+      return applyFunction(fn, args);
     default:
       return primitives.NULL;
   }
@@ -229,4 +230,29 @@ function evalExpressions(exps: (Expression | null)[] | null, env: Environment): 
     }
   }
   return result;
+}
+
+function applyFunction(fn: Object | null, args: (Object | null)[]): Object | null {
+  if (!(fn as FunctionVal)) return newError(`not a function: ${fn?.type()}`);
+  const fnObj = fn as FunctionVal;
+  const extendedEnv = extendFunctionEnv(fnObj, args);
+  const evaluated = evaluate(fnObj.body, extendedEnv);
+  return unwrapReturnValue(evaluated);
+}
+
+function extendFunctionEnv(fn: FunctionVal | null, args: (Object | null)[]): Environment {
+  let env: Environment = new Environment();
+  if (fn?.parameters) {
+    env = new Environment(fn.env);
+    for (let i = 0; i < fn.parameters.length; i++) {
+      const param = fn.parameters[i];
+      env.set(param.value, args[i]);
+    }
+  }
+  return env;
+}
+
+function unwrapReturnValue(obj: Object | null): Object | null {
+  if (obj instanceof ReturnVal) return obj.value;
+  return obj;
 }

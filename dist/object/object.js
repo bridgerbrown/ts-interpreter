@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorVal = exports.ReturnVal = exports.NullVal = exports.BooleanVal = exports.IntegerVal = void 0;
+exports.FunctionVal = exports.ErrorVal = exports.ReturnVal = exports.NullVal = exports.BooleanVal = exports.IntegerVal = void 0;
 var IntegerVal = /** @class */ (function () {
     function IntegerVal(value) {
         this.value = value;
@@ -50,3 +50,23 @@ var ErrorVal = /** @class */ (function () {
     return ErrorVal;
 }());
 exports.ErrorVal = ErrorVal;
+var FunctionVal = /** @class */ (function () {
+    function FunctionVal(parameters, body, env) {
+        this.parameters = parameters;
+        this.body = body;
+        this.env = env;
+    }
+    FunctionVal.prototype.type = function () { return "FUNCTION" /* Objects.Function_Obj */; };
+    FunctionVal.prototype.inspect = function () {
+        var strs = [];
+        if (this.parameters) {
+            for (var _i = 0, _a = this.parameters; _i < _a.length; _i++) {
+                var p = _a[_i];
+                strs.push(p);
+            }
+        }
+        return "fn(".concat(strs.join(", "), ") {\n").concat(this.body, "\n}");
+    };
+    return FunctionVal;
+}());
+exports.FunctionVal = FunctionVal;

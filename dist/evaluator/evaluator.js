@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.evaluate = void 0;
 var ast_1 = require("../ast/ast");
 var object_1 = require("../object/object");
+var environment_1 = require("../object/environment");
 function evaluate(node, env) {
     var right;
     var left;
@@ -46,6 +47,18 @@ function evaluate(node, env) {
             return val;
         case node instanceof ast_1.Identifier:
             return evalIdentifier(node, env);
+        case node instanceof ast_1.FunctionLiteral:
+            var params = node.parameters;
+            var body = node.body;
+            return new object_1.FunctionVal(params, body, env);
+        case node instanceof ast_1.CallExpression:
+            var fn = evaluate(node.fn, env);
+            if (isError(fn))
+                return fn;
+            var args = evalExpressions(node.args, env);
+            if (args.length == 1 && isError(args[0]))
+                return args[0];
+            return applyFunction(fn, args);
         default:
             return primitives.NULL;
     }
@@ -206,4 +219,41 @@ function evalIdentifier(node, env) {
     if (!val)
         return newError("identifier not found: " + node.value);
     return val;
+}
+function evalExpressions(exps, env) {
+    var result = [];
+    if (exps) {
+        for (var _i = 0, exps_1 = exps; _i < exps_1.length; _i++) {
+            var e = exps_1[_i];
+            var evaluated = evaluate(e, env);
+            if (isError(evaluated))
+                return [evaluated];
+            result.push(evaluated);
+        }
+    }
+    return result;
+}
+function applyFunction(fn, args) {
+    if (!fn)
+        return newError("not a function: ".concat(fn === null || fn === void 0 ? void 0 : fn.type()));
+    var fnObj = fn;
+    var extendedEnv = extendFunctionEnv(fnObj, args);
+    var evaluated = evaluate(fnObj.body, extendedEnv);
+    return unwrapReturnValue(evaluated);
+}
+function extendFunctionEnv(fn, args) {
+    var env = new environment_1.Environment();
+    if (fn === null || fn === void 0 ? void 0 : fn.parameters) {
+        env = new environment_1.Environment(fn.env);
+        for (var i = 0; i < fn.parameters.length; i++) {
+            var param = fn.parameters[i];
+            env.set(param.value, args[i]);
+        }
+    }
+    return env;
+}
+function unwrapReturnValue(obj) {
+    if (obj instanceof object_1.ReturnVal)
+        return obj.value;
+    return obj;
 }
