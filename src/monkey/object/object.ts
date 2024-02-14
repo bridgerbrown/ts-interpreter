@@ -1,3 +1,5 @@
+import { BlockStatement, Identifier } from "../ast/ast";
+import { Environment } from "./environment";
 
 type ObjectType = string;
 
@@ -6,7 +8,8 @@ const enum Objects {
   Boolean_Obj = "BOOLEAN",
   Null_Obj = "NULL",
   Return_Value_Obj = "RETURN_VALUE",
-  Error_Obj = "ERROR"
+  Error_Obj = "ERROR",
+  Function_Obj = "FUNCTION"
 }
 
 interface Object {
@@ -63,4 +66,24 @@ class ErrorVal {
   inspect(): string { return "ERROR: " + this.message; }
 }
 
-export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal };
+class FunctionVal {
+  parameters: Identifier[] | null;
+  body: BlockStatement | null
+  env: Environment | null;
+  constructor(parameters: Identifier[] | null, body: BlockStatement | null, env: Environment | null) {
+    this.parameters = parameters;
+    this.body = body;
+    this.env = env;
+  }
+
+  type(): ObjectType { return Objects.Function_Obj; }
+  inspect(): string { 
+    let strs = [];
+    if (this.parameters) {
+      for (let p of this.parameters) strs.push(p);
+    }
+    return `fn(${strs.join(", ")}) {\n${this.body}\n}`
+  }
+}
+
+export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal, FunctionVal };

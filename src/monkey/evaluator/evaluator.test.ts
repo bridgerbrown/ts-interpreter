@@ -1,5 +1,5 @@
 import { Lexer } from "../lexer/lexer";
-import { BooleanVal, ErrorVal, IntegerVal, Objects } from "../object/object";
+import { BooleanVal, ErrorVal, FunctionVal, IntegerVal, Objects } from "../object/object";
 import { Environment } from "../object/environment";
 import { Parser } from "../parser/parser";
 import { evaluate } from "./evaluator";
@@ -223,5 +223,35 @@ describe("Evaluate let statements", () => {
       testIntegerObject(evaluated, test.expected);
     });
   });
+});
+
+describe("Evaluate function object", () => {
+  const input = "fn(x) { x + 2 ; };";
+
+  const evaluated = testEval(input); 
+  expect(evaluated).toBeInstanceOf(FunctionVal);
+
+  const fn: FunctionVal = evaluated as FunctionVal;
+  expect(fn.parameters?.length).toBe(1);
+  expect(fn.parameters![0].string()).toBe("x");
+
+  const expected = "(x + 2)";
+  expect(fn.body?.string()).toBe(expected);
+});
+
+describe("Evaluate function application", () => {
+  const tests = [
+     { input: "let identity = fn(x) { x; }; identity(5);", expected: 5 },
+     { input: "let identity = fn(x) { return x; }; identity(5);", expected: 5 },
+     { input: "let double = fn(x) { x * 2; }; double(5);", expected: 10 },
+     { input: "let add = fn(x, y) { x + y; }; add(5, 5);", expected: 10 },
+     { input: "let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", expected: 20 },
+     { input: "fn(x) { x; }(5)", expected: 5 },
+  ];
+
+  for (let { input, expected } of tests) {
+    const evaluated = testEval(input); 
+    testIntegerObject(evaluated, expected);
+  }
 });
 

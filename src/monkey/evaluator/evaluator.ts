@@ -1,5 +1,5 @@
-import { BlockStatement, Boolean, Expression, ExpressionStatement, Identifier, IfExpression, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement, Statement } from "../ast/ast";
-import { BooleanVal, ErrorVal, IntegerVal, NullVal, Object, Objects, ReturnVal } from "../object/object";
+import { BlockStatement, Boolean, CallExpression, Expression, ExpressionStatement, FunctionLiteral, Identifier, IfExpression, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement, Statement } from "../ast/ast";
+import { BooleanVal, ErrorVal, FunctionVal, IntegerVal, NullVal, Object, Objects, ReturnVal } from "../object/object";
 import { Environment } from "../object/environment";
 
 export function evaluate(node: any, env: Environment): Object | null {
@@ -41,6 +41,15 @@ export function evaluate(node: any, env: Environment): Object | null {
       return val;
     case node instanceof Identifier:
       return evalIdentifier(node, env);
+    case node instanceof FunctionLiteral:
+      const params = node.parameters;
+      const body = node.body;
+      return new FunctionVal(params, body, env);
+    case node instanceof CallExpression:
+      const fn = evaluate(node.fn, env);
+      if (isError(fn)) return fn;
+      const args = evalExpressions(node.args, env);
+      if (args.length == 1 && isError(args[0])) return args[0];
     default:
       return primitives.NULL;
   }
@@ -207,4 +216,17 @@ function evalIdentifier(node: any, env: Environment) {
   const val = env.get(node.value);
   if (!val) return newError("identifier not found: " + node.value);
   return val;
+}
+
+function evalExpressions(exps: (Expression | null)[] | null, env: Environment): (Object | null)[] {
+  const result: (Object | null)[] = [];
+
+  if (exps) {
+    for (let e of exps) {
+      let evaluated = evaluate(e, env);
+      if (isError(evaluated)) return [evaluated];
+      result.push(evaluated);
+    }
+  }
+  return result;
 }
