@@ -1,6 +1,6 @@
 import { Lexer } from "../lexer/lexer";
 import { Token, TokenType } from "../token/token";
-import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement, IntegerLiteral, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral, CallExpression} from "../ast/ast";
+import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement, IntegerLiteral, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral, CallExpression, StringLiteral} from "../ast/ast";
 
 export interface Parser {
   lexer: Lexer;
@@ -19,7 +19,8 @@ export class Parser implements Parser {
     [TokenType.False, this.parseBoolean.bind(this)],
     [TokenType.If, this.parseIfExpression.bind(this)],
     [TokenType.Function, this.parseFunctionLiteral.bind(this)],
-    [TokenType.LParen, this.parseGroupedExpression.bind(this)]
+    [TokenType.LParen, this.parseGroupedExpression.bind(this)],
+    [TokenType.String, this.parseStringLiteral.bind(this)]
   ]);
 
   private infixParseFns = new Map<TokenType, InfixParseFn>([
@@ -311,6 +312,10 @@ export class Parser implements Parser {
     let exp = this.parseExpression(Precedence.LOWEST);
     if (!this.expectPeek(TokenType.RParen)) return null;
     return exp;
+  }
+
+  parseStringLiteral(): Expression | null {
+    return new StringLiteral(this.currToken, this.currToken.literal);
   }
 }
 

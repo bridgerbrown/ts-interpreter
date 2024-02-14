@@ -51,9 +51,7 @@ class LetStatement implements Statement {
     this.value = value;
   }
   statementNode(): void {}
-  tokenLiteral(): string {
-    return this.token.literal;
-  }
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     let out: string = `let ${this.name?.value} = ${this.value?.string()};`
     return out;
@@ -69,9 +67,7 @@ class ReturnStatement implements Statement {
     this.returnValue = value;
   }
   statementNode(): void {}
-  tokenLiteral(): string {
-    return this.token.literal;
-  }
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     let out: string = "";
     out += this.tokenLiteral() + " ";
@@ -92,12 +88,8 @@ class Identifier implements Expression {
     this.value = token.literal;
   }
   expressionNode(): void {}
-  tokenLiteral(): string {
-    return this.token.literal;
-  }
-  string(): string {
-    return this.value.toString();
-  }
+  tokenLiteral(): string { return this.token.literal; }
+  string(): string { return this.value.toString(); }
 }
 
 class IntegerLiteral implements Expression {
@@ -109,9 +101,7 @@ class IntegerLiteral implements Expression {
     this.value = value;
   }
   expressionNode(): void {}
-  tokenLiteral(): string {
-    return this.token.literal;
-  }
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     if (this.value) {
       return this.value.toString();
@@ -131,9 +121,7 @@ class ExpressionStatement implements Statement {
   }
 
   statementNode(): void {}
-  tokenLiteral(): string {
-      return this.token.literal;
-  }
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     if (this.expression !== null) {
       return `${this.expression.string()}`;
@@ -153,11 +141,8 @@ class PrefixExpression implements Expression {
     this.right = right;
   }
 
-  expressionNode(): void {
-  }
-  tokenLiteral(): string {
-      return this.token.literal;
-  }
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     return `(${this.operator}${this.right?.string()})`;
   }
@@ -176,12 +161,8 @@ class InfixExpression implements Expression {
     this.right = right;
   }
 
-  expressionNode(): void {
-      
-  }
-  tokenLiteral(): string {
-      return this.token.literal;
-  }
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     return `(${this.left.string()} ${this.operator} ${this.right?.string()})`;
   }
@@ -196,15 +177,9 @@ class Boolean implements Expression {
     this.value = value;
   }
 
-  expressionNode(): void {
-      
-  }
-  tokenLiteral(): string {
-      return this.token.literal;
-  }
-  string(): string {
-    return this.token.literal;
-  }
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
+  string(): string { return this.token.literal; }
 }
 
 class IfExpression implements Expression {
@@ -221,12 +196,8 @@ class IfExpression implements Expression {
     this.alternative = alternative;
   }
 
-  expressionNode(): void {
-      
-  }
-  tokenLiteral(): string {
-      return this.token.literal;
-  }
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     let expression: string = "if" + this.condition?.string() + " " + this.consequence?.string();
     if (this.alternative !== null) {
@@ -245,12 +216,8 @@ class BlockStatement implements Statement {
     this.statements = statements; 
   }
 
-  statementNode(): void {
-      
-  }
-  tokenLiteral(): string {
-      return this.token.literal;
-  }
+  statementNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     let statements = "";
     for (let s of this.statements) {
@@ -271,12 +238,8 @@ class FunctionLiteral implements Expression {
     this.body = body;
   }
 
-  expressionNode(): void {
-      
-  }
-  tokenLiteral(): string {
-      return this.token.literal;
-  }
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     let params = [];
     if (this.parameters) {
@@ -304,12 +267,8 @@ class CallExpression implements Expression {
     this.args = args;
   }
 
-  expressionNode(): void {
-      
-  }
-  tokenLiteral(): string {
-    return this.token.literal;
-  }
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
   string(): string {
     let args = [];
     if (this.args) {
@@ -322,9 +281,21 @@ class CallExpression implements Expression {
   }
 }
 
+class StringLiteral implements Expression {
+  token: Token;
+  value: string;
+
+  constructor(token: Token, value: string) {
+    this.token = token;
+    this.value = value;
+  }
+
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
+  string(): string { return this.token.literal; }
+}
 
 export { Node, Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral,
 ExpressionStatement, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral,
-CallExpression
+CallExpression, StringLiteral
 };
-

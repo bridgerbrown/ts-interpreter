@@ -1,5 +1,5 @@
-import { BlockStatement, Boolean, CallExpression, Expression, ExpressionStatement, FunctionLiteral, Identifier, IfExpression, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement, Statement } from "../ast/ast";
-import { BooleanVal, ErrorVal, FunctionVal, IntegerVal, NullVal, Object, Objects, ReturnVal } from "../object/object";
+import { BlockStatement, Boolean, CallExpression, Expression, ExpressionStatement, FunctionLiteral, Identifier, IfExpression, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement, Statement, StringLiteral } from "../ast/ast";
+import { BooleanVal, ErrorVal, FunctionVal, IntegerVal, NullVal, Object, Objects, ReturnVal, StringVal } from "../object/object";
 import { Environment } from "../object/environment";
 
 export function evaluate(node: any, env: Environment): Object | null {
@@ -51,6 +51,8 @@ export function evaluate(node: any, env: Environment): Object | null {
       const args = evalExpressions(node.args, env);
       if (args.length == 1 && isError(args[0])) return args[0];
       return applyFunction(fn, args);
+    case node instanceof StringLiteral:
+      return new StringVal(node.value);
     default:
       return primitives.NULL;
   }

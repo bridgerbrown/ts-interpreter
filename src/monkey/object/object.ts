@@ -9,7 +9,8 @@ const enum Objects {
   Null_Obj = "NULL",
   Return_Value_Obj = "RETURN_VALUE",
   Error_Obj = "ERROR",
-  Function_Obj = "FUNCTION"
+  Function_Obj = "FUNCTION",
+  String_Obj = "STRING"
 }
 
 interface Object {
@@ -86,4 +87,14 @@ class FunctionVal {
   }
 }
 
-export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal, FunctionVal };
+class StringVal {
+  value: string;
+  constructor(value: string) {
+    this.value = value;
+  }
+
+  type(): ObjectType { return Objects.String_Obj; }
+  inspect(): string { return this.value; }
+}
+
+export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal, FunctionVal, StringVal };

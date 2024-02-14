@@ -1,5 +1,5 @@
 import { Lexer } from "../lexer/lexer";
-import { BooleanVal, ErrorVal, FunctionVal, IntegerVal, Objects } from "../object/object";
+import { BooleanVal, ErrorVal, FunctionVal, IntegerVal, Objects, StringVal } from "../object/object";
 import { Environment } from "../object/environment";
 import { Parser } from "../parser/parser";
 import { evaluate } from "./evaluator";
@@ -274,3 +274,13 @@ describe("Function closures", () => {
   });
 });
 
+describe("Evaluate string literals", () => {
+  const input = `"Hello World!"`;
+
+  const evaluated = testEval(input); 
+  it(`should evaluate ${input} to string literal`, () => {
+    expect(evaluated).toBeInstanceOf(StringVal);
+    const str = evaluated as StringVal;
+    expect(str.value).toBe("Hello World!");
+  });
+});
