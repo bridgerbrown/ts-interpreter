@@ -10,7 +10,8 @@ const enum Objects {
   Return_Value_Obj = "RETURN_VALUE",
   Error_Obj = "ERROR",
   Function_Obj = "FUNCTION",
-  String_Obj = "STRING"
+  String_Obj = "STRING",
+  BuiltIn_Obj = "BUILTIN"
 }
 
 interface Object {
@@ -18,7 +19,7 @@ interface Object {
   inspect(): string;
 }
 
-class IntegerVal {
+class IntegerVal implements Object {
   public value: number;
   constructor(value: number) {
     this.value = value;
@@ -28,7 +29,7 @@ class IntegerVal {
   inspect(): string { return this.value.toString(); }
 }
 
-class BooleanVal {
+class BooleanVal implements Object {
   public value: boolean;
   constructor(value: boolean) {
     this.value = value;
@@ -38,12 +39,12 @@ class BooleanVal {
   inspect(): string { return this.value.toString(); }
 }
 
-class NullVal {
+class NullVal implements Object {
   type(): ObjectType { return Objects.Null_Obj; }
   inspect(): string { return "null"; }
 }
 
-class ReturnVal {
+class ReturnVal implements Object {
   public value: Object | null;
   constructor(value: Object | null) {
     this.value = value;
@@ -57,7 +58,7 @@ class ReturnVal {
   }
 }
 
-class ErrorVal {
+class ErrorVal implements Object {
   message: string;
   constructor(message: string) {
     this.message = message;
@@ -67,7 +68,7 @@ class ErrorVal {
   inspect(): string { return "ERROR: " + this.message; }
 }
 
-class FunctionVal {
+class FunctionVal implements Object {
   parameters: Identifier[] | null;
   body: BlockStatement | null
   env: Environment | null;
@@ -87,7 +88,7 @@ class FunctionVal {
   }
 }
 
-class StringVal {
+class StringVal implements Object {
   value: string;
   constructor(value: string) {
     this.value = value;
@@ -97,4 +98,16 @@ class StringVal {
   inspect(): string { return this.value; }
 }
 
-export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal, FunctionVal, StringVal };
+type BuiltInFunction = (...args: (Object | null)[]) => Object | ErrorVal | null; 
+
+class BuiltIn implements Object {
+  fn: BuiltInFunction;
+  constructor(fn: BuiltInFunction) {
+    this.fn = fn;
+  }
+
+  type(): ObjectType { return Objects.BuiltIn_Obj; }
+  inspect(): string { return "builtin function"; }
+}
+
+export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal, FunctionVal, StringVal, BuiltIn };

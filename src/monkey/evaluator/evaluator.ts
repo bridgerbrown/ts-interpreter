@@ -1,11 +1,12 @@
 import { BlockStatement, Boolean, CallExpression, Expression, ExpressionStatement, FunctionLiteral, Identifier, IfExpression, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement, Statement, StringLiteral } from "../ast/ast";
-import { BooleanVal, ErrorVal, FunctionVal, IntegerVal, NullVal, Object, Objects, ReturnVal, StringVal } from "../object/object";
+import { BooleanVal, BuiltIn, ErrorVal, FunctionVal, IntegerVal, NullVal, Object, Objects, ReturnVal, StringVal } from "../object/object";
 import { Environment } from "../object/environment";
+import { builtins } from "./builtins";
 
 export function evaluate(node: any, env: Environment): Object | null {
   let right: Object | null;
   let left: Object | null;
-  let val;
+  let val: Object | null;
 
   switch (true) {
     case node instanceof Program:
@@ -73,7 +74,7 @@ function evalProgram(statements: Statement[], env: Environment): Object | null {
   return result;
 }
 
-const primitives = {
+export const primitives = {
   "NULL": new NullVal(),
   "TRUE": new BooleanVal(true),
   "FALSE": new BooleanVal(false)
@@ -126,6 +127,8 @@ function evalInfixExpression(operator: string, left: any, right: Object | null):
       return nativeBoolToBooleanObject(left != right);
     case (left.type() != right?.type()):
       return newError("type mismatch:", left.type(), operator, right?.type());
+    case (left.type() === Objects.String_Obj && right?.type() === Objects.String_Obj):
+      return evalStringInfixExpression(operator, left, right);
     default:
       return newError("unknown operator:", left.type(), operator, right?.type());
   }
@@ -201,7 +204,7 @@ function evalBlockStatement(block: BlockStatement | null, env: Environment): Obj
   return result;
 }
 
-function newError(format: string, ...a: any[]): ErrorVal | null {
+export function newError(format: string, ...a: any[]): ErrorVal | null {
   const error = format.replace(/{(\d+)}/g, (match, number) => {
     return typeof a[number] !== 'undefined' ? a[number] : match;
   });
@@ -217,8 +220,12 @@ function isError(obj: Object | null): boolean {
 
 function evalIdentifier(node: any, env: Environment) {
   const val = env.get(node.value);
-  if (!val) return newError("identifier not found: " + node.value);
-  return val;
+  if (val) return val;
+
+  const builtin = builtins[node.value];
+  if (builtin) return builtin;
+
+  return newError("identifier not found: " + node.value);
 }
 
 function evalExpressions(exps: (Expression | null)[] | null, env: Environment): (Object | null)[] {
@@ -235,11 +242,16 @@ function evalExpressions(exps: (Expression | null)[] | null, env: Environment): 
 }
 
 function applyFunction(fn: Object | null, args: (Object | null)[]): Object | null {
-  if (!(fn as FunctionVal)) return newError(`not a function: ${fn?.type()}`);
-  const fnObj = fn as FunctionVal;
-  const extendedEnv = extendFunctionEnv(fnObj, args);
-  const evaluated = evaluate(fnObj.body, extendedEnv);
-  return unwrapReturnValue(evaluated);
+  switch (true) {
+    case (fn instanceof FunctionVal):
+      const extendedEnv = extendFunctionEnv(fn, args);
+      const evaluated = evaluate(fn.body, extendedEnv);
+      return unwrapReturnValue(evaluated); 
+    case (fn instanceof BuiltIn):
+      return fn.fn(...args);
+    default:
+      return newError(`not a function: ${fn?.type()}`);
+  }
 }
 
 function extendFunctionEnv(fn: FunctionVal | null, args: (Object | null)[]): Environment {
@@ -258,3 +270,13 @@ function unwrapReturnValue(obj: Object | null): Object | null {
   if (obj instanceof ReturnVal) return obj.value;
   return obj;
 }
+
+function evalStringInfixExpression(operator: string, left: Object, right: Object): Object | null {
+  if (operator !== "+") {
+    return newError(`unknown operator: ${left.type()} ${operator} ${right.type()}`)
+  }
+  const leftVal = (left as StringVal).value;
+  const rightVal = (right as StringVal).value;
+  return new StringVal(leftVal + rightVal);
+}
+
