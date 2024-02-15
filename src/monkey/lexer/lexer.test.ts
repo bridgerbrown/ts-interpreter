@@ -21,6 +21,7 @@ describe("test nextToken()", function() {
     10 != 9;
     "foobar"
     "foo bar"
+    [1, 2];
   `;
 
   const lexer = new Lexer(input);
@@ -105,6 +106,13 @@ describe("test nextToken()", function() {
 
     { type: TokenType.String, literal: "foobar" },
     { type: TokenType.String, literal: "foo bar" },
+
+    { type: TokenType.LBracket, literal: "[" },
+    { type: TokenType.Int, literal: "1" },
+    { type: TokenType.Comma, literal: "," },
+    { type: TokenType.Int, literal: "2" },
+    { type: TokenType.RBracket, literal: "]" },
+    { type: TokenType.Semicolon, literal: ";" },
     { type: TokenType.Eof, literal: "eof" },
   ];
 

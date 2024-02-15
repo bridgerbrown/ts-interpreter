@@ -14,7 +14,9 @@ var Parser = /** @class */ (function () {
             [token_1.TokenType.False, this.parseBoolean.bind(this)],
             [token_1.TokenType.If, this.parseIfExpression.bind(this)],
             [token_1.TokenType.Function, this.parseFunctionLiteral.bind(this)],
-            [token_1.TokenType.LParen, this.parseGroupedExpression.bind(this)]
+            [token_1.TokenType.LParen, this.parseGroupedExpression.bind(this)],
+            [token_1.TokenType.String, this.parseStringLiteral.bind(this)],
+            [token_1.TokenType.LBracket, this.parseArrayLiteral.bind(this)]
         ]);
         this.infixParseFns = new Map([
             [token_1.TokenType.Plus, this.parseInfixExpression.bind(this)],
@@ -25,7 +27,8 @@ var Parser = /** @class */ (function () {
             [token_1.TokenType.NotEqual, this.parseInfixExpression.bind(this)],
             [token_1.TokenType.Lt, this.parseInfixExpression.bind(this)],
             [token_1.TokenType.Gt, this.parseInfixExpression.bind(this)],
-            [token_1.TokenType.LParen, this.parseCallExpression.bind(this)]
+            [token_1.TokenType.LParen, this.parseCallExpression.bind(this)],
+            [token_1.TokenType.LBracket, this.parseIndexExpression.bind(this)]
         ]);
         this.lexer = lexer;
         this.errors = [];
@@ -241,7 +244,7 @@ var Parser = /** @class */ (function () {
         return identifiers;
     };
     Parser.prototype.parseCallExpression = function (fn) {
-        return new ast_1.CallExpression(this.currToken, fn, this.parseCallArguments());
+        return new ast_1.CallExpression(this.currToken, fn, this.parseExpressionList(token_1.TokenType.RParen));
     };
     Parser.prototype.parseCallArguments = function () {
         var args = [];
@@ -264,6 +267,37 @@ var Parser = /** @class */ (function () {
         this.nextToken();
         var exp = this.parseExpression(Precedence.LOWEST);
         if (!this.expectPeek(token_1.TokenType.RParen))
+            return null;
+        return exp;
+    };
+    Parser.prototype.parseStringLiteral = function () {
+        return new ast_1.StringLiteral(this.currToken, this.currToken.literal);
+    };
+    Parser.prototype.parseArrayLiteral = function () {
+        return new ast_1.ArrayLiteral(this.currToken, this.parseExpressionList(token_1.TokenType.RBracket));
+    };
+    Parser.prototype.parseExpressionList = function (end) {
+        var list = [];
+        if (this.peekTokenIs(end)) {
+            this.nextToken();
+            return list;
+        }
+        this.nextToken();
+        list.push(this.parseExpression(Precedence.LOWEST));
+        while (this.peekTokenIs(token_1.TokenType.Comma)) {
+            this.nextToken();
+            this.nextToken();
+            list.push(this.parseExpression(Precedence.LOWEST));
+        }
+        if (!this.expectPeek(end))
+            return null;
+        return list;
+    };
+    Parser.prototype.parseIndexExpression = function (left) {
+        var exp = new ast_1.IndexExpression(this.currToken, left, null);
+        this.nextToken();
+        exp.index = this.parseExpression(Precedence.LOWEST);
+        if (!this.expectPeek(token_1.TokenType.RBracket))
             return null;
         return exp;
     };

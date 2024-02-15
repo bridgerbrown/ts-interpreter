@@ -81,6 +81,15 @@ var Lexer = /** @class */ (function () {
             case "\0":
                 token = newToken(token_1.TokenType.Eof, "eof");
                 break;
+            case '"':
+                token = newToken(token_1.TokenType.String, this.readString());
+                break;
+            case "[":
+                token = newToken(token_1.TokenType.LBracket, this.char);
+                break;
+            case "]":
+                token = newToken(token_1.TokenType.RBracket, this.char);
+                break;
             default: {
                 if (isLetter(this.char)) {
                     return this.readIdentifier();
@@ -121,6 +130,15 @@ var Lexer = /** @class */ (function () {
         var position = this.position;
         while (isDigit(this.char)) {
             this.readChar();
+        }
+        return this.input.slice(position, this.position);
+    };
+    Lexer.prototype.readString = function () {
+        var position = this.position + 1;
+        while (true) {
+            this.readChar();
+            if (this.char === '"' || this.char === "\0")
+                break;
         }
         return this.input.slice(position, this.position);
     };

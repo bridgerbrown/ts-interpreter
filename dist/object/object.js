@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FunctionVal = exports.ErrorVal = exports.ReturnVal = exports.NullVal = exports.BooleanVal = exports.IntegerVal = void 0;
+exports.BuiltIn = exports.StringVal = exports.FunctionVal = exports.ErrorVal = exports.ReturnVal = exports.NullVal = exports.BooleanVal = exports.IntegerVal = void 0;
 var IntegerVal = /** @class */ (function () {
     function IntegerVal(value) {
         this.value = value;
@@ -70,3 +70,21 @@ var FunctionVal = /** @class */ (function () {
     return FunctionVal;
 }());
 exports.FunctionVal = FunctionVal;
+var StringVal = /** @class */ (function () {
+    function StringVal(value) {
+        this.value = value;
+    }
+    StringVal.prototype.type = function () { return "STRING" /* Objects.String_Obj */; };
+    StringVal.prototype.inspect = function () { return this.value; };
+    return StringVal;
+}());
+exports.StringVal = StringVal;
+var BuiltIn = /** @class */ (function () {
+    function BuiltIn(fn) {
+        this.fn = fn;
+    }
+    BuiltIn.prototype.type = function () { return "BUILTIN" /* Objects.BuiltIn_Obj */; };
+    BuiltIn.prototype.inspect = function () { return "builtin function"; };
+    return BuiltIn;
+}());
+exports.BuiltIn = BuiltIn;

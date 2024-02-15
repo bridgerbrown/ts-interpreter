@@ -28,6 +28,8 @@ export enum TokenType {
   RParen = ")",
   LBrace = "{",
   RBrace = "}",
+  LBracket = "[",
+  RBracket = "]",
 
   Function = "FUNCTION",
   Let = "LET",

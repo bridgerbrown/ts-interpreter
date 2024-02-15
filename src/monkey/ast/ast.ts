@@ -295,7 +295,49 @@ class StringLiteral implements Expression {
   string(): string { return this.token.literal; }
 }
 
+class ArrayLiteral implements Expression {
+  token: Token;
+  elements: (Expression | null)[] | null;
+
+  constructor(token: Token, elements: (Expression | null)[] | null) {
+    this.token = token;
+    this.elements = elements;
+  }
+
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
+  string(): string { 
+    let arr = [];
+    if (this.elements) {
+      for (let el of this.elements) {
+        el ? arr.push(el.string()) : "null";
+      }
+      return "[" + arr.join(", ") + "]";
+    }
+    return "[]";
+  }
+}
+
+class IndexExpression implements Expression {
+  token: Token;
+  left: Expression;
+  index: Expression | null;
+
+  constructor(token: Token, left: Expression, index: Expression | null) {
+    this.token = token;
+    this.left = left;
+    this.index = index;
+  }
+
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
+  string(): string { 
+    return "(" + this.left.string() + "[" + this.index?.string() + "]";
+  }
+
+}
+
 export { Node, Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral,
 ExpressionStatement, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral,
-CallExpression, StringLiteral
+CallExpression, StringLiteral, ArrayLiteral, IndexExpression
 };

@@ -1,6 +1,6 @@
 import { Lexer } from "../lexer/lexer";
 import { Token, TokenType } from "../token/token";
-import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement, IntegerLiteral, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral, CallExpression, StringLiteral} from "../ast/ast";
+import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement, IntegerLiteral, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral, CallExpression, StringLiteral, ArrayLiteral, IndexExpression} from "../ast/ast";
 
 export interface Parser {
   lexer: Lexer;
@@ -20,7 +20,8 @@ export class Parser implements Parser {
     [TokenType.If, this.parseIfExpression.bind(this)],
     [TokenType.Function, this.parseFunctionLiteral.bind(this)],
     [TokenType.LParen, this.parseGroupedExpression.bind(this)],
-    [TokenType.String, this.parseStringLiteral.bind(this)]
+    [TokenType.String, this.parseStringLiteral.bind(this)],
+    [TokenType.LBracket, this.parseArrayLiteral.bind(this)]
   ]);
 
   private infixParseFns = new Map<TokenType, InfixParseFn>([
@@ -32,7 +33,8 @@ export class Parser implements Parser {
     [TokenType.NotEqual, this.parseInfixExpression.bind(this)],
     [TokenType.Lt, this.parseInfixExpression.bind(this)],
     [TokenType.Gt, this.parseInfixExpression.bind(this)],
-    [TokenType.LParen, this.parseCallExpression.bind(this)]
+    [TokenType.LParen, this.parseCallExpression.bind(this)],
+    [TokenType.LBracket, this.parseIndexExpression.bind(this)]
   ]);
 
   constructor(lexer: Lexer) {
@@ -284,7 +286,7 @@ export class Parser implements Parser {
   }
 
   parseCallExpression(fn: Expression): Expression {
-    return new CallExpression(this.currToken, fn, this.parseCallArguments());
+    return new CallExpression(this.currToken, fn, this.parseExpressionList(TokenType.RParen));
   }
 
   parseCallArguments(): (Expression | null)[] | null {
@@ -316,6 +318,35 @@ export class Parser implements Parser {
 
   parseStringLiteral(): Expression | null {
     return new StringLiteral(this.currToken, this.currToken.literal);
+  }
+
+  parseArrayLiteral(): Expression | null {
+    return new ArrayLiteral(this.currToken, this.parseExpressionList(TokenType.RBracket));
+  }
+
+  parseExpressionList(end: TokenType): (Expression | null)[] | null {
+    const list: (Expression | null)[] = [];
+    if (this.peekTokenIs(end)) {
+      this.nextToken();
+      return list;
+    }
+    this.nextToken();
+    list.push(this.parseExpression(Precedence.LOWEST));
+    while (this.peekTokenIs(TokenType.Comma)) {
+      this.nextToken();
+      this.nextToken();
+      list.push(this.parseExpression(Precedence.LOWEST));
+    }
+    if (!this.expectPeek(end)) return null;
+    return list;
+  }
+
+  parseIndexExpression(left: Expression): Expression | null {
+    const exp = new IndexExpression(this.currToken, left, null);
+    this.nextToken();
+    exp.index = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.RBracket)) return null;
+    return exp;
   }
 }
 

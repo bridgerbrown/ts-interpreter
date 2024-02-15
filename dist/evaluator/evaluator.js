@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.evaluate = void 0;
+exports.newError = exports.primitives = exports.evaluate = void 0;
 var ast_1 = require("../ast/ast");
 var object_1 = require("../object/object");
 var environment_1 = require("../object/environment");
+var builtins_1 = require("./builtins");
 function evaluate(node, env) {
     var right;
     var left;
@@ -59,8 +60,10 @@ function evaluate(node, env) {
             if (args.length == 1 && isError(args[0]))
                 return args[0];
             return applyFunction(fn, args);
+        case node instanceof ast_1.StringLiteral:
+            return new object_1.StringVal(node.value);
         default:
-            return primitives.NULL;
+            return exports.primitives.NULL;
     }
 }
 exports.evaluate = evaluate;
@@ -78,15 +81,15 @@ function evalProgram(statements, env) {
     }
     return result;
 }
-var primitives = {
+exports.primitives = {
     "NULL": new object_1.NullVal(),
     "TRUE": new object_1.BooleanVal(true),
     "FALSE": new object_1.BooleanVal(false)
 };
 function nativeBoolToBooleanObject(input) {
     if (input)
-        return primitives.TRUE;
-    return primitives.FALSE;
+        return exports.primitives.TRUE;
+    return exports.primitives.FALSE;
 }
 function evalPrefixExpression(operator, right) {
     switch (operator) {
@@ -99,7 +102,7 @@ function evalPrefixExpression(operator, right) {
     }
 }
 function evalExclOperatorExpression(right) {
-    var TRUE = primitives.TRUE, FALSE = primitives.FALSE, NULL = primitives.NULL;
+    var TRUE = exports.primitives.TRUE, FALSE = exports.primitives.FALSE, NULL = exports.primitives.NULL;
     switch (right) {
         case TRUE:
             return FALSE;
@@ -127,6 +130,8 @@ function evalInfixExpression(operator, left, right) {
             return nativeBoolToBooleanObject(left != right);
         case (left.type() != (right === null || right === void 0 ? void 0 : right.type())):
             return newError("type mismatch:", left.type(), operator, right === null || right === void 0 ? void 0 : right.type());
+        case (left.type() === "STRING" /* Objects.String_Obj */ && (right === null || right === void 0 ? void 0 : right.type()) === "STRING" /* Objects.String_Obj */):
+            return evalStringInfixExpression(operator, left, right);
         default:
             return newError("unknown operator:", left.type(), operator, right === null || right === void 0 ? void 0 : right.type());
     }
@@ -166,11 +171,11 @@ function evalIfExpression(ie, env) {
         return evaluate(ie.alternative, env);
     }
     else {
-        return primitives.NULL;
+        return exports.primitives.NULL;
     }
 }
 function isTruthy(obj) {
-    var NULL = primitives.NULL, TRUE = primitives.TRUE, FALSE = primitives.FALSE;
+    var NULL = exports.primitives.NULL, TRUE = exports.primitives.TRUE, FALSE = exports.primitives.FALSE;
     switch (obj) {
         case NULL:
             return false;
@@ -208,6 +213,7 @@ function newError(format) {
     });
     return new object_1.ErrorVal(error);
 }
+exports.newError = newError;
 function isError(obj) {
     if (obj !== null) {
         return obj.type() == "ERROR" /* Objects.Error_Obj */;
@@ -216,9 +222,12 @@ function isError(obj) {
 }
 function evalIdentifier(node, env) {
     var val = env.get(node.value);
-    if (!val)
-        return newError("identifier not found: " + node.value);
-    return val;
+    if (val)
+        return val;
+    var builtin = builtins_1.builtins[node.value];
+    if (builtin)
+        return builtin;
+    return newError("identifier not found: " + node.value);
 }
 function evalExpressions(exps, env) {
     var result = [];
@@ -234,12 +243,17 @@ function evalExpressions(exps, env) {
     return result;
 }
 function applyFunction(fn, args) {
-    if (!fn)
-        return newError("not a function: ".concat(fn === null || fn === void 0 ? void 0 : fn.type()));
-    var fnObj = fn;
-    var extendedEnv = extendFunctionEnv(fnObj, args);
-    var evaluated = evaluate(fnObj.body, extendedEnv);
-    return unwrapReturnValue(evaluated);
+    var _a;
+    switch (true) {
+        case (fn instanceof object_1.FunctionVal):
+            var extendedEnv = extendFunctionEnv(fn, args);
+            var evaluated = evaluate(fn.body, extendedEnv);
+            return unwrapReturnValue(evaluated);
+        case (fn instanceof object_1.BuiltIn):
+            return (_a = fn).fn.apply(_a, args);
+        default:
+            return newError("not a function: ".concat(fn === null || fn === void 0 ? void 0 : fn.type()));
+    }
 }
 function extendFunctionEnv(fn, args) {
     var env = new environment_1.Environment();
@@ -256,4 +270,12 @@ function unwrapReturnValue(obj) {
     if (obj instanceof object_1.ReturnVal)
         return obj.value;
     return obj;
+}
+function evalStringInfixExpression(operator, left, right) {
+    if (operator !== "+") {
+        return newError("unknown operator: ".concat(left.type(), " ").concat(operator, " ").concat(right.type()));
+    }
+    var leftVal = left.value;
+    var rightVal = right.value;
+    return new object_1.StringVal(leftVal + rightVal);
 }

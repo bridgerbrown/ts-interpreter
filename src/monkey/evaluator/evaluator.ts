@@ -47,7 +47,7 @@ export function evaluate(node: any, env: Environment): Object | null {
       const body = node.body;
       return new FunctionVal(params, body, env);
     case node instanceof CallExpression:
-      const fn = evaluate(node.fn, env);
+      const fn = evaluate((node.fn as FunctionLiteral), env);
       if (isError(fn)) return fn;
       const args = evalExpressions(node.args, env);
       if (args.length == 1 && isError(args[0])) return args[0];
@@ -244,11 +244,11 @@ function evalExpressions(exps: (Expression | null)[] | null, env: Environment): 
 function applyFunction(fn: Object | null, args: (Object | null)[]): Object | null {
   switch (true) {
     case (fn instanceof FunctionVal):
-      const extendedEnv = extendFunctionEnv(fn, args);
-      const evaluated = evaluate(fn.body, extendedEnv);
+      const extendedEnv = extendFunctionEnv(fn as FunctionVal, args);
+      const evaluated = evaluate((fn as FunctionVal).body, extendedEnv);
       return unwrapReturnValue(evaluated); 
     case (fn instanceof BuiltIn):
-      return fn.fn(...args);
+      return (fn as BuiltIn).fn(...args);
     default:
       return newError(`not a function: ${fn?.type()}`);
   }

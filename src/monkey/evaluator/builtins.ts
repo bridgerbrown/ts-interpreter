@@ -9,7 +9,7 @@ export const builtins: Record<string, BuiltIn> = {
       const arg = args[0] as Object;
       switch (true) {
         case (arg instanceof StringVal):
-          return new IntegerVal((arg.value).length);
+          return new IntegerVal((arg.inspect()).length);
         default:
           return newError(`argument to 'len' not supported, got ${args[0]?.type()}`)
       }

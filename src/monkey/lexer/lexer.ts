@@ -87,6 +87,12 @@ export class Lexer {
       case '"':
         token = newToken(TokenType.String, this.readString());
         break;
+      case "[":
+        token = newToken(TokenType.LBracket, this.char);
+        break;
+      case "]":
+        token = newToken(TokenType.RBracket, this.char);
+        break;
       default: {
         if (isLetter(this.char)) {
           return this.readIdentifier();

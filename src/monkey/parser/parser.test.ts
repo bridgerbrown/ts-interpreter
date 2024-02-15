@@ -1,6 +1,6 @@
 import { Lexer } from "../lexer/lexer";
 import { Parser } from "./parser";
-import { Program, IntegerLiteral, Identifier, LetStatement, ExpressionStatement, StringLiteral } from "../ast/ast";
+import { Program, IntegerLiteral, Identifier, LetStatement, ExpressionStatement, StringLiteral, ArrayLiteral, InfixExpression, Expression, IndexExpression } from "../ast/ast";
 import { TokenType } from "../token/token";
 
 describe("Let statements", () => {
@@ -101,3 +101,85 @@ describe("String literal expression", () => {
     expect(literal?.tokenLiteral()).toBe("hello world");
   });
 });
+
+describe("Parsing array literals", () => {
+  const input = "[1, 2 * 2, 3 + 3]";
+
+  const lexer = new Lexer(input);
+  const parser = new Parser(lexer);
+  const program = parser.parseProgram();
+  parser.checkParserErrors();
+
+  const expected = new Program();
+  expected.statements = [
+    new ExpressionStatement({ type: TokenType.String, literal: "[1, 2 * 2, 3 + 3]" },
+      new ArrayLiteral({ type: TokenType.String, literal: "[1, 2 * 2, 3 + 3]" }, 
+        [ 
+          new IntegerLiteral({ type: TokenType.Int, literal: "1" }, 1),
+          new InfixExpression({ type: TokenType.String, literal: "2 * 2" }, "*", 
+            new IntegerLiteral({ type: TokenType.Int, literal: "2" }, 2),
+            new IntegerLiteral({ type: TokenType.Int, literal: "2" }, 2),
+          ),
+          new InfixExpression({ type: TokenType.String, literal: "3 + 3" }, "+", 
+            new IntegerLiteral({ type: TokenType.Int, literal: "3" }, 3),
+            new IntegerLiteral({ type: TokenType.Int, literal: "3" }, 3),
+          )
+        ]
+      )
+    )
+  ];
+
+  it(`should parse array literal expressions`, () => {
+    const statement = expected.statements[0] as ExpressionStatement;
+    const array = statement.expression as ArrayLiteral;
+    expect(array).toBeInstanceOf(ArrayLiteral);
+    expect(array.elements?.length).toBe(3);
+
+    testIntegerLiteral(array.elements![0], 1);
+    testInfixExpression(array.elements![1], 2, "*", 2);
+    testInfixExpression(array.elements![2], 3, "+", 3);
+  });
+});
+
+function testIntegerLiteral(expression: Expression | null, value: number) {
+  expect(expression).toBeInstanceOf(IntegerLiteral);
+  const integer = expression as IntegerLiteral;
+  expect(integer.value).toBe(value);
+}
+
+function testInfixExpression(expression: Expression | null, leftValue: number, operator: string, rightValue: number) {
+  expect(expression).toBeInstanceOf(InfixExpression);
+  const infix = expression as InfixExpression;
+  testIntegerLiteral(infix.left, leftValue);
+  expect(infix.operator).toBe(operator);
+  testIntegerLiteral(infix.right, rightValue);
+}
+
+describe("Parsing index expressions", () => {
+  const input = "myArray[1 + 1]";
+
+  const lexer = new Lexer(input);
+  const parser = new Parser(lexer);
+  const program = parser.parseProgram();
+  parser.checkParserErrors();
+
+  const expected = new Program();
+  expected.statements = [
+    new ExpressionStatement({ type: TokenType.String, literal: "myArray[1 + 1]" }, 
+      new IndexExpression({ type: TokenType.LBracket, literal: "[" }, 
+        new Identifier({ type: TokenType.Ident, literal: "myArray" }),
+        new InfixExpression({ type: TokenType.Plus, literal: "+" }, "+", 
+          new IntegerLiteral({ type: TokenType.Int, literal: "1" }, 1),
+          new IntegerLiteral({ type: TokenType.Int, literal: "1" }, 1),
+        )
+      )
+    )
+  ];
+
+  it(`should parse index expressions`, () => {
+    const statement = program.statements[0] as ExpressionStatement;
+    const literal = statement.expression; 
+    expect(literal).toBeInstanceOf(IndexExpression);
+  });
+});
+
