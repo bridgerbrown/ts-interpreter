@@ -23,6 +23,7 @@ export enum TokenType {
   Lt = "<",
   Gt = ">",
   Comma = ",",
+  Colon = ":",
   Semicolon = ";",
   LParen = "(",
   RParen = ")",

@@ -334,10 +334,29 @@ class IndexExpression implements Expression {
   string(): string { 
     return "(" + this.left.string() + "[" + this.index?.string() + "]";
   }
+}
 
+class HashLiteral implements Expression {
+  token: Token;
+  pairs: Map<Expression, Expression | null>;
+
+  constructor(token: Token, pairs: Map<Expression, Expression | null>) {
+    this.token = token;
+    this.pairs = pairs;
+  }
+
+  expressionNode(): void {}
+  tokenLiteral(): string { return this.token.literal; }
+  string(): string { 
+    const pairs = [];
+    for (let [key, value] of this.pairs) {
+      pairs.push(`${key.string()}:${value?.string()}`);
+    }
+    return "{" + pairs.join(", ") + "}";
+  }
 }
 
 export { Node, Statement, Expression, Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral,
 ExpressionStatement, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral,
-CallExpression, StringLiteral, ArrayLiteral, IndexExpression
+CallExpression, StringLiteral, ArrayLiteral, IndexExpression, HashLiteral
 };
