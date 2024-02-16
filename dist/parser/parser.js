@@ -313,6 +313,7 @@ var Precedence;
     Precedence[Precedence["PRODUCT"] = 4] = "PRODUCT";
     Precedence[Precedence["PREFIX"] = 5] = "PREFIX";
     Precedence[Precedence["CALL"] = 6] = "CALL";
+    Precedence[Precedence["INDEX"] = 7] = "INDEX";
 })(Precedence || (Precedence = {}));
 var precedences = new Map([
     [token_1.TokenType.Equal, Precedence.EQUALS],
@@ -324,4 +325,5 @@ var precedences = new Map([
     [token_1.TokenType.SlashF, Precedence.PRODUCT],
     [token_1.TokenType.Asterisk, Precedence.PRODUCT],
     [token_1.TokenType.LParen, Precedence.CALL],
+    [token_1.TokenType.LBracket, Precedence.INDEX],
 ]);

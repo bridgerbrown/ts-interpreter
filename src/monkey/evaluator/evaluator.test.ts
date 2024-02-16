@@ -1,5 +1,5 @@
 import { Lexer } from "../lexer/lexer";
-import { BooleanVal, ErrorVal, FunctionVal, IntegerVal, Objects, StringVal } from "../object/object";
+import { ArrayVal, BooleanVal, ErrorVal, FunctionVal, IntegerVal, Objects, StringVal } from "../object/object";
 import { Environment } from "../object/environment";
 import { Parser } from "../parser/parser";
 import { evaluate } from "./evaluator";
@@ -322,3 +322,42 @@ describe("Evaluate built-in functions", () => {
     });
   };
 });
+
+describe("Evaluate built-in functions", () => {
+  const input = "[1, 2 * 2, 3 + 3]";
+  const evaluated = testEval(input); 
+  it("should evaluate array integer objects", () => {
+    expect(evaluated).toBeInstanceOf(ArrayVal);
+    const array = evaluated as ArrayVal;
+    testIntegerObject(array.elements[0], 1);
+    testIntegerObject(array.elements[1], 4);
+    testIntegerObject(array.elements[2], 6);
+  });
+});
+
+describe("Evaluate array index expressions", () => {
+  const tests = [
+    { input: "[1, 2, 3][0]", expected: 1, },
+    { input: "[1, 2, 3][1]", expected: 2, },
+    { input: "[1, 2, 3][2]", expected: 3, },
+    { input: "let i = 0; [1][i];", expected: 1, }, 
+    { input: "[1, 2, 3][1 + 1];", expected: 3, },
+    { input: "let myArray = [1, 2, 3]; myArray[2];", expected: 3, }, 
+    { input: "let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];", expected: 6, },
+    { input: "let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i]", expected: 2, },
+    { input: "[1, 2, 3][3]", expected: null },
+    { input: "[1, 2, 3][-1]", expected: null },
+  ];
+
+  for (const { input, expected } of tests) {
+    it(`should evaluate ${input} to ${expected}`, () => {
+      const evaluated = testEval(input); 
+      if (typeof expected === "number") {
+        testIntegerObject(evaluated, expected);
+      } else {
+        testNullObject(evaluated);
+      }
+    })
+  };
+});
+

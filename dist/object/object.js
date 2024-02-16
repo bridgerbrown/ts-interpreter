@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BuiltIn = exports.StringVal = exports.FunctionVal = exports.ErrorVal = exports.ReturnVal = exports.NullVal = exports.BooleanVal = exports.IntegerVal = void 0;
+exports.ArrayVal = exports.BuiltIn = exports.StringVal = exports.FunctionVal = exports.ErrorVal = exports.ReturnVal = exports.NullVal = exports.BooleanVal = exports.IntegerVal = void 0;
 var IntegerVal = /** @class */ (function () {
     function IntegerVal(value) {
         this.value = value;
@@ -88,3 +88,20 @@ var BuiltIn = /** @class */ (function () {
     return BuiltIn;
 }());
 exports.BuiltIn = BuiltIn;
+var ArrayVal = /** @class */ (function () {
+    function ArrayVal(elements) {
+        this.elements = [];
+        this.elements = elements;
+    }
+    ArrayVal.prototype.type = function () { return "ARRAY" /* Objects.Array_Obj */; };
+    ArrayVal.prototype.inspect = function () {
+        var elements = [];
+        for (var _i = 0, _a = this.elements; _i < _a.length; _i++) {
+            var e = _a[_i];
+            elements.push(e === null || e === void 0 ? void 0 : e.inspect());
+        }
+        return "[" + elements.join(", ") + "]";
+    };
+    return ArrayVal;
+}());
+exports.ArrayVal = ArrayVal;

@@ -1,5 +1,5 @@
-import { BlockStatement, Boolean, CallExpression, Expression, ExpressionStatement, FunctionLiteral, Identifier, IfExpression, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement, Statement, StringLiteral } from "../ast/ast";
-import { BooleanVal, BuiltIn, ErrorVal, FunctionVal, IntegerVal, NullVal, Object, Objects, ReturnVal, StringVal } from "../object/object";
+import { ArrayLiteral, BlockStatement, Boolean, CallExpression, Expression, ExpressionStatement, FunctionLiteral, Identifier, IfExpression, IndexExpression, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement, Statement, StringLiteral } from "../ast/ast";
+import { ArrayVal, BooleanVal, BuiltIn, ErrorVal, FunctionVal, IntegerVal, NullVal, Object, Objects, ReturnVal, StringVal } from "../object/object";
 import { Environment } from "../object/environment";
 import { builtins } from "./builtins";
 
@@ -54,6 +54,16 @@ export function evaluate(node: any, env: Environment): Object | null {
       return applyFunction(fn, args);
     case node instanceof StringLiteral:
       return new StringVal(node.value);
+    case node instanceof ArrayLiteral:
+      const elements = evalExpressions(node.elements, env);
+      if (elements.length === 1 && isError(elements[0])) return elements[0];
+      return new ArrayVal(elements);
+    case node instanceof IndexExpression:
+      left = evaluate(node.left, env);
+      if (isError(left)) return left;
+      const index = evaluate(node.index, env);
+      if (isError(index)) return index;
+      return evalIndexExpression(left, index);
     default:
       return primitives.NULL;
   }
@@ -280,3 +290,20 @@ function evalStringInfixExpression(operator: string, left: Object, right: Object
   return new StringVal(leftVal + rightVal);
 }
 
+function evalIndexExpression(left: Object | null, index: Object | null): Object | null {
+  switch (true) {
+    case (left && index && left.type() === Objects.Array_Obj && index.type() === Objects.Integer_Obj):
+      return evalArrayIndexExpression(left, index);
+    default:
+      return newError(`index operator not supported: ${left?.type()}`);
+  }
+}
+
+function evalArrayIndexExpression(array: Object | null, index: Object): Object | null {
+  const arrayObject = array as ArrayVal;
+  const idx = (index as IntegerVal).value;
+  const max = arrayObject.elements.length - 1;
+  
+  if (idx < 0 || idx > max) return primitives.NULL;
+  return arrayObject.elements[idx];
+}

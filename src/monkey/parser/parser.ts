@@ -355,7 +355,7 @@ interface PrefixParseFn {
 }
 
 interface InfixParseFn {
-  (expression: Expression): Expression;
+  (expression: Expression): Expression | null;
 }
 
 enum Precedence {
@@ -365,7 +365,8 @@ enum Precedence {
   SUM = 3,
   PRODUCT = 4,
   PREFIX = 5,
-  CALL = 6
+  CALL = 6,
+  INDEX = 7
 }
 
 const precedences = new Map<TokenType, Precedence>([
@@ -378,4 +379,5 @@ const precedences = new Map<TokenType, Precedence>([
   [TokenType.SlashF, Precedence.PRODUCT],
   [TokenType.Asterisk, Precedence.PRODUCT],
   [TokenType.LParen, Precedence.CALL],
+  [TokenType.LBracket, Precedence.INDEX],
 ])

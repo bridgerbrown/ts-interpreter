@@ -11,7 +11,8 @@ const enum Objects {
   Error_Obj = "ERROR",
   Function_Obj = "FUNCTION",
   String_Obj = "STRING",
-  BuiltIn_Obj = "BUILTIN"
+  BuiltIn_Obj = "BUILTIN",
+  Array_Obj = "ARRAY"
 }
 
 interface Object {
@@ -110,4 +111,21 @@ class BuiltIn implements Object {
   inspect(): string { return "builtin function"; }
 }
 
-export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal, FunctionVal, StringVal, BuiltIn };
+class ArrayVal implements Object {
+  elements: (Object | null)[] = [];
+  constructor(elements: (Object | null)[]) {
+    this.elements = elements;
+  }
+
+  type(): ObjectType { return Objects.Array_Obj; }
+  inspect(): string {
+    const elements = [];
+    for (let e of this.elements) {
+      elements.push(e?.inspect());
+    }
+    return "[" + elements.join(", ") + "]";
+  }
+}
+
+export { Object, Objects, IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal, FunctionVal, StringVal, BuiltIn,
+ArrayVal };

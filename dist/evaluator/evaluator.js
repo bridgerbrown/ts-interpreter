@@ -62,6 +62,19 @@ function evaluate(node, env) {
             return applyFunction(fn, args);
         case node instanceof ast_1.StringLiteral:
             return new object_1.StringVal(node.value);
+        case node instanceof ast_1.ArrayLiteral:
+            var elements = evalExpressions(node.elements, env);
+            if (elements.length === 1 && isError(elements[0]))
+                return elements[0];
+            return new object_1.ArrayVal(elements);
+        case node instanceof ast_1.IndexExpression:
+            left = evaluate(node.left, env);
+            if (isError(left))
+                return left;
+            var index = evaluate(node.index, env);
+            if (isError(index))
+                return index;
+            return evalIndexExpression(left, index);
         default:
             return exports.primitives.NULL;
     }
@@ -278,4 +291,20 @@ function evalStringInfixExpression(operator, left, right) {
     var leftVal = left.value;
     var rightVal = right.value;
     return new object_1.StringVal(leftVal + rightVal);
+}
+function evalIndexExpression(left, index) {
+    switch (true) {
+        case (left && index && left.type() === "ARRAY" /* Objects.Array_Obj */ && index.type() === "INTEGER" /* Objects.Integer_Obj */):
+            return evalArrayIndexExpression(left, index);
+        default:
+            return newError("index operator not supported: ".concat(left === null || left === void 0 ? void 0 : left.type()));
+    }
+}
+function evalArrayIndexExpression(array, index) {
+    var arrayObject = array;
+    var idx = index.value;
+    var max = arrayObject.elements.length - 1;
+    if (idx < 0 || idx > max)
+        return exports.primitives.NULL;
+    return arrayObject.elements[idx];
 }
