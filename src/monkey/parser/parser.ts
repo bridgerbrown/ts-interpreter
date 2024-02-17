@@ -1,6 +1,6 @@
 import { Lexer } from "../lexer/lexer";
 import { Token, TokenType } from "../token/token";
-import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement, IntegerLiteral, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral, CallExpression, StringLiteral, ArrayLiteral, IndexExpression, HashLiteral} from "../ast/ast";
+import { Program, Statement, LetStatement, Identifier, Expression, ReturnStatement, ExpressionStatement, IntegerLiteral, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral, CallExpression, StringLiteral, ArrayLiteral, IndexExpression } from "../ast/ast";
 
 export interface Parser {
   lexer: Lexer;
@@ -22,7 +22,6 @@ export class Parser implements Parser {
     [TokenType.LParen, this.parseGroupedExpression.bind(this)],
     [TokenType.String, this.parseStringLiteral.bind(this)],
     [TokenType.LBracket, this.parseArrayLiteral.bind(this)],
-    [TokenType.LBrace, this.parseHashLiteral.bind(this)]
   ]);
 
   private infixParseFns = new Map<TokenType, InfixParseFn>([
@@ -348,25 +347,6 @@ export class Parser implements Parser {
     exp.index = this.parseExpression(Precedence.LOWEST);
     if (!this.expectPeek(TokenType.RBracket)) return null;
     return exp;
-  }
-
-  parseHashLiteral(): Expression | null {
-    const hash = new HashLiteral(this.currToken, new Map());
-    while (!this.peekTokenIs(TokenType.RBrace)) {
-      this.nextToken();
-      const key = this.parseExpression(Precedence.LOWEST);
-      
-      if (!this.expectPeek(TokenType.Colon)) return null;
-      this.nextToken();
-
-      const value = this.parseExpression(Precedence.LOWEST);
-      if (key) hash.pairs.set(key, value);
-      
-      if (!this.peekTokenIs(TokenType.RBrace) && !this.expectPeek(TokenType.Comma)) return null;
-    }
-    
-    if (!this.expectPeek(TokenType.RBrace)) return null;
-    return hash;
   }
 }
 

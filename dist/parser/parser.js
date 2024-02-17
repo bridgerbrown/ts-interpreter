@@ -16,7 +16,8 @@ var Parser = /** @class */ (function () {
             [token_1.TokenType.Function, this.parseFunctionLiteral.bind(this)],
             [token_1.TokenType.LParen, this.parseGroupedExpression.bind(this)],
             [token_1.TokenType.String, this.parseStringLiteral.bind(this)],
-            [token_1.TokenType.LBracket, this.parseArrayLiteral.bind(this)]
+            [token_1.TokenType.LBracket, this.parseArrayLiteral.bind(this)],
+            [token_1.TokenType.LBrace, this.parseHashLiteral.bind(this)]
         ]);
         this.infixParseFns = new Map([
             [token_1.TokenType.Plus, this.parseInfixExpression.bind(this)],
@@ -300,6 +301,24 @@ var Parser = /** @class */ (function () {
         if (!this.expectPeek(token_1.TokenType.RBracket))
             return null;
         return exp;
+    };
+    Parser.prototype.parseHashLiteral = function () {
+        var hash = new ast_1.HashLiteral(this.currToken, new Map());
+        while (!this.peekTokenIs(token_1.TokenType.RBrace)) {
+            this.nextToken();
+            var key = this.parseExpression(Precedence.LOWEST);
+            if (!this.expectPeek(token_1.TokenType.Colon))
+                return null;
+            this.nextToken();
+            var value = this.parseExpression(Precedence.LOWEST);
+            if (key)
+                hash.pairs.set(key, value);
+            if (!this.peekTokenIs(token_1.TokenType.RBrace) && !this.expectPeek(token_1.TokenType.Comma))
+                return null;
+        }
+        if (!this.expectPeek(token_1.TokenType.RBrace))
+            return null;
+        return hash;
     };
     return Parser;
 }());

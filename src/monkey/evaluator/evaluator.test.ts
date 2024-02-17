@@ -1,5 +1,5 @@
 import { Lexer } from "../lexer/lexer";
-import { ArrayVal, BooleanVal, ErrorVal, FunctionVal, IntegerVal, Objects, StringVal } from "../object/object";
+import { ArrayVal, BooleanVal, ErrorVal, FunctionVal, IntegerVal, StringVal } from "../object/object";
 import { Environment } from "../object/environment";
 import { Parser } from "../parser/parser";
 import { evaluate } from "./evaluator";
@@ -360,4 +360,3 @@ describe("Evaluate array index expressions", () => {
     })
   };
 });
-

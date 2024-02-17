@@ -90,6 +90,9 @@ var Lexer = /** @class */ (function () {
             case "]":
                 token = newToken(token_1.TokenType.RBracket, this.char);
                 break;
+            case ":":
+                token = newToken(token_1.TokenType.Colon, this.char);
+                break;
             default: {
                 if (isLetter(this.char)) {
                     return this.readIdentifier();

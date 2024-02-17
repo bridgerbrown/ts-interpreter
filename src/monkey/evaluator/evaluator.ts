@@ -281,9 +281,9 @@ function unwrapReturnValue(obj: Object | null): Object | null {
   return obj;
 }
 
-function evalStringInfixExpression(operator: string, left: Object, right: Object): Object | null {
+function evalStringInfixExpression(operator: string, left: Object, right: Object | null): Object | null {
   if (operator !== "+") {
-    return newError(`unknown operator: ${left.type()} ${operator} ${right.type()}`)
+    return newError(`unknown operator: ${left.type()} ${operator} ${right?.type()}`)
   }
   const leftVal = (left as StringVal).value;
   const rightVal = (right as StringVal).value;
@@ -299,7 +299,7 @@ function evalIndexExpression(left: Object | null, index: Object | null): Object 
   }
 }
 
-function evalArrayIndexExpression(array: Object | null, index: Object): Object | null {
+function evalArrayIndexExpression(array: Object | null, index: Object | null): Object | null {
   const arrayObject = array as ArrayVal;
   const idx = (index as IntegerVal).value;
   const max = arrayObject.elements.length - 1;

@@ -1,6 +1,33 @@
 "use strict";
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IndexExpression = exports.ArrayLiteral = exports.StringLiteral = exports.CallExpression = exports.FunctionLiteral = exports.BlockStatement = exports.IfExpression = exports.Boolean = exports.InfixExpression = exports.PrefixExpression = exports.ExpressionStatement = exports.IntegerLiteral = exports.Identifier = exports.ReturnStatement = exports.LetStatement = exports.Program = void 0;
+exports.HashLiteral = exports.IndexExpression = exports.ArrayLiteral = exports.StringLiteral = exports.CallExpression = exports.FunctionLiteral = exports.BlockStatement = exports.IfExpression = exports.Boolean = exports.InfixExpression = exports.PrefixExpression = exports.ExpressionStatement = exports.IntegerLiteral = exports.Identifier = exports.ReturnStatement = exports.LetStatement = exports.Program = void 0;
 var Program = /** @class */ (function () {
     function Program() {
         this.statements = [];
@@ -15,10 +42,20 @@ var Program = /** @class */ (function () {
         }
     };
     Program.prototype.string = function () {
+        var e_1, _a;
         var out = "";
-        for (var _i = 0, _a = this.statements; _i < _a.length; _i++) {
-            var s = _a[_i];
-            out += s.string();
+        try {
+            for (var _b = __values(this.statements), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var s = _c.value;
+                out += s.string();
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_1) throw e_1.error; }
         }
         return out;
     };
@@ -176,10 +213,20 @@ var BlockStatement = /** @class */ (function () {
     BlockStatement.prototype.statementNode = function () { };
     BlockStatement.prototype.tokenLiteral = function () { return this.token.literal; };
     BlockStatement.prototype.string = function () {
+        var e_2, _a;
         var statements = "";
-        for (var _i = 0, _a = this.statements; _i < _a.length; _i++) {
-            var s = _a[_i];
-            statements += s.string();
+        try {
+            for (var _b = __values(this.statements), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var s = _c.value;
+                statements += s.string();
+            }
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_2) throw e_2.error; }
         }
         return statements;
     };
@@ -195,11 +242,21 @@ var FunctionLiteral = /** @class */ (function () {
     FunctionLiteral.prototype.expressionNode = function () { };
     FunctionLiteral.prototype.tokenLiteral = function () { return this.token.literal; };
     FunctionLiteral.prototype.string = function () {
+        var e_3, _a;
         var params = [];
         if (this.parameters) {
-            for (var _i = 0, _a = this.parameters; _i < _a.length; _i++) {
-                var p = _a[_i];
-                params.push(p.string());
+            try {
+                for (var _b = __values(this.parameters), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var p = _c.value;
+                    params.push(p.string());
+                }
+            }
+            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_3) throw e_3.error; }
             }
         }
         var body = "";
@@ -221,11 +278,21 @@ var CallExpression = /** @class */ (function () {
     CallExpression.prototype.expressionNode = function () { };
     CallExpression.prototype.tokenLiteral = function () { return this.token.literal; };
     CallExpression.prototype.string = function () {
+        var e_4, _a;
         var args = [];
         if (this.args) {
-            for (var _i = 0, _a = this.args; _i < _a.length; _i++) {
-                var arg = _a[_i];
-                args.push(arg === null || arg === void 0 ? void 0 : arg.string());
+            try {
+                for (var _b = __values(this.args), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var arg = _c.value;
+                    args.push(arg === null || arg === void 0 ? void 0 : arg.string());
+                }
+            }
+            catch (e_4_1) { e_4 = { error: e_4_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_4) throw e_4.error; }
             }
             return this.fn.string() + "(" + this.args.join(", ") + ")";
         }
@@ -253,11 +320,21 @@ var ArrayLiteral = /** @class */ (function () {
     ArrayLiteral.prototype.expressionNode = function () { };
     ArrayLiteral.prototype.tokenLiteral = function () { return this.token.literal; };
     ArrayLiteral.prototype.string = function () {
+        var e_5, _a;
         var arr = [];
         if (this.elements) {
-            for (var _i = 0, _a = this.elements; _i < _a.length; _i++) {
-                var el = _a[_i];
-                el ? arr.push(el.string()) : "null";
+            try {
+                for (var _b = __values(this.elements), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var el = _c.value;
+                    el ? arr.push(el.string()) : "null";
+                }
+            }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_5) throw e_5.error; }
             }
             return "[" + arr.join(", ") + "]";
         }
@@ -281,3 +358,31 @@ var IndexExpression = /** @class */ (function () {
     return IndexExpression;
 }());
 exports.IndexExpression = IndexExpression;
+var HashLiteral = /** @class */ (function () {
+    function HashLiteral(token, pairs) {
+        this.token = token;
+        this.pairs = pairs;
+    }
+    HashLiteral.prototype.expressionNode = function () { };
+    HashLiteral.prototype.tokenLiteral = function () { return this.token.literal; };
+    HashLiteral.prototype.string = function () {
+        var e_6, _a;
+        var pairs = [];
+        try {
+            for (var _b = __values(this.pairs.entries()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
+                pairs.push("".concat(key.string(), ":").concat(value === null || value === void 0 ? void 0 : value.string()));
+            }
+        }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_6) throw e_6.error; }
+        }
+        return "{" + pairs.join(", ") + "}";
+    };
+    return HashLiteral;
+}());
+exports.HashLiteral = HashLiteral;
