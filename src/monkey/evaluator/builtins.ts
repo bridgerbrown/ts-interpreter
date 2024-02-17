@@ -29,4 +29,10 @@ export const builtins: Record<string, BuiltIn> = {
     
     return new ArrayVal(newElements);
   }),
+  "prnt": new BuiltIn((...args: (Object | null)[]): null => {
+    for (const arg of args) {
+      arg ? console.log(arg.inspect()) : console.log("");
+    }
+    return null; 
+  })
 }

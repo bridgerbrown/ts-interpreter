@@ -1,40 +1,4 @@
 "use strict";
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
-var __read = (this && this.__read) || function (o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-};
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.newError = exports.primitives = exports.evaluate = void 0;
 var ast_1 = require("../ast/ast");
@@ -111,34 +75,22 @@ function evaluate(node, env) {
             if (isError(index))
                 return index;
             return evalIndexExpression(left, index);
-        case node instanceof ast_1.HashLiteral:
-            return evalHashLiteral(node, env);
         default:
             return exports.primitives.NULL;
     }
 }
 exports.evaluate = evaluate;
 function evalProgram(statements, env) {
-    var e_1, _a;
     var result = null;
-    try {
-        for (var statements_1 = __values(statements), statements_1_1 = statements_1.next(); !statements_1_1.done; statements_1_1 = statements_1.next()) {
-            var statement = statements_1_1.value;
-            result = evaluate(statement, env);
-            switch (true) {
-                case (result instanceof object_1.ReturnVal):
-                    return result.value;
-                case (result instanceof object_1.ErrorVal):
-                    return result;
-            }
+    for (var _i = 0, statements_1 = statements; _i < statements_1.length; _i++) {
+        var statement = statements_1[_i];
+        result = evaluate(statement, env);
+        switch (true) {
+            case (result instanceof object_1.ReturnVal):
+                return result.value;
+            case (result instanceof object_1.ErrorVal):
+                return result;
         }
-    }
-    catch (e_1_1) { e_1 = { error: e_1_1 }; }
-    finally {
-        try {
-            if (statements_1_1 && !statements_1_1.done && (_a = statements_1.return)) _a.call(statements_1);
-        }
-        finally { if (e_1) throw e_1.error; }
     }
     return result;
 }
@@ -249,27 +201,17 @@ function isTruthy(obj) {
     }
 }
 function evalBlockStatement(block, env) {
-    var e_2, _a;
     var result = null;
     if (block && block.statements) {
-        try {
-            for (var _b = __values(block.statements), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var statement = _c.value;
-                result = evaluate(statement, env);
-                if (result !== null) {
-                    var rt = result.type();
-                    if (rt == "RETURN_VALUE" /* Objects.Return_Value_Obj */ || rt == "ERROR" /* Objects.Error_Obj */) {
-                        return result;
-                    }
+        for (var _i = 0, _a = block.statements; _i < _a.length; _i++) {
+            var statement = _a[_i];
+            result = evaluate(statement, env);
+            if (result !== null) {
+                var rt = result.type();
+                if (rt == "RETURN_VALUE" /* Objects.Return_Value_Obj */ || rt == "ERROR" /* Objects.Error_Obj */) {
+                    return result;
                 }
             }
-        }
-        catch (e_2_1) { e_2 = { error: e_2_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-            }
-            finally { if (e_2) throw e_2.error; }
         }
     }
     return result;
@@ -301,24 +243,14 @@ function evalIdentifier(node, env) {
     return newError("identifier not found: " + node.value);
 }
 function evalExpressions(exps, env) {
-    var e_3, _a;
     var result = [];
     if (exps) {
-        try {
-            for (var exps_1 = __values(exps), exps_1_1 = exps_1.next(); !exps_1_1.done; exps_1_1 = exps_1.next()) {
-                var e = exps_1_1.value;
-                var evaluated = evaluate(e, env);
-                if (isError(evaluated))
-                    return [evaluated];
-                result.push(evaluated);
-            }
-        }
-        catch (e_3_1) { e_3 = { error: e_3_1 }; }
-        finally {
-            try {
-                if (exps_1_1 && !exps_1_1.done && (_a = exps_1.return)) _a.call(exps_1);
-            }
-            finally { if (e_3) throw e_3.error; }
+        for (var _i = 0, exps_1 = exps; _i < exps_1.length; _i++) {
+            var e = exps_1[_i];
+            var evaluated = evaluate(e, env);
+            if (isError(evaluated))
+                return [evaluated];
+            result.push(evaluated);
         }
     }
     return result;
@@ -331,7 +263,7 @@ function applyFunction(fn, args) {
             var evaluated = evaluate(fn.body, extendedEnv);
             return unwrapReturnValue(evaluated);
         case (fn instanceof object_1.BuiltIn):
-            return (_a = fn).fn.apply(_a, __spreadArray([], __read(args), false));
+            return (_a = fn).fn.apply(_a, args);
         default:
             return newError("not a function: ".concat(fn === null || fn === void 0 ? void 0 : fn.type()));
     }
@@ -375,32 +307,4 @@ function evalArrayIndexExpression(array, index) {
     if (idx < 0 || idx > max)
         return exports.primitives.NULL;
     return arrayObject.elements[idx];
-}
-function evalHashLiteral(node, env) {
-    var e_4, _a;
-    var pairs = new Map();
-    try {
-        for (var _b = __values(node === null || node === void 0 ? void 0 : node.pairs), _c = _b.next(); !_c.done; _c = _b.next()) {
-            var _d = __read(_c.value, 2), keyNode = _d[0], valueNode = _d[1];
-            var key = evaluate(keyNode, env);
-            if (isError(key))
-                return key;
-            var hashKey = key;
-            if (!hashKey)
-                return newError("unusable as hash key: ".concat(key === null || key === void 0 ? void 0 : key.type()));
-            var value = evaluate(valueNode, env);
-            if (isError(value))
-                return value;
-            var hashed = hashKey.hashKey();
-            pairs.set(hashed, new object_1.HashPair(key, value));
-        }
-    }
-    catch (e_4_1) { e_4 = { error: e_4_1 }; }
-    finally {
-        try {
-            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-        }
-        finally { if (e_4) throw e_4.error; }
-    }
-    return new object_1.HashVal(pairs);
 }

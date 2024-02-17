@@ -3,17 +3,6 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
     if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
     return cooked;
 };
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.start = void 0;
 var evaluator_1 = require("../evaluator/evaluator");
@@ -23,22 +12,12 @@ var parser_1 = require("../parser/parser");
 var readline = require("node:readline/promises");
 var prompt = '>> ';
 function printParserErrors(errors) {
-    var e_1, _a;
     console.log(monkeyFaceAscii);
     console.log("Whoops! We ran into some monkey business here!\n");
     console.log(" parser errors:\n");
-    try {
-        for (var errors_1 = __values(errors), errors_1_1 = errors_1.next(); !errors_1_1.done; errors_1_1 = errors_1.next()) {
-            var message = errors_1_1.value;
-            console.log("\t".concat(message, "\n"));
-        }
-    }
-    catch (e_1_1) { e_1 = { error: e_1_1 }; }
-    finally {
-        try {
-            if (errors_1_1 && !errors_1_1.done && (_a = errors_1.return)) _a.call(errors_1);
-        }
-        finally { if (e_1) throw e_1.error; }
+    for (var _i = 0, errors_1 = errors; _i < errors_1.length; _i++) {
+        var message = errors_1[_i];
+        console.log("\t".concat(message, "\n"));
     }
 }
 var monkeyFaceAscii = String.raw(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n          __,__\n  .--.  .-\"    \"-.  .--.\n //..\\// .-..-. \\//..\\\n|||| '||//  Y   \\||'|| ||\n||\\  \\\\0 | 0// // // ||\n\\ '- ,\\-\"\"\"\"\"\"-//, -'//\n ''-'  //  ^  ^  \\ '-''\n      || \\_  _.// ||\n      \\  \\'~'// //\n       '._ '-=-'_.' \n          '----'\n"], ["\n          __,__\n  .--.  .-\"    \"-.  .--.\n //..\\\\// .-..-. \\\\//..\\\\\n|||| '||//  Y   \\\\||'|| ||\n||\\\\  \\\\\\\\0 | 0// // // ||\n\\\\ '- ,\\\\-\"\"\"\"\"\"-//, -'//\n ''-'  //  ^  ^  \\\\ '-''\n      || \\\\_  _.// ||\n      \\\\  \\\\'~'// //\n       '._ '-=-'_.' \n          '----'\n"])));
