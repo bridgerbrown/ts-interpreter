@@ -1,17 +1,20 @@
+import Router from "./services/Router";
 
 interface WindowApp extends Window {
   app: {
-    router: Router;
+    router: typeof Router;
   }
 }
 
 const app: WindowApp['app'] = {} as WindowApp['app'];
 
-interface HTMLElement {
-  $: (selectors: string) => Element | null;
-  $$: (selectors: string) => NodeListOf<Element>;
-  on: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => void;
-  off: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions) => void;
+declare global { 
+  interface HTMLElement {
+    $: (selectors: string) => Element | null;
+    $$: (selectors: string) => NodeListOf<Element>;
+    on: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => void;
+    off: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions) => void;
+  }
 }
 
 const $ = (selectors: string) => document.querySelector(selectors);
@@ -32,7 +35,8 @@ HTMLElement.prototype.on = function(this: HTMLElement, type: string, listener: E
 HTMLElement.prototype.off = function(this: HTMLElement, type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions) {
   this.removeEventListener(type, listener, options);
 };
-app.router = {} as Router;
+
+app.router = {} as typeof Router;
 
 window.addEventListener("DOMContentLoaded", () => {
   app.router.init();
