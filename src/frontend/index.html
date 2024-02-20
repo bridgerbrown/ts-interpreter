@@ -22,56 +22,20 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/static/public/favicon/favicon-16x16.png"/>
   <link rel="manifest" href="/static/public/favicon/site.webmanifest"/>
   <title>TS Interpreter</title>
-  <link rel="stylesheet" href="/src/frontend/static/css/index.css" type="text/css"/>
-  <script type="module" src="/static/ts/index.ts"></script>
+  <link rel="stylesheet" href="/static/css/index.css" type="text/css"/>
+  <script type="module" src="/static/ts/index.js"></script>
 </head>
 <body>
-  <main id="site__container"></main>
+  <main id="app"></main>
 
   <header>
     <h1>TS Interpreter</h1>
     <nav>
-      <a href="/" class="nav__page-link" data-link title="Home page link">Home</a>
-      <a href="/demo" class="nav__page-link" data-link title="Demo page link">Demo</a>
-      <a href="/code" class="nav__page-link" data-link title="Code page link">Code</a>
-      <a href="/development" class="nav__page-link" data-link title="Development page link">Development</a>
+      <a href="/" class="navlink nav__page-link" data-link title="Home page link">Home</a>
+      <a href="/demo" class="navlink nav__page-link" data-link title="Demo page link">Demo</a>
+      <a href="/code" class="navlink nav__page-link" data-link title="Code page link">Code</a>
+      <a href="/development" class="navlink nav__page-link" data-link title="Development page link">Development</a>
     </nav>
   </header> 
-
-  <template id="home-page-template">
-    <main class="page page__home">
-      <div id="home__container">
-        <section>
-          <h2>
-            What is an interpreter?
-          </h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dapibus dolor sit amet libero accumsan tincidunt. Curabitur congue nibh purus, sed sagittis nisi eleifend et. Phasellus ullamcorper semper nunc at venenatis. Vivamus sed enim ut tortor fermentum fermentum. Donec in metus rutrum, posuere tellus quis, tempor neque. In sit amet lacus ut magna malesuada imperdiet vitae vitae purus. Vestibulum sed enim sagittis, vulputate ex eu, vestibulum ipsum. Etiam in elit ligula. Quisque scelerisque maximus fermentum. Cras maximus sagittis orci, id finibus nisi pretium vitae. Nulla viverra ligula ac orci fermentum, nec auctor risus tincidunt. Nulla pharetra nulla sit amet dignissim condimentum. Aenean id vestibulum augue, sed tempus orci. Nam magna dui, ullamcorper sed pulvinar vitae, mollis in odio. Nulla nec urna vitae nunc tristique tempor eu quis est. Etiam pharetra non est et feugiat.
-          </p>
-        </section>
-      </div>
-    </main>
-  </template>
-
-  <template id="demo-page-template">
-    <main class="page page__demo">
-      <div id="demo__container">
-      </div>
-    </main>
-  </template>
-
-  <template id="code-page-template">
-    <main class="page page__code">
-      <div id="code__container">
-      </div>
-    </main>
-  </template>
-
-  <template id="dev-page-template">
-    <main class="page page__dev">
-      <div id="dev__container">
-      </div>
-    </main>
-  </template>
 </body>
 </html>

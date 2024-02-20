@@ -43,3 +43,16 @@ nav a:hover {
   opacity: 1;
   transition: opacity 0.25s ease-in-out;
 }
+
+.page {
+  min-height: 100%;
+  width: 100%;
+}
+
+/* Home */
+
+#page__home {
+  overflow: hidden;
+  position: fixed;
+  height: 100vh;
+}
