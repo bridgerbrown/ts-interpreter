@@ -74,6 +74,11 @@ footer {
   line-height: 1.5;
 }
 
+/* Demo page */
+#demo__container {
+  width: 780px;
+}
+
 /* Code page */
 #code__display-container {
   display: flex;

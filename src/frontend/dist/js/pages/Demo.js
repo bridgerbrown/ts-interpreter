@@ -1,9 +1,17 @@
-export default class Demo {
-  constructor(params) {
-    this.params = params;
+import { initTerminal } from "../services/Terminal";
+
+export default class Demo extends HTMLElement {
+  connectedCallback() {
+    this.render()
   }
 
-  async getHtml() {
-    return "<h1>test</h1>";
+  render() {
+    const template = document.getElementById("demo-page-template");
+    const content = template.content.cloneNode(true);
+    this.appendChild(content);    
+
+    initTerminal();
   }
 }
+
+customElements.define("demo-page", Demo);

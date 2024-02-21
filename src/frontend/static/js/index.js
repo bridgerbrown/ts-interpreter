@@ -1,12 +1,8 @@
 import Home from './pages/Home.js';
+import Demo from './pages/Demo.js';
 import Code from './pages/Code.js';
 
 window.app = {}
-
-HTMLElement.prototype.on = () => this.addEventListener.call(this, arguments);
-HTMLElement.prototype.off = () => this.removeEventListener.call(this, arguments);
-HTMLElement.prototype.$ = () => this.querySelector.call(this, arguments);
-HTMLElement.prototype.$$ = () => this.querySelectorAll.call(this, arguments);
 
 const router = {
   init: () => {
@@ -58,5 +54,3 @@ app.router = router;
 window.addEventListener("DOMContentLoaded", () => {
   router.init();
 });
-
-

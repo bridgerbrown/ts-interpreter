@@ -71,6 +71,10 @@ footer {
   line-height: 1.5;
 }
 
+#demo__container {
+  width: 780px;
+}
+
 #code__display-container {
   justify-content: center;
   display: flex;
