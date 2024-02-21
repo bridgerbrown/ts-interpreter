@@ -7,7 +7,6 @@ body {
 }
 
 body>header {
-  position: fixed;
   width: 100%;
   top: 0;
 }
@@ -15,16 +14,17 @@ body>header {
 body>main {
   margin: auto;
   margin-top: 60px;
-  max-width: 500px;
+  max-width: 66vw;
 }
 
-/* Nav */
+/* Nav & Footer */
 header {
   width: 100vw;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  color: white;
 }
 
 header h1 {
@@ -49,10 +49,24 @@ nav a:hover {
   width: 100%;
 }
 
+footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8rem auto 2rem auto;
+}
+
 /* Home */
 
 #page__home {
   overflow: hidden;
-  position: fixed;
   height: 100vh;
+}
+
+#home__container section {
+  margin-bottom: 5rem;
+}
+
+#home__container p {
+  line-height: 1.5;
 }

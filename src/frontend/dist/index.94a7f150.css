@@ -1,0 +1,70 @@
+body {
+  color: #fff;
+  background: #000;
+  margin: 0;
+  padding: 0;
+  font-family: Courier New, Courier, monospace;
+}
+
+body > header {
+  width: 100%;
+  top: 0;
+}
+
+body > main {
+  max-width: 66vw;
+  margin: 60px auto auto;
+}
+
+header {
+  color: #fff;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  display: flex;
+}
+
+header h1 {
+  margin: 3rem 0;
+}
+
+nav a {
+  color: #fff;
+  opacity: .8;
+  margin: 0 .5rem;
+  padding: .5rem;
+  text-decoration: none;
+}
+
+nav a:hover {
+  opacity: 1;
+  transition: opacity .25s ease-in-out;
+}
+
+.page {
+  width: 100%;
+  min-height: 100%;
+}
+
+footer {
+  justify-content: center;
+  align-items: center;
+  margin: 8rem auto 2rem;
+  display: flex;
+}
+
+#page__home {
+  height: 100vh;
+  overflow: hidden;
+}
+
+#home__container section {
+  margin-bottom: 5rem;
+}
+
+#home__container p {
+  line-height: 1.5;
+}
+
+/*# sourceMappingURL=index.94a7f150.css.map */

@@ -1,0 +1,72 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+  background: black;
+  color: white;
+}
+
+body>header {
+  width: 100%;
+  top: 0;
+}
+
+body>main {
+  margin: auto;
+  margin-top: 60px;
+  max-width: 66vw;
+}
+
+/* Nav & Footer */
+header {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+header h1 {
+  margin: 3rem 0 3rem 0;
+}
+
+nav a {
+  color: white;
+  opacity: 0.8;
+  text-decoration: none;
+  padding: 0.5rem;
+  margin: 0 0.5rem
+}
+
+nav a:hover {
+  opacity: 1;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.page {
+  min-height: 100%;
+  width: 100%;
+}
+
+footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8rem auto 2rem auto;
+}
+
+/* Home */
+
+#page__home {
+  overflow: hidden;
+  height: 100vh;
+}
+
+#home__container section {
+  margin-bottom: 5rem;
+}
+
+#home__container p {
+  line-height: 1.5;
+}

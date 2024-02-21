@@ -1,9 +1,12 @@
-export default class Home {
-  constructor(params) {
-    this.params = params;
+export default class Home extends HTMLElement {
+  connectedCallback() {
+    this.render()
   }
-
-  async getHtml() {
-    return "<h1>test</h1>";
+  render() {
+    const template = document.getElementById("home-page-template");
+    const content = template.content.cloneNode(true);
+    this.appendChild(content);    
   }
 }
+
+customElements.define("home-page", Home);
