@@ -584,8 +584,6 @@ var _homeJs = require("./pages/Home.js");
 var _homeJsDefault = parcelHelpers.interopDefault(_homeJs);
 var _codeJs = require("./pages/Code.js");
 var _codeJsDefault = parcelHelpers.interopDefault(_codeJs);
-var _highlightJs = require("highlight.js");
-var _highlightJsDefault = parcelHelpers.interopDefault(_highlightJs);
 window.app = {};
 HTMLElement.prototype.on = ()=>undefined.addEventListener.call(undefined, arguments);
 HTMLElement.prototype.off = ()=>undefined.removeEventListener.call(undefined, arguments);
@@ -628,7 +626,6 @@ const router = {
             const currentPage = document.querySelector("main").firstElementChild;
             if (currentPage) currentPage.remove();
             document.querySelector("main").appendChild(pageElement);
-            if (route === "/code") (0, _highlightJsDefault.default).highlightAll();
         }
         window.scrollX = 0;
     }
@@ -638,7 +635,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
     router.init();
 });
 
-},{"./pages/Home.js":"3sTrT","./pages/Code.js":"besEt","highlight.js":"8fSEq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3sTrT":[function(require,module,exports) {
+},{"./pages/Home.js":"3sTrT","./pages/Code.js":"besEt","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3sTrT":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 class Home extends HTMLElement {
@@ -687,6 +684,8 @@ exports.export = function(dest, destName, get) {
 },{}],"besEt":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+var _highlightJs = require("highlight.js");
+var _highlightJsDefault = parcelHelpers.interopDefault(_highlightJs);
 class Code extends HTMLElement {
     connectedCallback() {
         this.render();
@@ -698,6 +697,7 @@ class Code extends HTMLElement {
             const data = await response.text();
             const element = document.querySelector("#code__file-display");
             element.textContent = data;
+            (0, _highlightJsDefault.default).highlightAll();
         } catch (error) {
             console.error("Error fetching file:", error);
         }
@@ -712,7 +712,7 @@ class Code extends HTMLElement {
 exports.default = Code;
 customElements.define("code-page", Code);
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8fSEq":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","highlight.js":"8fSEq"}],"8fSEq":[function(require,module,exports) {
 var hljs = require("827b710554f16a43");
 hljs.registerLanguage("1c", require("6605f9777440a689"));
 hljs.registerLanguage("abnf", require("697b27f86932c591"));

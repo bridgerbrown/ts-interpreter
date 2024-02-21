@@ -1,8 +1,6 @@
 import Home from './pages/Home.js';
 import Code from './pages/Code.js';
 
-import hljs from 'highlight.js';
-
 window.app = {}
 
 HTMLElement.prototype.on = () => this.addEventListener.call(this, arguments);
@@ -50,7 +48,6 @@ const router = {
         currentPage.remove();
       }
       document.querySelector("main").appendChild(pageElement);
-      if (route === "/code") hljs.highlightAll();
     }
     window.scrollX = 0;
   }

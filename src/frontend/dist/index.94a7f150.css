@@ -1,3 +1,7 @@
+:root {
+  --hover-transition: opacity .25s ease-in-out;
+}
+
 body {
   color: #fff;
   background: #000;
@@ -39,7 +43,7 @@ nav a {
 
 nav a:hover {
   opacity: 1;
-  transition: opacity .25s ease-in-out;
+  transition: var(--hover-transition);
 }
 
 .page {
@@ -65,6 +69,35 @@ footer {
 
 #home__container p {
   line-height: 1.5;
+}
+
+#code__container {
+  justify-content: center;
+  display: flex;
+}
+
+#code__file-tree {
+  margin-right: 1.5rem;
+  line-height: 1.4;
+  list-style: none;
+}
+
+#code__file-tree ul {
+  padding-inline-start: 30px;
+}
+
+.ft__dir {
+  font-weight: bold;
+}
+
+.ft__files, #ft__main-file {
+  color: #c9d1d9;
+}
+
+.ft__files li:hover, #ft__main-file:hover {
+  color: #d2a8ff;
+  transition: var(--hover-transition);
+  cursor: pointer;
 }
 
 /*# sourceMappingURL=index.94a7f150.css.map */

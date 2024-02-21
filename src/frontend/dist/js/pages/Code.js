@@ -1,3 +1,5 @@
+import hljs from 'highlight.js';
+
 export default class Code extends HTMLElement {
   connectedCallback() {
     this.render()
@@ -13,6 +15,8 @@ export default class Code extends HTMLElement {
 
       const element = document.querySelector('#code__file-display');
       element.textContent = data;
+
+      hljs.highlightAll();
     } catch (error) {
       console.error("Error fetching file:", error);
     }
