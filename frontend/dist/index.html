@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="TS Interpreter">
+  <meta property="og:description" content="">
+  <meta name="title" content="TS Interpreter">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, maximum-scale=5.0, target-densityDpi=device-dpi">
+  <title>TS Interpreter</title>
+  <link rel="stylesheet" href="/index.94a7f150.css" type="text/css">
+  <script src="/index.b07aff3f.js" defer=""></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css">
+  <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1>TS Interpreter</h1>
+    <nav>
+      <a href="/" class="navlink av__page-link" data-link="" title="Home page link">Home</a>
+      <a href="/demo" class="navlink nav__page-link" data-link="" title="Dome page link">Test in Terminal</a>
+      <a href="/code" class="navlink nav__page-link" data-link="" title="Code page link">Code</a>
+      <a href="/development" class="navlink nav__page-link" data-link="" title="Development page link">Development</a>
+    </nav>
+  </header> 
+  <main id="site__container"></main>
+  <footer>
+    <p>Built by Bridger Brown</p>
+  </footer>
+
+  <template id="home-page-template">
+    <main class="page" id="page__home">
+      <div id="home__container">
+        <section>
+          <h1>
+            What is an interpreter?
+          </h1>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
+          </p>
+        </section>
+
+        <section>
+          <h1>
+            How does it work?
+          </h1>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
+          </p>
+        </section>
+
+        <section>
+          <h1>
+            How do I test it out?  
+          </h1>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
+          </p>
+        </section>
+
+        <section>
+          <h1>
+            How was it built?
+          </h1>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
+          </p>
+        </section>
+
+      </div>
+    </main>
+  </template>
+
+  <template id="demo-page-template">
+    <main class="page" id="page__demo">
+      <div id="demo__container">
+        <div id="terminal"></div>
+      </div>
+    </main>
+  </template>
+
+  <template id="code-page-template">
+    <main class="page page__code">
+      <div id="code__display-container">
+        <div id="code__file-tree-container">
+          <ul id="code__file-tree">
+            <li class="ft__dir">ast</li>            
+            <ul class="ft__files">
+              <li data-ft-filepath="ast/ast.test.ts">ast.test.ts</li>
+              <li data-ft-filepath="ast/ast.ts">ast.ts</li>
+            </ul>
+            <li class="ft__dir">evaluator</li>            
+            <ul class="ft__files">
+              <li data-ft-filepath="evaluator/builtins.ts">builtins.ts</li>
+              <li data-ft-filepath="evaluator/evaluator.test.ts">evaluator.test.ts</li>
+              <li data-ft-filepath="evaluator/evaluator.ts">evaluator.ts</li>
+            </ul>
+            <li class="ft__dir">lexer</li>            
+            <ul class="ft__files">
+              <li data-ft-filepath="lexer/lexer.test.ts">lexer.test.ts</li>
+              <li data-ft-filepath="lexer/lexer.ts">lexer.ts</li>
+            </ul>
+            <li class="ft__dir">object</li>            
+            <ul class="ft__files">
+              <li data-ft-filepath="object/environment.ts">environment.ts</li>
+              <li data-ft-filepath="object/object.ts">object.ts</li>
+            </ul>
+            <li class="ft__dir">parser</li>            
+            <ul class="ft__files">
+              <li data-ft-filepath="parser/parser.test.ts">parser.test.ts</li>
+              <li data-ft-filepath="parser/parser.ts">parser.ts</li>
+            </ul>
+            <li class="ft__dir">repl</li>            
+            <ul class="ft__files">
+              <li data-ft-filepath="repl/repl.ts">repl.ts</li>
+            </ul>
+            <li class="ft__dir">token</li>            
+            <ul class="ft__files">
+              <li data-ft-filepath="token/token.ts">token.ts</li>
+            </ul>
+            <li class="ft__files" id="ft__main-file" data-ft-filepath="main.ts">main.ts</li>            
+          </ul>
+        </div>
+        <div id="code__file-display-container">
+          <p>/lexer/lexer.ts</p>
+          <pre><code id="code__file-display" class="language-typescript">
+        </code></pre></div>
+        
+      </div>
+    </main>
+  </template>
+
+  <template>
+    <main class="page page__how">
+      <div id="how__container">
+      </div>
+    </main>
+  </template>
+
+
+  <template>
+    <main class="page page__dev">
+      <div id="dev__container">
+      </div>
+    </main>
+  </template>
+</body>
+</html>
