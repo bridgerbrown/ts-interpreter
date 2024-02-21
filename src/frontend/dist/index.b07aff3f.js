@@ -584,6 +584,8 @@ var _homeJs = require("./pages/Home.js");
 var _homeJsDefault = parcelHelpers.interopDefault(_homeJs);
 var _codeJs = require("./pages/Code.js");
 var _codeJsDefault = parcelHelpers.interopDefault(_codeJs);
+var _highlightJs = require("highlight.js");
+var _highlightJsDefault = parcelHelpers.interopDefault(_highlightJs);
 window.app = {};
 HTMLElement.prototype.on = ()=>undefined.addEventListener.call(undefined, arguments);
 HTMLElement.prototype.off = ()=>undefined.removeEventListener.call(undefined, arguments);
@@ -626,6 +628,7 @@ const router = {
             const currentPage = document.querySelector("main").firstElementChild;
             if (currentPage) currentPage.remove();
             document.querySelector("main").appendChild(pageElement);
+            if (route === "/code") (0, _highlightJsDefault.default).highlightAll();
         }
         window.scrollX = 0;
     }
@@ -635,7 +638,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
     router.init();
 });
 
-},{"./pages/Home.js":"3sTrT","./pages/Code.js":"besEt","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3sTrT":[function(require,module,exports) {
+},{"./pages/Home.js":"3sTrT","./pages/Code.js":"besEt","highlight.js":"8fSEq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3sTrT":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 class Home extends HTMLElement {
@@ -690,14 +693,17 @@ class Code extends HTMLElement {
     connectedCallback() {
         this.render();
     }
-    async fetchCodeFile() {
+    async fetchCodeFile(name) {
         try {
-            const response = await fetch("../../interpreter/lexer/lexer.ts");
+            const response = await fetch(`../../interpreter/${name}`);
             if (!response.ok) throw new Error("Failed to fetch file");
             const data = await response.text();
             const element = document.querySelector("#code__file-display");
             element.textContent = data;
+            element.dataset.highlighted = "";
             (0, _highlightJsDefault.default).highlightAll();
+            const heading = document.querySelector("#code__file-display-container p");
+            heading.textContent = name;
         } catch (error) {
             console.error("Error fetching file:", error);
         }
@@ -706,7 +712,11 @@ class Code extends HTMLElement {
         const template = document.getElementById("code-page-template");
         const content = template.content.cloneNode(true);
         this.appendChild(content);
-        this.fetchCodeFile();
+        this.fetchCodeFile("lexer/lexer.ts");
+        const filesLi = document.querySelectorAll(".ft__files li");
+        filesLi.forEach((li)=>{
+            li.addEventListener("click", ()=>this.fetchCodeFile(li.dataset.ftFilepath));
+        });
     }
 }
 exports.default = Code;

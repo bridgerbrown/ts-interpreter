@@ -5,9 +5,9 @@ export default class Code extends HTMLElement {
     this.render()
   }
 
-  async fetchCodeFile() {
+  async fetchCodeFile(name) {
     try {
-      const response = await fetch('../../interpreter/lexer/lexer.ts');
+      const response = await fetch(`../../interpreter/${name}`);
       if (!response.ok) {
         throw new Error("Failed to fetch file");
       }
@@ -15,8 +15,12 @@ export default class Code extends HTMLElement {
 
       const element = document.querySelector('#code__file-display');
       element.textContent = data;
-
+      
+      element.dataset.highlighted = "";
       hljs.highlightAll();
+
+      const heading = document.querySelector("#code__file-display-container p");
+      heading.textContent = name;
     } catch (error) {
       console.error("Error fetching file:", error);
     }
@@ -26,7 +30,14 @@ export default class Code extends HTMLElement {
     const template = document.getElementById("code-page-template");
     const content = template.content.cloneNode(true);
     this.appendChild(content);    
-    this.fetchCodeFile();
+    
+    this.fetchCodeFile("lexer/lexer.ts");
+
+    const filesLi = document.querySelectorAll(".ft__files li");
+    filesLi.forEach((li) => {
+      li.addEventListener("click", () => this.fetchCodeFile(li.dataset.ftFilepath))
+    });
+
   }
 }
 

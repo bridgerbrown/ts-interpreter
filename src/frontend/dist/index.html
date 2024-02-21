@@ -81,48 +81,51 @@
 
   <template id="code-page-template">
     <main class="page page__code">
-      <div id="code__container">
+      <div id="code__display-container">
         <div id="code__file-tree-container">
           <ul id="code__file-tree">
             <li class="ft__dir">ast</li>            
             <ul class="ft__files">
-              <li>ast.test.ts</li>
-              <li>ast.ts</li>
+              <li data-ft-filepath="ast/ast.test.ts">ast.test.ts</li>
+              <li data-ft-filepath="ast/ast.ts">ast.ts</li>
             </ul>
             <li class="ft__dir">evaluator</li>            
             <ul class="ft__files">
-              <li>builtins.ts</li>
-              <li>evaluator.test.ts</li>
-              <li>evaluator.ts</li>
+              <li data-ft-filepath="evaluator/builtins.ts">builtins.ts</li>
+              <li data-ft-filepath="evaluator/evaluator.test.ts">evaluator.test.ts</li>
+              <li data-ft-filepath="evaluator/evaluator.ts">evaluator.ts</li>
             </ul>
             <li class="ft__dir">lexer</li>            
             <ul class="ft__files">
-              <li>lexer.test.ts</li>
-              <li>lexer.ts</li>
+              <li data-ft-filepath="lexer/lexer.test.ts">lexer.test.ts</li>
+              <li data-ft-filepath="lexer/lexer.ts">lexer.ts</li>
             </ul>
             <li class="ft__dir">object</li>            
             <ul class="ft__files">
-              <li>environment.ts</li>
-              <li>object.ts</li>
+              <li data-ft-filepath="object/environment.ts">environment.ts</li>
+              <li data-ft-filepath="object/object.ts">object.ts</li>
             </ul>
             <li class="ft__dir">parser</li>            
             <ul class="ft__files">
-              <li>parser.test.ts</li>
-              <li>parser.ts</li>
+              <li data-ft-filepath="parser/parser.test.ts">parser.test.ts</li>
+              <li data-ft-filepath="parser/parser.ts">parser.ts</li>
             </ul>
             <li class="ft__dir">repl</li>            
             <ul class="ft__files">
-              <li>repl.ts</li>
+              <li data-ft-filepath="repl/repl.ts">repl.ts</li>
             </ul>
             <li class="ft__dir">token</li>            
             <ul class="ft__files">
-              <li>token.ts</li>
+              <li data-ft-filepath="token/token.ts">token.ts</li>
             </ul>
-            <li class="ft__files" id="ft__main-file">main.ts</li>            
+            <li class="ft__files" id="ft__main-file" data-ft-filepath="main.ts">main.ts</li>            
           </ul>
         </div>
-        <pre><code id="code__file-display" class="language-typescript">
-        </code></pre>
+        <div id="code__file-display-container">
+          <p>/lexer/lexer.ts</p>
+          <pre><code id="code__file-display" class="language-typescript">
+        </code></pre></div>
+        
       </div>
     </main>
   </template>

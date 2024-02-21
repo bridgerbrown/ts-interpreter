@@ -17,7 +17,7 @@ body > header {
 
 body > main {
   max-width: 66vw;
-  margin: 60px auto auto;
+  margin: 40px auto auto;
 }
 
 header {
@@ -71,13 +71,27 @@ footer {
   line-height: 1.5;
 }
 
-#code__container {
+#code__display-container {
   justify-content: center;
   display: flex;
 }
 
+#code__display-container p {
+  font-size: 16px;
+  font-style: italic;
+}
+
+#code__file-display {
+  border-radius: 10px;
+  width: 780px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 #code__file-tree {
+  margin-top: 3.2rem;
   margin-right: 1.5rem;
+  font-size: 16px;
   line-height: 1.4;
   list-style: none;
 }
