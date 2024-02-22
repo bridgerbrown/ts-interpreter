@@ -1,24 +1,10 @@
 export function initTerminal() {
-  var baseTheme = {
-    foreground: '#F8F8F8',
-    background: '#2D2E2C',
-    selection: '#5DA5D533',
-    black: '#1E1E1D',
-    brightBlack: '#262625',
-    red: '#CE5C5C',
-    brightRed: '#FF7272',
-    green: '#5BCC5B',
-    brightGreen: '#72FF72',
-    yellow: '#CCCC5B',
-    brightYellow: '#FFFF72',
-    blue: '#5D5DD3',
-    brightBlue: '#7279FF',
-    magenta: '#BC5ED1',
-    brightMagenta: '#E572FF',
-    cyan: '#5DA5D5',
-    brightCyan: '#72F0FF',
-    white: '#F8F8F8',
-    brightWhite: '#FFFFFF'
+  let socket = new WebSocket("ws://localhost:8000");
+  socket.onopen = function (event) {
+    console.log("WebSocket connection opened");
+  };
+  socket.onmessage = function (event) {
+    console.log("Message received from server: ", event.data);
   };
 
   var term = new window.Terminal({
@@ -29,16 +15,13 @@ export function initTerminal() {
   });
   term.open(document.getElementById('terminal'));
 
-  // Cancel wheel events from scrolling the page if the terminal has scrollback
   document.querySelector('.xterm').addEventListener('wheel', e => {
     if (term.buffer.active.baseY > 0) {
       e.preventDefault();
     }
   });
 
-  let socket;
   function runTerminal() {
-    socket = new WebSocket("ws://localhost:8080");
     if (term._initialized) {
       return;
     }
@@ -151,11 +134,12 @@ export function initTerminal() {
         commands[command].f();
         return;
       }
-      socket.send(command + '\n');
+      socket.send(JSON.stringify(text));
+      console.log(typeof text);
+      console.log(text);
       socket.onmessage = (event) => {
         term.write(event.data);
       };
-      // term.writeln(`${command}: command not found`);
     }
     prompt(term);
   }
@@ -173,3 +157,26 @@ function addDecoration(term) {
     element.style.width = '';
   });
 }
+
+  var baseTheme = {
+    foreground: '#F8F8F8',
+    background: '#2D2E2C',
+    selection: '#5DA5D533',
+    black: '#1E1E1D',
+    brightBlack: '#262625',
+    red: '#CE5C5C',
+    brightRed: '#FF7272',
+    green: '#5BCC5B',
+    brightGreen: '#72FF72',
+    yellow: '#CCCC5B',
+    brightYellow: '#FFFF72',
+    blue: '#5D5DD3',
+    brightBlue: '#7279FF',
+    magenta: '#BC5ED1',
+    brightMagenta: '#E572FF',
+    cyan: '#5DA5D5',
+    brightCyan: '#72F0FF',
+    white: '#F8F8F8',
+    brightWhite: '#FFFFFF'
+  };
+
