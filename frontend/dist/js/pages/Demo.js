@@ -1,4 +1,4 @@
-import { initTerminal } from "../services/Terminal";
+import { initTerminal } from "../services/initTerminal";
 
 export default class Demo extends HTMLElement {
   connectedCallback() {
