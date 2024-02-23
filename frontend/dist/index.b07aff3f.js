@@ -701,8 +701,9 @@ customElements.define("demo-page", Demo);
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "initTerminal", ()=>initTerminal);
+var _replJs = require("../../../../interpreter/dist/repl/repl.js");
 function initTerminal() {
-    let socket = new WebSocket("ws://localhost:8000");
+    const socket = new WebSocket("ws://localhost:8000");
     socket.onopen = function(event) {
         console.log("WebSocket connection opened");
     };
@@ -713,17 +714,22 @@ function initTerminal() {
         fontFamily: '"Cascadia Code", Menlo, monospace',
         theme: baseTheme,
         cursorBlink: true,
-        allowProposedApi: true
+        fontSize: 17,
+        letterSpacing: 2,
+        lineHeight: 1.2,
+        rows: 20,
+        cols: 70
     });
     term.open(document.getElementById("terminal"));
     document.querySelector(".xterm").addEventListener("wheel", (e)=>{
         if (term.buffer.active.baseY > 0) e.preventDefault();
     });
+    var command = "";
     function runTerminal() {
         if (term._initialized) return;
         term._initialized = true;
         term.prompt = ()=>{
-            term.write("\r\n$ ");
+            term.write("\r\n>> ");
         };
         addDecoration(term);
         prompt(term);
@@ -754,81 +760,18 @@ function initTerminal() {
     }
     function prompt(term) {
         command = "";
-        term.write("\r\n$ ");
+        term.write("\r\n>> ");
     }
-    var command = "";
-    var commands = {
-        help: {
-            f: ()=>{
-                const padding = 10;
-                function formatMessage(name, description) {
-                    const maxLength = term.cols - padding - 3;
-                    let remaining = description;
-                    const d = [];
-                    while(remaining.length > 0){
-                        // Trim any spaces left over from the previous line
-                        remaining = remaining.trimStart();
-                        // Check if the remaining text fits
-                        if (remaining.length < maxLength) {
-                            d.push(remaining);
-                            remaining = "";
-                        } else {
-                            let splitIndex = -1;
-                            // Check if the remaining line wraps already
-                            if (remaining[maxLength] === " ") splitIndex = maxLength;
-                            else {
-                                // Find the last space to use as the split index
-                                for(let i = maxLength - 1; i >= 0; i--)if (remaining[i] === " ") {
-                                    splitIndex = i;
-                                    break;
-                                }
-                            }
-                            d.push(remaining.substring(0, splitIndex));
-                            remaining = remaining.substring(splitIndex);
-                        }
-                    }
-                    const message = `  \x1b[36;1m${name.padEnd(padding)}\x1b[0m ${d[0]}` + d.slice(1).map((e)=>`\r\n  ${" ".repeat(padding)} ${e}`);
-                    return message;
-                }
-                term.writeln([
-                    "Welcome to xterm.js! Try some of the commands below.",
-                    "",
-                    ...Object.keys(commands).map((e)=>formatMessage(e, commands[e].description))
-                ].join("\n\r"));
-                prompt(term);
-            },
-            description: "Prints this help message"
-        },
-        ls: {
-            f: ()=>{
-                term.writeln([
-                    "a",
-                    "bunch",
-                    "of",
-                    "fake",
-                    "files"
-                ].join("\r\n"));
-                term.prompt(term);
-            },
-            description: "Prints a fake directory structure"
-        }
-    };
     function runCommand(term, text) {
         const command = text.trim().split(" ")[0];
         if (command.length > 0) {
-            term.writeln("");
-            if (command in commands) {
-                commands[command].f();
-                return;
-            }
             socket.send(JSON.stringify(text));
-            console.log(typeof text);
-            console.log(text);
             socket.onmessage = (event)=>{
+                term.writeln("");
                 term.write(event.data);
+                prompt(term);
             };
         }
-        prompt(term);
     }
     runTerminal();
 }
@@ -867,7 +810,1652 @@ var baseTheme = {
     brightWhite: "#FFFFFF"
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"besEt":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../../../interpreter/dist/repl/repl.js":"f09km"}],"f09km":[function(require,module,exports) {
+var process = require("20d4d5d713bfb4a3");
+"use strict";
+var __makeTemplateObject = this && this.__makeTemplateObject || function(cooked, raw) {
+    if (Object.defineProperty) Object.defineProperty(cooked, "raw", {
+        value: raw
+    });
+    else cooked.raw = raw;
+    return cooked;
+};
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.startInterpreter = exports.startRepl = void 0;
+var evaluator_1 = require("a0e1b329d88d74e6");
+var lexer_1 = require("a92188718013e0a1");
+var environment_1 = require("1465c7beb54b0492");
+var parser_1 = require("15fca0449bfec411");
+var readline = require("7eb12f65c204a92b");
+var prompt = ">> ";
+function printParserErrors(errors) {
+    console.log(monkeyFaceAscii);
+    console.log("Whoops! We ran into some monkey business here!\n");
+    console.log(" parser errors:\n");
+    for(var _i = 0, errors_1 = errors; _i < errors_1.length; _i++){
+        var message = errors_1[_i];
+        console.log("	".concat(message, "\n"));
+    }
+}
+var monkeyFaceAscii = String.raw(templateObject_1 || (templateObject_1 = __makeTemplateObject([
+    "\n          __,__\n  .--.  .-\"    \"-.  .--.\n //..\\// .-..-. \\//..\\\n|||| '||//  Y   \\||'|| ||\n||\\  \\\\0 | 0// // // ||\n\\ '- ,\\-\"\"\"\"\"\"-//, -'//\n ''-'  //  ^  ^  \\ '-''\n      || \\_  _.// ||\n      \\  \\'~'// //\n       '._ '-=-'_.' \n          '----'\n"
+], [
+    "\n          __,__\n  .--.  .-\"    \"-.  .--.\n //..\\\\// .-..-. \\\\//..\\\\\n|||| '||//  Y   \\\\||'|| ||\n||\\\\  \\\\\\\\0 | 0// // // ||\n\\\\ '- ,\\\\-\"\"\"\"\"\"-//, -'//\n ''-'  //  ^  ^  \\\\ '-''\n      || \\\\_  _.// ||\n      \\\\  \\\\'~'// //\n       '._ '-=-'_.' \n          '----'\n"
+])));
+function startRepl() {
+    var env = new environment_1.Environment();
+    var rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+    rl.setPrompt(prompt);
+    rl.prompt();
+    rl.on("line", function(line) {
+        var lexer = new lexer_1.Lexer(line);
+        var parser = new parser_1.Parser(lexer);
+        var program = parser.parseProgram();
+        if (parser.errors.length !== 0) printParserErrors(parser.errors);
+        var evaluated = (0, evaluator_1.evaluate)(program, env);
+        if (evaluated !== null) process.stdout.write(evaluated.inspect() + "\n");
+        rl.prompt();
+    }).on("close", function() {
+        process.exit(0);
+    });
+}
+exports.startRepl = startRepl;
+function startInterpreter(line) {
+    var env = new environment_1.Environment();
+    var lexer = new lexer_1.Lexer(line);
+    var parser = new parser_1.Parser(lexer);
+    var program = parser.parseProgram();
+    if (parser.errors.length !== 0) printParserErrors(parser.errors);
+    var evaluated = (0, evaluator_1.evaluate)(program, env);
+    if (evaluated !== null) return evaluated.inspect();
+    return "";
+}
+exports.startInterpreter = startInterpreter;
+var templateObject_1;
+
+},{"20d4d5d713bfb4a3":"d5jf4","a0e1b329d88d74e6":"aTnva","a92188718013e0a1":"jPgp6","1465c7beb54b0492":"kFCvq","15fca0449bfec411":"591KS","7eb12f65c204a92b":"jhUEF"}],"d5jf4":[function(require,module,exports) {
+// shim for using process in browser
+var process = module.exports = {};
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+var cachedSetTimeout;
+var cachedClearTimeout;
+function defaultSetTimout() {
+    throw new Error("setTimeout has not been defined");
+}
+function defaultClearTimeout() {
+    throw new Error("clearTimeout has not been defined");
+}
+(function() {
+    try {
+        if (typeof setTimeout === "function") cachedSetTimeout = setTimeout;
+        else cachedSetTimeout = defaultSetTimout;
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === "function") cachedClearTimeout = clearTimeout;
+        else cachedClearTimeout = defaultClearTimeout;
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+})();
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) //normal enviroments in sane situations
+    return setTimeout(fun, 0);
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch (e) {
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch (e) {
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) //normal enviroments in sane situations
+    return clearTimeout(marker);
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e) {
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e) {
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) return;
+    draining = false;
+    if (currentQueue.length) queue = currentQueue.concat(queue);
+    else queueIndex = -1;
+    if (queue.length) drainQueue();
+}
+function drainQueue() {
+    if (draining) return;
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+    var len = queue.length;
+    while(len){
+        currentQueue = queue;
+        queue = [];
+        while(++queueIndex < len)if (currentQueue) currentQueue[queueIndex].run();
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+process.nextTick = function(fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) for(var i = 1; i < arguments.length; i++)args[i - 1] = arguments[i];
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) runTimeout(drainQueue);
+};
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function() {
+    this.fun.apply(null, this.array);
+};
+process.title = "browser";
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ""; // empty string to avoid regexp issues
+process.versions = {};
+function noop() {}
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+process.listeners = function(name) {
+    return [];
+};
+process.binding = function(name) {
+    throw new Error("process.binding is not supported");
+};
+process.cwd = function() {
+    return "/";
+};
+process.chdir = function(dir) {
+    throw new Error("process.chdir is not supported");
+};
+process.umask = function() {
+    return 0;
+};
+
+},{}],"aTnva":[function(require,module,exports) {
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.newError = exports.primitives = exports.evaluate = void 0;
+var ast_1 = require("3b7ba768a50743e6");
+var object_1 = require("9631fe2f231c30f9");
+var environment_1 = require("eddfae59f8414e29");
+var builtins_1 = require("450449a89ba43783");
+function evaluate(node, env) {
+    var right;
+    var left;
+    var val;
+    switch(true){
+        case node instanceof ast_1.Program:
+            return evalProgram(node.statements, env);
+        case node instanceof ast_1.ExpressionStatement:
+            return evaluate(node.expression, env);
+        case node instanceof ast_1.IntegerLiteral:
+            return new object_1.IntegerVal(node.value);
+        case node instanceof ast_1.Boolean:
+            return nativeBoolToBooleanObject(node.value);
+        case node instanceof ast_1.PrefixExpression:
+            right = evaluate(node.right, env);
+            if (isError(right)) return right;
+            return evalPrefixExpression(node.operator, right);
+        case node instanceof ast_1.InfixExpression:
+            left = evaluate(node.left, env);
+            if (isError(left)) return left;
+            right = evaluate(node.right, env);
+            if (isError(right)) return right;
+            return evalInfixExpression(node.operator, left, right);
+        case node instanceof ast_1.BlockStatement:
+            return evalBlockStatement(node, env);
+        case node instanceof ast_1.IfExpression:
+            return evalIfExpression(node, env);
+        case node instanceof ast_1.ReturnStatement:
+            val = evaluate(node.returnValue, env);
+            if (isError(val)) return val;
+            return new object_1.ReturnVal(val);
+        case node instanceof ast_1.LetStatement:
+            val = evaluate(node.value, env);
+            if (isError(val)) return val;
+            env.set(node.name.value, val);
+            return val;
+        case node instanceof ast_1.Identifier:
+            return evalIdentifier(node, env);
+        case node instanceof ast_1.FunctionLiteral:
+            var params = node.parameters;
+            var body = node.body;
+            return new object_1.FunctionVal(params, body, env);
+        case node instanceof ast_1.CallExpression:
+            var fn = evaluate(node.fn, env);
+            if (isError(fn)) return fn;
+            var args = evalExpressions(node.args, env);
+            if (args.length == 1 && isError(args[0])) return args[0];
+            return applyFunction(fn, args);
+        case node instanceof ast_1.StringLiteral:
+            return new object_1.StringVal(node.value);
+        case node instanceof ast_1.ArrayLiteral:
+            var elements = evalExpressions(node.elements, env);
+            if (elements.length === 1 && isError(elements[0])) return elements[0];
+            return new object_1.ArrayVal(elements);
+        case node instanceof ast_1.IndexExpression:
+            left = evaluate(node.left, env);
+            if (isError(left)) return left;
+            var index = evaluate(node.index, env);
+            if (isError(index)) return index;
+            return evalIndexExpression(left, index);
+        default:
+            return exports.primitives.NULL;
+    }
+}
+exports.evaluate = evaluate;
+function evalProgram(statements, env) {
+    var result = null;
+    for(var _i = 0, statements_1 = statements; _i < statements_1.length; _i++){
+        var statement = statements_1[_i];
+        result = evaluate(statement, env);
+        switch(true){
+            case result instanceof object_1.ReturnVal:
+                return result.value;
+            case result instanceof object_1.ErrorVal:
+                return result;
+        }
+    }
+    return result;
+}
+exports.primitives = {
+    "NULL": new object_1.NullVal(),
+    "TRUE": new object_1.BooleanVal(true),
+    "FALSE": new object_1.BooleanVal(false)
+};
+function nativeBoolToBooleanObject(input) {
+    if (input) return exports.primitives.TRUE;
+    return exports.primitives.FALSE;
+}
+function evalPrefixExpression(operator, right) {
+    switch(operator){
+        case "!":
+            return evalExclOperatorExpression(right);
+        case "-":
+            return evalMinusPrefixOperatorExpression(right);
+        default:
+            return newError("unknown operator:", operator, right === null || right === void 0 ? void 0 : right.type());
+    }
+}
+function evalExclOperatorExpression(right) {
+    var TRUE = exports.primitives.TRUE, FALSE = exports.primitives.FALSE, NULL = exports.primitives.NULL;
+    switch(right){
+        case TRUE:
+            return FALSE;
+        case FALSE:
+            return TRUE;
+        case NULL:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+function evalMinusPrefixOperatorExpression(right) {
+    if ((right === null || right === void 0 ? void 0 : right.type()) !== "INTEGER" /* Objects.Integer_Obj */ ) return newError("unknown operator: ", right === null || right === void 0 ? void 0 : right.type());
+    return new object_1.IntegerVal(-right.value);
+}
+function evalInfixExpression(operator, left, right) {
+    switch(true){
+        case left.type() === "INTEGER" /* Objects.Integer_Obj */  && (right === null || right === void 0 ? void 0 : right.type()) === "INTEGER" /* Objects.Integer_Obj */ :
+            return evalIntegerInfixExpression(operator, left, right);
+        case operator == "==":
+            return nativeBoolToBooleanObject(left == right);
+        case operator == "!=":
+            return nativeBoolToBooleanObject(left != right);
+        case left.type() != (right === null || right === void 0 ? void 0 : right.type()):
+            return newError("type mismatch:", left.type(), operator, right === null || right === void 0 ? void 0 : right.type());
+        case left.type() === "STRING" /* Objects.String_Obj */  && (right === null || right === void 0 ? void 0 : right.type()) === "STRING" /* Objects.String_Obj */ :
+            return evalStringInfixExpression(operator, left, right);
+        default:
+            return newError("unknown operator:", left.type(), operator, right === null || right === void 0 ? void 0 : right.type());
+    }
+}
+function evalIntegerInfixExpression(operator, left, right) {
+    var leftVal = new object_1.IntegerVal(left.value).value;
+    var rightVal = new object_1.IntegerVal(right.value).value;
+    switch(operator){
+        case "+":
+            return new object_1.IntegerVal(leftVal + rightVal);
+        case "-":
+            return new object_1.IntegerVal(leftVal - rightVal);
+        case "*":
+            return new object_1.IntegerVal(leftVal * rightVal);
+        case "/":
+            return new object_1.IntegerVal(leftVal / rightVal);
+        case "<":
+            return nativeBoolToBooleanObject(leftVal < rightVal);
+        case ">":
+            return nativeBoolToBooleanObject(leftVal > rightVal);
+        case "==":
+            return nativeBoolToBooleanObject(leftVal == rightVal);
+        case "!=":
+            return nativeBoolToBooleanObject(leftVal != rightVal);
+        default:
+            return newError("unknown operator: ", left.type(), operator, right === null || right === void 0 ? void 0 : right.type());
+    }
+}
+function evalIfExpression(ie, env) {
+    var condition = evaluate(ie === null || ie === void 0 ? void 0 : ie.condition, env);
+    if (isError(condition)) return condition;
+    if (isTruthy(condition)) return evaluate(ie === null || ie === void 0 ? void 0 : ie.consequence, env);
+    else if ((ie === null || ie === void 0 ? void 0 : ie.alternative) != null) return evaluate(ie.alternative, env);
+    else return exports.primitives.NULL;
+}
+function isTruthy(obj) {
+    var NULL = exports.primitives.NULL, TRUE = exports.primitives.TRUE, FALSE = exports.primitives.FALSE;
+    switch(obj){
+        case NULL:
+            return false;
+        case TRUE:
+            return true;
+        case FALSE:
+            return false;
+        default:
+            return true;
+    }
+}
+function evalBlockStatement(block, env) {
+    var result = null;
+    if (block && block.statements) for(var _i = 0, _a = block.statements; _i < _a.length; _i++){
+        var statement = _a[_i];
+        result = evaluate(statement, env);
+        if (result !== null) {
+            var rt = result.type();
+            if (rt == "RETURN_VALUE" /* Objects.Return_Value_Obj */  || rt == "ERROR" /* Objects.Error_Obj */ ) return result;
+        }
+    }
+    return result;
+}
+function newError(format) {
+    var a = [];
+    for(var _i = 1; _i < arguments.length; _i++)a[_i - 1] = arguments[_i];
+    var error = format.replace(/{(\d+)}/g, function(match, number) {
+        return typeof a[number] !== "undefined" ? a[number] : match;
+    });
+    return new object_1.ErrorVal(error);
+}
+exports.newError = newError;
+function isError(obj) {
+    if (obj !== null) return obj.type() == "ERROR" /* Objects.Error_Obj */ ;
+    return false;
+}
+function evalIdentifier(node, env) {
+    var val = env.get(node.value);
+    if (val) return val;
+    var builtin = builtins_1.builtins[node.value];
+    if (builtin) return builtin;
+    return newError("identifier not found: " + node.value);
+}
+function evalExpressions(exps, env) {
+    var result = [];
+    if (exps) for(var _i = 0, exps_1 = exps; _i < exps_1.length; _i++){
+        var e = exps_1[_i];
+        var evaluated = evaluate(e, env);
+        if (isError(evaluated)) return [
+            evaluated
+        ];
+        result.push(evaluated);
+    }
+    return result;
+}
+function applyFunction(fn, args) {
+    var _a;
+    switch(true){
+        case fn instanceof object_1.FunctionVal:
+            var extendedEnv = extendFunctionEnv(fn, args);
+            var evaluated = evaluate(fn.body, extendedEnv);
+            return unwrapReturnValue(evaluated);
+        case fn instanceof object_1.BuiltIn:
+            return (_a = fn).fn.apply(_a, args);
+        default:
+            return newError("not a function: ".concat(fn === null || fn === void 0 ? void 0 : fn.type()));
+    }
+}
+function extendFunctionEnv(fn, args) {
+    var env = new environment_1.Environment();
+    if (fn === null || fn === void 0 ? void 0 : fn.parameters) {
+        env = new environment_1.Environment(fn.env);
+        for(var i = 0; i < fn.parameters.length; i++){
+            var param = fn.parameters[i];
+            env.set(param.value, args[i]);
+        }
+    }
+    return env;
+}
+function unwrapReturnValue(obj) {
+    if (obj instanceof object_1.ReturnVal) return obj.value;
+    return obj;
+}
+function evalStringInfixExpression(operator, left, right) {
+    if (operator !== "+") return newError("unknown operator: ".concat(left.type(), " ").concat(operator, " ").concat(right === null || right === void 0 ? void 0 : right.type()));
+    var leftVal = left.value;
+    var rightVal = right.value;
+    return new object_1.StringVal(leftVal + rightVal);
+}
+function evalIndexExpression(left, index) {
+    switch(true){
+        case left && index && left.type() === "ARRAY" /* Objects.Array_Obj */  && index.type() === "INTEGER" /* Objects.Integer_Obj */ :
+            return evalArrayIndexExpression(left, index);
+        default:
+            return newError("index operator not supported: ".concat(left === null || left === void 0 ? void 0 : left.type()));
+    }
+}
+function evalArrayIndexExpression(array, index) {
+    var arrayObject = array;
+    var idx = index.value;
+    var max = arrayObject.elements.length - 1;
+    if (idx < 0 || idx > max) return exports.primitives.NULL;
+    return arrayObject.elements[idx];
+}
+
+},{"3b7ba768a50743e6":"6ems1","9631fe2f231c30f9":"gJnOA","eddfae59f8414e29":"kFCvq","450449a89ba43783":"4CkWN"}],"6ems1":[function(require,module,exports) {
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.IndexExpression = exports.ArrayLiteral = exports.StringLiteral = exports.CallExpression = exports.FunctionLiteral = exports.BlockStatement = exports.IfExpression = exports.Boolean = exports.InfixExpression = exports.PrefixExpression = exports.ExpressionStatement = exports.IntegerLiteral = exports.Identifier = exports.ReturnStatement = exports.LetStatement = exports.Program = void 0;
+var Program = /** @class */ function() {
+    function Program() {
+        this.statements = [];
+        this.statements = [];
+    }
+    Program.prototype.tokenLiteral = function() {
+        if (this.statements.length > 0) return this.statements[0].tokenLiteral();
+        else return "";
+    };
+    Program.prototype.string = function() {
+        var out = "";
+        for(var _i = 0, _a = this.statements; _i < _a.length; _i++){
+            var s = _a[_i];
+            out += s.string();
+        }
+        return out;
+    };
+    return Program;
+}();
+exports.Program = Program;
+var LetStatement = /** @class */ function() {
+    function LetStatement(token, name, value) {
+        this.token = token;
+        this.name = name;
+        this.value = value;
+    }
+    LetStatement.prototype.statementNode = function() {};
+    LetStatement.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    LetStatement.prototype.string = function() {
+        var _a, _b;
+        var out = "let ".concat((_a = this.name) === null || _a === void 0 ? void 0 : _a.value, " = ").concat((_b = this.value) === null || _b === void 0 ? void 0 : _b.string(), ";");
+        return out;
+    };
+    return LetStatement;
+}();
+exports.LetStatement = LetStatement;
+var ReturnStatement = /** @class */ function() {
+    function ReturnStatement(token, value) {
+        this.token = token;
+        this.returnValue = value;
+    }
+    ReturnStatement.prototype.statementNode = function() {};
+    ReturnStatement.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    ReturnStatement.prototype.string = function() {
+        var out = "";
+        out += this.tokenLiteral() + " ";
+        if (this.returnValue !== null) out += this.returnValue.toString();
+        out += ";";
+        return out;
+    };
+    return ReturnStatement;
+}();
+exports.ReturnStatement = ReturnStatement;
+var Identifier = /** @class */ function() {
+    function Identifier(token) {
+        this.value = "";
+        this.token = token;
+        this.value = token.literal;
+    }
+    Identifier.prototype.expressionNode = function() {};
+    Identifier.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    Identifier.prototype.string = function() {
+        return this.value.toString();
+    };
+    return Identifier;
+}();
+exports.Identifier = Identifier;
+var IntegerLiteral = /** @class */ function() {
+    function IntegerLiteral(token, value) {
+        this.token = token;
+        this.value = value;
+    }
+    IntegerLiteral.prototype.expressionNode = function() {};
+    IntegerLiteral.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    IntegerLiteral.prototype.string = function() {
+        if (this.value) return this.value.toString();
+        else return "";
+    };
+    return IntegerLiteral;
+}();
+exports.IntegerLiteral = IntegerLiteral;
+var ExpressionStatement = /** @class */ function() {
+    function ExpressionStatement(token, expression) {
+        this.token = token;
+        this.expression = expression;
+    }
+    ExpressionStatement.prototype.statementNode = function() {};
+    ExpressionStatement.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    ExpressionStatement.prototype.string = function() {
+        if (this.expression !== null) return "".concat(this.expression.string());
+        return "";
+    };
+    return ExpressionStatement;
+}();
+exports.ExpressionStatement = ExpressionStatement;
+var PrefixExpression = /** @class */ function() {
+    function PrefixExpression(token, operator, right) {
+        this.token = token;
+        this.operator = operator;
+        this.right = right;
+    }
+    PrefixExpression.prototype.expressionNode = function() {};
+    PrefixExpression.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    PrefixExpression.prototype.string = function() {
+        var _a;
+        return "(".concat(this.operator).concat((_a = this.right) === null || _a === void 0 ? void 0 : _a.string(), ")");
+    };
+    return PrefixExpression;
+}();
+exports.PrefixExpression = PrefixExpression;
+var InfixExpression = /** @class */ function() {
+    function InfixExpression(token, operator, left, right) {
+        this.token = token;
+        this.operator = operator;
+        this.left = left;
+        this.right = right;
+    }
+    InfixExpression.prototype.expressionNode = function() {};
+    InfixExpression.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    InfixExpression.prototype.string = function() {
+        var _a;
+        return "(".concat(this.left.string(), " ").concat(this.operator, " ").concat((_a = this.right) === null || _a === void 0 ? void 0 : _a.string(), ")");
+    };
+    return InfixExpression;
+}();
+exports.InfixExpression = InfixExpression;
+var Boolean = /** @class */ function() {
+    function Boolean(token, value) {
+        this.token = token;
+        this.value = value;
+    }
+    Boolean.prototype.expressionNode = function() {};
+    Boolean.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    Boolean.prototype.string = function() {
+        return this.token.literal;
+    };
+    return Boolean;
+}();
+exports.Boolean = Boolean;
+var IfExpression = /** @class */ function() {
+    function IfExpression(token, condition, consequence, alternative) {
+        this.token = token;
+        this.condition = condition;
+        this.consequence = consequence;
+        this.alternative = alternative;
+    }
+    IfExpression.prototype.expressionNode = function() {};
+    IfExpression.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    IfExpression.prototype.string = function() {
+        var _a, _b, _c;
+        var expression = "if" + ((_a = this.condition) === null || _a === void 0 ? void 0 : _a.string()) + " " + ((_b = this.consequence) === null || _b === void 0 ? void 0 : _b.string());
+        if (this.alternative !== null) expression += "else " + ((_c = this.alternative) === null || _c === void 0 ? void 0 : _c.string());
+        return expression;
+    };
+    return IfExpression;
+}();
+exports.IfExpression = IfExpression;
+var BlockStatement = /** @class */ function() {
+    function BlockStatement(token, statements) {
+        this.token = token;
+        this.statements = statements;
+    }
+    BlockStatement.prototype.statementNode = function() {};
+    BlockStatement.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    BlockStatement.prototype.string = function() {
+        var statements = "";
+        for(var _i = 0, _a = this.statements; _i < _a.length; _i++){
+            var s = _a[_i];
+            statements += s.string();
+        }
+        return statements;
+    };
+    return BlockStatement;
+}();
+exports.BlockStatement = BlockStatement;
+var FunctionLiteral = /** @class */ function() {
+    function FunctionLiteral(token, parameters, body) {
+        this.token = token;
+        this.parameters = parameters;
+        this.body = body;
+    }
+    FunctionLiteral.prototype.expressionNode = function() {};
+    FunctionLiteral.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    FunctionLiteral.prototype.string = function() {
+        var params = [];
+        if (this.parameters) for(var _i = 0, _a = this.parameters; _i < _a.length; _i++){
+            var p = _a[_i];
+            params.push(p.string());
+        }
+        var body = "";
+        if (this.body) body = this.body.toString();
+        var str = this.tokenLiteral() + "(" + params.join(", ") + ") " + body;
+        return str;
+    };
+    return FunctionLiteral;
+}();
+exports.FunctionLiteral = FunctionLiteral;
+var CallExpression = /** @class */ function() {
+    function CallExpression(token, fn, args) {
+        this.token = token;
+        this.fn = fn;
+        this.args = args;
+    }
+    CallExpression.prototype.expressionNode = function() {};
+    CallExpression.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    CallExpression.prototype.string = function() {
+        var args = [];
+        if (this.args) {
+            for(var _i = 0, _a = this.args; _i < _a.length; _i++){
+                var arg = _a[_i];
+                args.push(arg === null || arg === void 0 ? void 0 : arg.string());
+            }
+            return this.fn.string() + "(" + this.args.join(", ") + ")";
+        }
+        return "";
+    };
+    return CallExpression;
+}();
+exports.CallExpression = CallExpression;
+var StringLiteral = /** @class */ function() {
+    function StringLiteral(token, value) {
+        this.token = token;
+        this.value = value;
+    }
+    StringLiteral.prototype.expressionNode = function() {};
+    StringLiteral.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    StringLiteral.prototype.string = function() {
+        return this.token.literal;
+    };
+    return StringLiteral;
+}();
+exports.StringLiteral = StringLiteral;
+var ArrayLiteral = /** @class */ function() {
+    function ArrayLiteral(token, elements) {
+        this.token = token;
+        this.elements = elements;
+    }
+    ArrayLiteral.prototype.expressionNode = function() {};
+    ArrayLiteral.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    ArrayLiteral.prototype.string = function() {
+        var arr = [];
+        if (this.elements) {
+            for(var _i = 0, _a = this.elements; _i < _a.length; _i++){
+                var el = _a[_i];
+                el && arr.push(el.string());
+            }
+            return "[" + arr.join(", ") + "]";
+        }
+        return "[]";
+    };
+    return ArrayLiteral;
+}();
+exports.ArrayLiteral = ArrayLiteral;
+var IndexExpression = /** @class */ function() {
+    function IndexExpression(token, left, index) {
+        this.token = token;
+        this.left = left;
+        this.index = index;
+    }
+    IndexExpression.prototype.expressionNode = function() {};
+    IndexExpression.prototype.tokenLiteral = function() {
+        return this.token.literal;
+    };
+    IndexExpression.prototype.string = function() {
+        var _a;
+        return "(" + this.left.string() + "[" + ((_a = this.index) === null || _a === void 0 ? void 0 : _a.string()) + "]";
+    };
+    return IndexExpression;
+}();
+exports.IndexExpression = IndexExpression;
+
+},{}],"gJnOA":[function(require,module,exports) {
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.ArrayVal = exports.BuiltIn = exports.StringVal = exports.FunctionVal = exports.ErrorVal = exports.ReturnVal = exports.NullVal = exports.BooleanVal = exports.IntegerVal = void 0;
+var IntegerVal = /** @class */ function() {
+    function IntegerVal(value) {
+        this.value = value;
+    }
+    IntegerVal.prototype.type = function() {
+        return "INTEGER" /* Objects.Integer_Obj */ ;
+    };
+    IntegerVal.prototype.inspect = function() {
+        return this.value.toString();
+    };
+    return IntegerVal;
+}();
+exports.IntegerVal = IntegerVal;
+var BooleanVal = /** @class */ function() {
+    function BooleanVal(value) {
+        this.value = value;
+    }
+    BooleanVal.prototype.type = function() {
+        return "BOOLEAN" /* Objects.Boolean_Obj */ ;
+    };
+    BooleanVal.prototype.inspect = function() {
+        return this.value.toString();
+    };
+    return BooleanVal;
+}();
+exports.BooleanVal = BooleanVal;
+var NullVal = /** @class */ function() {
+    function NullVal() {}
+    NullVal.prototype.type = function() {
+        return "NULL" /* Objects.Null_Obj */ ;
+    };
+    NullVal.prototype.inspect = function() {
+        return "null";
+    };
+    return NullVal;
+}();
+exports.NullVal = NullVal;
+var ReturnVal = /** @class */ function() {
+    function ReturnVal(value) {
+        this.value = value;
+    }
+    ReturnVal.prototype.type = function() {
+        return "RETURN_VALUE" /* Objects.Return_Value_Obj */ ;
+    };
+    ReturnVal.prototype.inspect = function() {
+        if (this.value) return this.value.toString();
+        return "";
+    };
+    return ReturnVal;
+}();
+exports.ReturnVal = ReturnVal;
+var ErrorVal = /** @class */ function() {
+    function ErrorVal(message) {
+        this.message = message;
+    }
+    ErrorVal.prototype.type = function() {
+        return "ERROR" /* Objects.Error_Obj */ ;
+    };
+    ErrorVal.prototype.inspect = function() {
+        return "ERROR: " + this.message;
+    };
+    return ErrorVal;
+}();
+exports.ErrorVal = ErrorVal;
+var FunctionVal = /** @class */ function() {
+    function FunctionVal(parameters, body, env) {
+        this.parameters = parameters;
+        this.body = body;
+        this.env = env;
+    }
+    FunctionVal.prototype.type = function() {
+        return "FUNCTION" /* Objects.Function_Obj */ ;
+    };
+    FunctionVal.prototype.inspect = function() {
+        var strs = [];
+        if (this.parameters) for(var _i = 0, _a = this.parameters; _i < _a.length; _i++){
+            var p = _a[_i];
+            strs.push(p);
+        }
+        return "fn(".concat(strs.join(", "), ") {\n").concat(this.body, "\n}");
+    };
+    return FunctionVal;
+}();
+exports.FunctionVal = FunctionVal;
+var StringVal = /** @class */ function() {
+    function StringVal(value) {
+        this.value = value;
+    }
+    StringVal.prototype.type = function() {
+        return "STRING" /* Objects.String_Obj */ ;
+    };
+    StringVal.prototype.inspect = function() {
+        return this.value;
+    };
+    return StringVal;
+}();
+exports.StringVal = StringVal;
+var BuiltIn = /** @class */ function() {
+    function BuiltIn(fn) {
+        this.fn = fn;
+    }
+    BuiltIn.prototype.type = function() {
+        return "BUILTIN" /* Objects.BuiltIn_Obj */ ;
+    };
+    BuiltIn.prototype.inspect = function() {
+        return "builtin function";
+    };
+    return BuiltIn;
+}();
+exports.BuiltIn = BuiltIn;
+var ArrayVal = /** @class */ function() {
+    function ArrayVal(elements) {
+        this.elements = [];
+        this.elements = elements;
+    }
+    ArrayVal.prototype.type = function() {
+        return "ARRAY" /* Objects.Array_Obj */ ;
+    };
+    ArrayVal.prototype.inspect = function() {
+        var elements = [];
+        for(var _i = 0, _a = this.elements; _i < _a.length; _i++){
+            var e = _a[_i];
+            elements.push(e === null || e === void 0 ? void 0 : e.inspect());
+        }
+        return "[" + elements.join(", ") + "]";
+    };
+    return ArrayVal;
+}();
+exports.ArrayVal = ArrayVal;
+
+},{}],"kFCvq":[function(require,module,exports) {
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.Environment = void 0;
+var Environment = /** @class */ function() {
+    function Environment(outer) {
+        this.store = new Map();
+        this.outer = outer;
+    }
+    Environment.prototype.get = function(name) {
+        var _a;
+        var obj = this.store.get(name);
+        if (!obj) obj = (_a = this.outer) === null || _a === void 0 ? void 0 : _a.get(name);
+        return obj;
+    };
+    Environment.prototype.set = function(name, val) {
+        this.store.set(name, val);
+    };
+    return Environment;
+}();
+exports.Environment = Environment;
+
+},{}],"4CkWN":[function(require,module,exports) {
+"use strict";
+var __spreadArray = this && this.__spreadArray || function(to, from, pack) {
+    if (pack || arguments.length === 2) {
+        for(var i = 0, l = from.length, ar; i < l; i++)if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.builtins = void 0;
+var object_1 = require("ded4b69842cfc263");
+var evaluator_1 = require("5a0cfe219056f7a9");
+exports.builtins = {
+    "len": new object_1.BuiltIn(function() {
+        var _a;
+        var args = [];
+        for(var _i = 0; _i < arguments.length; _i++)args[_i] = arguments[_i];
+        if (args.length !== 1) return (0, evaluator_1.newError)("wrong number of arguments. got=".concat(args.length, ", want=1"));
+        var arg = args[0];
+        switch(true){
+            case arg instanceof object_1.StringVal:
+                return new object_1.IntegerVal(arg.inspect().length);
+            case arg instanceof object_1.ArrayVal:
+                return new object_1.IntegerVal(arg.elements.length);
+            default:
+                return (0, evaluator_1.newError)("argument to 'len' not supported, got ".concat((_a = args[0]) === null || _a === void 0 ? void 0 : _a.type()));
+        }
+    }),
+    "push": new object_1.BuiltIn(function() {
+        var args = [];
+        for(var _i = 0; _i < arguments.length; _i++)args[_i] = arguments[_i];
+        if (args.length !== 2) return (0, evaluator_1.newError)("wrong number of arguments. got=".concat(args.length, " want=2"));
+        if (args[0] && args[0].type() !== "ARRAY" /* Objects.Array_Obj */ ) return (0, evaluator_1.newError)("argument to 'push' must be ARRAY, got ".concat(args[0].type()));
+        var arr = args[0];
+        var newElements = __spreadArray(__spreadArray([], arr.elements, true), [
+            args[1]
+        ], false);
+        return new object_1.ArrayVal(newElements);
+    }),
+    "prnt": new object_1.BuiltIn(function() {
+        var args = [];
+        for(var _i = 0; _i < arguments.length; _i++)args[_i] = arguments[_i];
+        for(var _a = 0, args_1 = args; _a < args_1.length; _a++){
+            var arg = args_1[_a];
+            arg ? console.log(arg.inspect()) : console.log("");
+        }
+        return null;
+    })
+};
+
+},{"ded4b69842cfc263":"gJnOA","5a0cfe219056f7a9":"aTnva"}],"jPgp6":[function(require,module,exports) {
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.newToken = exports.isDigit = exports.isLetter = exports.Lexer = void 0;
+var token_1 = require("ec1cd5f0dde0cd0e");
+var Lexer = /** @class */ function() {
+    function Lexer(input) {
+        this.input = input;
+        this.position = 0;
+        this.readPosition = 0;
+        this.char = "";
+        this.readChar();
+    }
+    Lexer.prototype.readChar = function() {
+        if (this.readPosition >= this.input.length) this.char = "\x00";
+        else this.char = this.input[this.readPosition];
+        this.position = this.readPosition;
+        this.readPosition += 1;
+    };
+    Lexer.prototype.nextToken = function() {
+        var token;
+        this.skipWhitespace();
+        switch(this.char){
+            case "=":
+                if (this.peekChar() == "=") {
+                    this.readChar();
+                    token = newToken(token_1.TokenType.Equal, "==");
+                } else token = newToken(token_1.TokenType.Assign, this.char);
+                break;
+            case "+":
+                token = newToken(token_1.TokenType.Plus, this.char);
+                break;
+            case "-":
+                token = newToken(token_1.TokenType.Minus, this.char);
+                break;
+            case "!":
+                if (this.peekChar() == "=") {
+                    this.readChar();
+                    token = newToken(token_1.TokenType.NotEqual, "!=");
+                } else token = newToken(token_1.TokenType.Excl, this.char);
+                break;
+            case "*":
+                token = newToken(token_1.TokenType.Asterisk, this.char);
+                break;
+            case "/":
+                token = newToken(token_1.TokenType.SlashF, this.char);
+                break;
+            case "<":
+                token = newToken(token_1.TokenType.Lt, this.char);
+                break;
+            case ">":
+                token = newToken(token_1.TokenType.Gt, this.char);
+                break;
+            case ",":
+                token = newToken(token_1.TokenType.Comma, this.char);
+                break;
+            case ";":
+                token = newToken(token_1.TokenType.Semicolon, this.char);
+                break;
+            case "(":
+                token = newToken(token_1.TokenType.LParen, this.char);
+                break;
+            case ")":
+                token = newToken(token_1.TokenType.RParen, this.char);
+                break;
+            case "{":
+                token = newToken(token_1.TokenType.LBrace, this.char);
+                break;
+            case "}":
+                token = newToken(token_1.TokenType.RBrace, this.char);
+                break;
+            case "\x00":
+                token = newToken(token_1.TokenType.Eof, "eof");
+                break;
+            case '"':
+                token = newToken(token_1.TokenType.String, this.readString());
+                break;
+            case "[":
+                token = newToken(token_1.TokenType.LBracket, this.char);
+                break;
+            case "]":
+                token = newToken(token_1.TokenType.RBracket, this.char);
+                break;
+            case ":":
+                token = newToken(token_1.TokenType.Colon, this.char);
+                break;
+            default:
+                if (isLetter(this.char)) return this.readIdentifier();
+                else if (isDigit(this.char)) return newToken(token_1.TokenType.Int, this.readInteger());
+                else return newToken(token_1.TokenType.Illegal, this.char);
+        }
+        this.readChar();
+        return token;
+    };
+    Lexer.prototype.readIdentifier = function() {
+        var position = this.position;
+        while(isLetter(this.char))this.readChar();
+        var literal = this.input.slice(position, this.position);
+        return (0, token_1.lookupIdentifier)(literal);
+    };
+    Lexer.prototype.peekChar = function() {
+        if (this.readPosition >= this.input.length) return "\x00";
+        else return this.input[this.readPosition];
+    };
+    Lexer.prototype.skipWhitespace = function() {
+        while(this.char === " " || this.char === "	" || this.char === "\n" || this.char === "\r")this.readChar();
+    };
+    Lexer.prototype.readInteger = function() {
+        var position = this.position;
+        while(isDigit(this.char))this.readChar();
+        return this.input.slice(position, this.position);
+    };
+    Lexer.prototype.readString = function() {
+        var position = this.position + 1;
+        while(true){
+            this.readChar();
+            if (this.char === '"' || this.char === "\x00") break;
+        }
+        return this.input.slice(position, this.position);
+    };
+    return Lexer;
+}();
+exports.Lexer = Lexer;
+var _0Ch = "0".charCodeAt(0);
+var _9Ch = "9".charCodeAt(0);
+var aCh = "a".charCodeAt(0);
+var zCh = "z".charCodeAt(0);
+var ACh = "A".charCodeAt(0);
+var ZCh = "Z".charCodeAt(0);
+var _Ch = "_".charCodeAt(0);
+function isLetter(character) {
+    var char = character.charCodeAt(0);
+    return aCh <= char && zCh >= char || ACh <= char && ZCh >= char || char === _Ch;
+}
+exports.isLetter = isLetter;
+function isDigit(character) {
+    var char = character.charCodeAt(0);
+    return _0Ch <= char && _9Ch >= char;
+}
+exports.isDigit = isDigit;
+function newToken(type, literal) {
+    return {
+        type: type,
+        literal: literal
+    };
+}
+exports.newToken = newToken;
+
+},{"ec1cd5f0dde0cd0e":"cS2Mv"}],"cS2Mv":[function(require,module,exports) {
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.lookupIdentifier = exports.keywords = exports.TokenType = void 0;
+var TokenType;
+(function(TokenType) {
+    TokenType["Illegal"] = "ILLEGAL";
+    TokenType["Eof"] = "EOF";
+    TokenType["Ident"] = "IDENT";
+    TokenType["String"] = "STRING";
+    TokenType["Int"] = "INT";
+    TokenType["Assign"] = "=";
+    TokenType["Plus"] = "+";
+    TokenType["Minus"] = "-";
+    TokenType["Excl"] = "!";
+    TokenType["Asterisk"] = "*";
+    TokenType["SlashF"] = "/";
+    TokenType["Equal"] = "==";
+    TokenType["NotEqual"] = "!=";
+    TokenType["Lt"] = "<";
+    TokenType["Gt"] = ">";
+    TokenType["Comma"] = ",";
+    TokenType["Colon"] = ":";
+    TokenType["Semicolon"] = ";";
+    TokenType["LParen"] = "(";
+    TokenType["RParen"] = ")";
+    TokenType["LBrace"] = "{";
+    TokenType["RBrace"] = "}";
+    TokenType["LBracket"] = "[";
+    TokenType["RBracket"] = "]";
+    TokenType["Function"] = "FUNCTION";
+    TokenType["Let"] = "LET";
+    TokenType["True"] = "TRUE";
+    TokenType["False"] = "FALSE";
+    TokenType["If"] = "IF";
+    TokenType["Else"] = "ELSE";
+    TokenType["Return"] = "RETURN";
+})(TokenType || (exports.TokenType = TokenType = {}));
+exports.keywords = new Map([
+    [
+        "fn",
+        TokenType.Function
+    ],
+    [
+        "let",
+        TokenType.Let
+    ],
+    [
+        "true",
+        TokenType.True
+    ],
+    [
+        "false",
+        TokenType.False
+    ],
+    [
+        "if",
+        TokenType.If
+    ],
+    [
+        "else",
+        TokenType.Else
+    ],
+    [
+        "return",
+        TokenType.Return
+    ]
+]);
+var lookupIdentifier = function(literal) {
+    var type = exports.keywords.get(literal);
+    if (type) return {
+        type: type,
+        literal: literal
+    };
+    return {
+        type: TokenType.Ident,
+        literal: literal
+    };
+};
+exports.lookupIdentifier = lookupIdentifier;
+
+},{}],"591KS":[function(require,module,exports) {
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.Parser = void 0;
+var token_1 = require("2b2b380b192b587b");
+var ast_1 = require("9572ade43a49c3f9");
+var Parser = /** @class */ function() {
+    function Parser(lexer) {
+        this.prefixParseFns = new Map([
+            [
+                token_1.TokenType.Ident,
+                this.parseIdentifier.bind(this)
+            ],
+            [
+                token_1.TokenType.Int,
+                this.parseIntegerLiteral.bind(this)
+            ],
+            [
+                token_1.TokenType.Excl,
+                this.parsePrefixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.Minus,
+                this.parsePrefixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.True,
+                this.parseBoolean.bind(this)
+            ],
+            [
+                token_1.TokenType.False,
+                this.parseBoolean.bind(this)
+            ],
+            [
+                token_1.TokenType.If,
+                this.parseIfExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.Function,
+                this.parseFunctionLiteral.bind(this)
+            ],
+            [
+                token_1.TokenType.LParen,
+                this.parseGroupedExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.String,
+                this.parseStringLiteral.bind(this)
+            ],
+            [
+                token_1.TokenType.LBracket,
+                this.parseArrayLiteral.bind(this)
+            ]
+        ]);
+        this.infixParseFns = new Map([
+            [
+                token_1.TokenType.Plus,
+                this.parseInfixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.Minus,
+                this.parseInfixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.SlashF,
+                this.parseInfixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.Asterisk,
+                this.parseInfixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.Equal,
+                this.parseInfixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.NotEqual,
+                this.parseInfixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.Lt,
+                this.parseInfixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.Gt,
+                this.parseInfixExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.LParen,
+                this.parseCallExpression.bind(this)
+            ],
+            [
+                token_1.TokenType.LBracket,
+                this.parseIndexExpression.bind(this)
+            ]
+        ]);
+        this.lexer = lexer;
+        this.errors = [];
+        this.nextToken();
+        this.nextToken();
+    }
+    Parser.prototype.nextToken = function() {
+        this.currToken = this.peekToken;
+        this.peekToken = this.lexer.nextToken();
+    };
+    Parser.prototype.currTokenIs = function(token) {
+        return this.currToken.type === token;
+    };
+    Parser.prototype.peekTokenIs = function(token) {
+        return this.peekToken.type === token;
+    };
+    Parser.prototype.expectPeek = function(token) {
+        if (this.peekTokenIs(token)) {
+            this.nextToken();
+            return true;
+        } else {
+            this.peekError(token);
+            return false;
+        }
+    };
+    Parser.prototype.peekError = function(token) {
+        var message = "Expected next token to be ".concat(token, ", instead got ").concat(this.peekToken.type);
+        this.errors.push(message);
+    };
+    Parser.prototype.parseProgram = function() {
+        var program = new ast_1.Program();
+        while(!this.currTokenIs(token_1.TokenType.Eof)){
+            var statement = this.parseStatement();
+            if (statement !== null) program.statements.push(statement);
+            this.nextToken();
+        }
+        return program;
+    };
+    Parser.prototype.parseStatement = function() {
+        switch(this.currToken.type){
+            case token_1.TokenType.Let:
+                return this.parseLetStatement();
+            case token_1.TokenType.Return:
+                return this.parseReturnStatement();
+            default:
+                return this.parseExpressionStatement();
+        }
+    };
+    Parser.prototype.parseLetStatement = function() {
+        if (!this.expectPeek(token_1.TokenType.Ident)) return null;
+        var name = new ast_1.Identifier(this.currToken);
+        if (!this.expectPeek(token_1.TokenType.Assign)) return null;
+        this.nextToken();
+        var value = this.parseExpression(Precedence.LOWEST);
+        if (!this.currTokenIs(token_1.TokenType.Semicolon)) this.nextToken();
+        return new ast_1.LetStatement(this.currToken, name, value);
+    };
+    Parser.prototype.parseReturnStatement = function() {
+        this.nextToken();
+        var returnValue = this.parseExpression(Precedence.LOWEST);
+        while(!this.currTokenIs(token_1.TokenType.Semicolon))this.nextToken();
+        return new ast_1.ReturnStatement(this.currToken, returnValue);
+    };
+    Parser.prototype.parseIdentifier = function() {
+        return new ast_1.Identifier(this.currToken);
+    };
+    Parser.prototype.parseExpressionStatement = function() {
+        var statement = new ast_1.ExpressionStatement(this.currToken, this.parseExpression(Precedence.LOWEST));
+        if (this.peekTokenIs(token_1.TokenType.Semicolon)) this.nextToken();
+        return statement;
+    };
+    Parser.prototype.noPrefixParseFnError = function(token) {
+        var msg = "No prefix parse function for ".concat(token, " found.");
+        this.errors.push(msg);
+    };
+    Parser.prototype.parseExpression = function(precedence) {
+        var prefix = this.prefixParseFns.get(this.currToken.type);
+        if (!prefix) {
+            this.noPrefixParseFnError(this.currToken.type);
+            return null;
+        }
+        var leftExp = prefix();
+        prefix;
+        while(!this.peekTokenIs(token_1.TokenType.Semicolon) && precedence < this.peekPrecedence()){
+            var infix = this.infixParseFns.get(this.peekToken.type);
+            if (!infix) {
+                console.log("No infix");
+                return leftExp;
+            }
+            this.nextToken();
+            leftExp = infix(leftExp);
+        // console.log(`Parsed Infix Expression: ${leftExp.string()}`);
+        }
+        return leftExp;
+    };
+    Parser.prototype.parseIntegerLiteral = function() {
+        var value = parseInt(this.currToken.literal, 10);
+        if (isNaN(value)) {
+            var message = "Could not parse ".concat(this.currToken.literal, " as integer.");
+            this.errors.push(message);
+        }
+        return new ast_1.IntegerLiteral(this.currToken, value);
+    };
+    Parser.prototype.checkParserErrors = function() {
+        return this.errors;
+    };
+    Parser.prototype.registerPrefix = function(tokenType, fn) {
+        this.prefixParseFns.set(tokenType, fn);
+    };
+    Parser.prototype.registerInfix = function(tokenType, fn) {
+        this.infixParseFns.set(tokenType, fn);
+    };
+    Parser.prototype.peekPrecedence = function() {
+        var precedence = precedences.get(this.peekToken.type);
+        if (precedence !== undefined) return precedence;
+        return Precedence.LOWEST;
+    };
+    Parser.prototype.currPrecedence = function() {
+        var precedence = precedences.get(this.currToken.type);
+        if (precedence !== undefined) return precedence;
+        return Precedence.LOWEST;
+    };
+    Parser.prototype.parsePrefixExpression = function() {
+        var expression = new ast_1.PrefixExpression(this.currToken, this.currToken.literal, null);
+        this.nextToken();
+        expression.right = this.parseExpression(Precedence.PREFIX);
+        return expression;
+    };
+    Parser.prototype.parseInfixExpression = function(left) {
+        var operator = this.currToken.literal;
+        var precedence = this.currPrecedence();
+        this.nextToken();
+        var right = this.parseExpression(precedence);
+        return new ast_1.InfixExpression(this.currToken, operator, left, right);
+    };
+    Parser.prototype.parseBoolean = function() {
+        var expression = new ast_1.Boolean(this.currToken, this.currTokenIs(token_1.TokenType.True));
+        return expression;
+    };
+    Parser.prototype.parseIfExpression = function() {
+        if (!this.expectPeek(token_1.TokenType.LParen)) return null;
+        this.nextToken();
+        var condition = this.parseExpression(Precedence.LOWEST);
+        if (!this.expectPeek(token_1.TokenType.RParen)) return null;
+        if (!this.expectPeek(token_1.TokenType.LBrace)) return null;
+        var consequence = this.parseBlockStatement();
+        var alternative;
+        if (this.peekTokenIs(token_1.TokenType.Else)) {
+            this.nextToken();
+            if (!this.expectPeek(token_1.TokenType.LBrace)) return null;
+            alternative = this.parseBlockStatement();
+        }
+        return new ast_1.IfExpression(this.currToken, condition, consequence, alternative);
+    };
+    Parser.prototype.parseBlockStatement = function() {
+        var block = new ast_1.BlockStatement(this.currToken, []);
+        this.nextToken();
+        while(!this.currTokenIs(token_1.TokenType.RBrace) && !this.currTokenIs(token_1.TokenType.Eof)){
+            var statement = this.parseStatement();
+            if (statement !== null) block.statements.push(statement);
+            this.nextToken();
+        }
+        return block;
+    };
+    Parser.prototype.parseFunctionLiteral = function() {
+        if (!this.expectPeek(token_1.TokenType.LParen)) return null;
+        var parameters = this.parseFunctionParameters();
+        if (!this.expectPeek(token_1.TokenType.LBrace)) return null;
+        var body = this.parseBlockStatement();
+        return new ast_1.FunctionLiteral(this.currToken, parameters, body);
+    };
+    Parser.prototype.parseFunctionParameters = function() {
+        var identifiers = [];
+        if (this.peekTokenIs(token_1.TokenType.RParen)) {
+            this.nextToken();
+            return identifiers;
+        }
+        this.nextToken();
+        var ident = new ast_1.Identifier(this.currToken);
+        identifiers.push(ident);
+        while(this.peekTokenIs(token_1.TokenType.Comma)){
+            this.nextToken();
+            this.nextToken();
+            ident = new ast_1.Identifier(this.currToken);
+            identifiers.push(ident);
+        }
+        if (!this.expectPeek(token_1.TokenType.RParen)) return null;
+        return identifiers;
+    };
+    Parser.prototype.parseCallExpression = function(fn) {
+        return new ast_1.CallExpression(this.currToken, fn, this.parseExpressionList(token_1.TokenType.RParen));
+    };
+    Parser.prototype.parseCallArguments = function() {
+        var args = [];
+        if (this.peekTokenIs(token_1.TokenType.RParen)) {
+            this.nextToken();
+            return args;
+        }
+        this.nextToken();
+        args.push(this.parseExpression(Precedence.LOWEST));
+        while(this.peekTokenIs(token_1.TokenType.Comma)){
+            this.nextToken();
+            this.nextToken();
+            args.push(this.parseExpression(Precedence.LOWEST));
+        }
+        if (!this.expectPeek(token_1.TokenType.RParen)) return null;
+        return args;
+    };
+    Parser.prototype.parseGroupedExpression = function() {
+        this.nextToken();
+        var exp = this.parseExpression(Precedence.LOWEST);
+        if (!this.expectPeek(token_1.TokenType.RParen)) return null;
+        return exp;
+    };
+    Parser.prototype.parseStringLiteral = function() {
+        return new ast_1.StringLiteral(this.currToken, this.currToken.literal);
+    };
+    Parser.prototype.parseArrayLiteral = function() {
+        return new ast_1.ArrayLiteral(this.currToken, this.parseExpressionList(token_1.TokenType.RBracket));
+    };
+    Parser.prototype.parseExpressionList = function(end) {
+        var list = [];
+        if (this.peekTokenIs(end)) {
+            this.nextToken();
+            return list;
+        }
+        this.nextToken();
+        list.push(this.parseExpression(Precedence.LOWEST));
+        while(this.peekTokenIs(token_1.TokenType.Comma)){
+            this.nextToken();
+            this.nextToken();
+            list.push(this.parseExpression(Precedence.LOWEST));
+        }
+        if (!this.expectPeek(end)) return null;
+        return list;
+    };
+    Parser.prototype.parseIndexExpression = function(left) {
+        var exp = new ast_1.IndexExpression(this.currToken, left, null);
+        this.nextToken();
+        exp.index = this.parseExpression(Precedence.LOWEST);
+        if (!this.expectPeek(token_1.TokenType.RBracket)) return null;
+        return exp;
+    };
+    return Parser;
+}();
+exports.Parser = Parser;
+var Precedence;
+(function(Precedence) {
+    Precedence[Precedence["LOWEST"] = 0] = "LOWEST";
+    Precedence[Precedence["EQUALS"] = 1] = "EQUALS";
+    Precedence[Precedence["LESSGREATER"] = 2] = "LESSGREATER";
+    Precedence[Precedence["SUM"] = 3] = "SUM";
+    Precedence[Precedence["PRODUCT"] = 4] = "PRODUCT";
+    Precedence[Precedence["PREFIX"] = 5] = "PREFIX";
+    Precedence[Precedence["CALL"] = 6] = "CALL";
+    Precedence[Precedence["INDEX"] = 7] = "INDEX";
+})(Precedence || (Precedence = {}));
+var precedences = new Map([
+    [
+        token_1.TokenType.Equal,
+        Precedence.EQUALS
+    ],
+    [
+        token_1.TokenType.NotEqual,
+        Precedence.EQUALS
+    ],
+    [
+        token_1.TokenType.Lt,
+        Precedence.LESSGREATER
+    ],
+    [
+        token_1.TokenType.Gt,
+        Precedence.LESSGREATER
+    ],
+    [
+        token_1.TokenType.Plus,
+        Precedence.SUM
+    ],
+    [
+        token_1.TokenType.Minus,
+        Precedence.SUM
+    ],
+    [
+        token_1.TokenType.SlashF,
+        Precedence.PRODUCT
+    ],
+    [
+        token_1.TokenType.Asterisk,
+        Precedence.PRODUCT
+    ],
+    [
+        token_1.TokenType.LParen,
+        Precedence.CALL
+    ],
+    [
+        token_1.TokenType.LBracket,
+        Precedence.INDEX
+    ]
+]);
+
+},{"2b2b380b192b587b":"cS2Mv","9572ade43a49c3f9":"6ems1"}],"jhUEF":[function(require,module,exports) {
+"use strict";
+
+},{}],"besEt":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _highlightJs = require("highlight.js");

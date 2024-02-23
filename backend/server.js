@@ -20,54 +20,58 @@ module.exports = server;
 
 const wss = new WebSocket.Server({ port: 8000 });
 
-function createREPL(env) {
-  const repl = spawn('node', [], { stdio: ['pipe', 'pipe', 'pipe'] });
-  const rl = repl.stdin;
-
-  repl.on('close', (code, signal) => {
-    console.log(`REPL closed with code ${code} and signal ${signal}`);
-  })
-
-  repl.stdin.on("data", (data) => {
-    console.log("repl stdin", data.toString());
-    const lexer = new Lexer(data);
-    const parser = new Parser(lexer);
-    const program = parser.parseProgram();
-
-    if (parser.errors.length !== 0) {
-      printParserErrors(parser.errors);
-    } 
-
-    const evaluated = evaluate(program, env);
-    if (evaluated !== null) {
-      const output = evaluated.inspect() + '\n';
-      ws.send(output);
-    }
-  })
-
-  repl.stderr.on('data', (data) => {
-    console.error(`REPL Error: ${data}`);
-  });
-
-  return rl;
-}
-
 wss.on('connection', (ws) => {
   console.log("Client connection received");
   const env = new Environment();
-  const rl = createREPL(env);
 
   ws.on('message', (message) => {
     console.log('Received:', JSON.parse(message));
-    rl.write(JSON.parse(message) + '\n');
+    const input = JSON.parse(message);
+    interpreter(input, env)
+      .then((output) => {
+        ws.send(output);
+      })
+      .catch((error) => {
+        ws.send(error.toString());
+      });
   });
   
   ws.on('close', () => {
     console.log('Client disconnected');
-    rl.kill();
   });
 })
 
 app.get("/", (req, res) => {
   res.send("Server is live...");
 });
+
+function interpreter(input, env) {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error("Interpreter process timed out after 5 seconds. Make sure you are using allowed syntax!"));
+    }, 5000);
+
+    try {
+      const lexer = new Lexer(input);
+      const parser = new Parser(lexer);
+      const program = parser.parseProgram();
+
+      if (parser.errors.length !== 0) {
+        clearTimeout(timeout);
+        resolve(parserErrors(parser.errors));
+      } 
+
+      const evaluated = evaluate(program, env);
+      if (evaluated !== null) {
+        clearTimeout(timeout);
+        resolve(evaluated.inspect());
+      } else {
+        reject(new Error("Evaluator returned null. Make sure you are using allowed syntax!"));
+      }
+    } catch (error) {
+      clearTimeout(timeout);
+      return error.toString();
+    }
+    return "";
+  })
+}

@@ -58,18 +58,32 @@ export function startRepl(): void {
 }
 
 export function startInterpreter(line: string): string {
-  const env = new Environment();
-  const lexer = new Lexer(line);
-  const parser = new Parser(lexer);
-  const program = parser.parseProgram();
+  try {
+    const env = new Environment();
+    const lexer = new Lexer(line);
+    const parser = new Parser(lexer);
+    const program = parser.parseProgram();
 
-  if (parser.errors.length !== 0) {
-    printParserErrors(parser.errors)
-  } 
-  const evaluated = evaluate(program, env);
-  if (evaluated !== null) {
-    return evaluated.inspect();
+    const evaluated = evaluate(program, env);
+    if (evaluated !== null) {
+      return evaluated.inspect();
+    }
+    if (parser.errors.length !== 0) {
+      return parserErrors(parser.errors)
+    } 
+  } catch (error: any) {
+    return error.toString();
   }
 
   return "";
+}
+
+function parserErrors(errors: string[]): string {
+  const messages = [];
+  messages.push("Interpreter error:");
+  messages.push(" parser errors:");
+  for (const message of errors) {
+    messages.push(`\t${message}`);
+  }
+  return messages.join('\n');
 }

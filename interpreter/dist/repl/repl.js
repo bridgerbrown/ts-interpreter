@@ -47,18 +47,33 @@ function startRepl() {
 }
 exports.startRepl = startRepl;
 function startInterpreter(line) {
-    var env = new environment_1.Environment();
-    var lexer = new lexer_1.Lexer(line);
-    var parser = new parser_1.Parser(lexer);
-    var program = parser.parseProgram();
-    if (parser.errors.length !== 0) {
-        printParserErrors(parser.errors);
+    try {
+        var env = new environment_1.Environment();
+        var lexer = new lexer_1.Lexer(line);
+        var parser = new parser_1.Parser(lexer);
+        var program = parser.parseProgram();
+        var evaluated = (0, evaluator_1.evaluate)(program, env);
+        if (evaluated !== null) {
+            return evaluated.inspect();
+        }
+        if (parser.errors.length !== 0) {
+            return parserErrors(parser.errors);
+        }
     }
-    var evaluated = (0, evaluator_1.evaluate)(program, env);
-    if (evaluated !== null) {
-        return evaluated.inspect();
+    catch (error) {
+        return error.toString();
     }
     return "";
 }
 exports.startInterpreter = startInterpreter;
+function parserErrors(errors) {
+    var messages = [];
+    messages.push("Interpreter error:");
+    messages.push(" parser errors:");
+    for (var _i = 0, errors_2 = errors; _i < errors_2.length; _i++) {
+        var message = errors_2[_i];
+        messages.push("\t".concat(message));
+    }
+    return messages.join('\n');
+}
 var templateObject_1;

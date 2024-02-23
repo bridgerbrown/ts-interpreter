@@ -216,8 +216,10 @@ var Parser = /** @class */ (function () {
         return block;
     };
     Parser.prototype.parseFunctionLiteral = function () {
-        if (!this.expectPeek(token_1.TokenType.LParen))
+        if (!this.expectPeek(token_1.TokenType.LParen)) {
+            this.errors.push("Unexpected function syntax, right parenthesis should come after 'fn'");
             return null;
+        }
         var parameters = this.parseFunctionParameters();
         if (!this.expectPeek(token_1.TokenType.LBrace))
             return null;
@@ -236,8 +238,13 @@ var Parser = /** @class */ (function () {
         while (this.peekTokenIs(token_1.TokenType.Comma)) {
             this.nextToken();
             this.nextToken();
-            ident = new ast_1.Identifier(this.currToken);
-            identifiers.push(ident);
+            if (this.currTokenIs(token_1.TokenType.Ident)) {
+                ident = new ast_1.Identifier(this.currToken);
+                identifiers.push(ident);
+            }
+            else {
+                return null;
+            }
         }
         if (!this.expectPeek(token_1.TokenType.RParen))
             return null;

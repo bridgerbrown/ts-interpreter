@@ -255,7 +255,10 @@ export class Parser implements Parser {
   }
 
   parseFunctionLiteral(): Expression | null {
-    if (!this.expectPeek(TokenType.LParen)) return null;
+    if (!this.expectPeek(TokenType.LParen)) {
+      this.errors.push("Unexpected function syntax, right parenthesis should come after 'fn'")
+      return null;
+    }
     const parameters = this.parseFunctionParameters();
     if (!this.expectPeek(TokenType.LBrace)) return null;
     const body = this.parseBlockStatement();
@@ -277,8 +280,12 @@ export class Parser implements Parser {
     while (this.peekTokenIs(TokenType.Comma)) {
       this.nextToken();
       this.nextToken();
-      ident = new Identifier(this.currToken);
-      identifiers.push(ident);
+      if (this.currTokenIs(TokenType.Ident)) {
+        ident = new Identifier(this.currToken);
+        identifiers.push(ident);
+      } else {
+        return null;
+      }
     }
 
     if (!this.expectPeek(TokenType.RParen)) return null;
