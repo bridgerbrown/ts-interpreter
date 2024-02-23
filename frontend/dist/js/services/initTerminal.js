@@ -102,8 +102,8 @@ function addDecoration(term) {
 }
 
 var baseTheme = {
-  foreground: '#F8F8F8',
-  background: '#2D2E2C',
+  foreground: '#FFFFFF',
+  background: '#0d1217',
   selection: '#5DA5D533',
   black: '#1E1E1D',
   brightBlack: '#262625',

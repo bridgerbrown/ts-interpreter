@@ -32,6 +32,7 @@ wss.on('connection', (ws) => {
         ws.send(output);
       })
       .catch((error) => {
+        console.log(error);
         ws.send(error.toString());
       });
   });
@@ -56,9 +57,13 @@ function interpreter(input, env) {
       const parser = new Parser(lexer);
       const program = parser.parseProgram();
 
+      if (parser === null) {
+        reject(new Error("Parser returned null. Make sure you are using allowed syntax!"));
+      }
       if (parser.errors.length !== 0) {
         clearTimeout(timeout);
         resolve(parserErrors(parser.errors));
+        console.log(parserErrors(parser.errors));
       } 
 
       const evaluated = evaluate(program, env);
@@ -70,8 +75,19 @@ function interpreter(input, env) {
       }
     } catch (error) {
       clearTimeout(timeout);
+      console.log(error);
       return error.toString();
     }
     return "";
   })
+}
+
+function parserErrors(errors) {
+  const messages = [];
+  messages.push("Interpreter error:");
+  messages.push(" parser errors:");
+  for (const message of errors) {
+    messages.push(`\t${message}`);
+  }
+  return messages.join('\n');
 }
