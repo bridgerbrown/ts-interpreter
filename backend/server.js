@@ -84,10 +84,9 @@ function interpreter(input, env) {
 
 function parserErrors(errors) {
   const messages = [];
-  messages.push("Interpreter error:");
-  messages.push(" parser errors:");
+  messages.push("Parser errors:");
   for (const message of errors) {
-    messages.push(`\t${message}`);
+    messages.push(`${errors.indexOf(message) + 1}) ${message}.`);
   }
-  return messages.join('\n');
+  return messages.join('\r\n');
 }

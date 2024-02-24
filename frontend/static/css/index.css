@@ -1,11 +1,13 @@
 :root {
   --hover-transition: opacity 0.25s ease-in-out;
+  --lightGray: #c9d1d9;
+  --font: 'Courier New', Courier, monospace;
 }
 
 body {
   padding: 0;
   margin: 0;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font);
   background: black;
   color: white;
 }
@@ -78,10 +80,56 @@ footer {
 #page__demo {
   display: flex;
   justify-content: center;
+  flex-direction: column;
 }
 
 #demo__container {
   width: 780px;
+  border: 2px var(--lightGray) solid;
+  padding: 3px;
+  border-radius: 10px;
+}
+
+#demo__button-container {
+  margin-top: 1rem;
+  width: 790px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#demo__button-container button {
+  width: 32%;
+  height: 3rem;
+  font-size: 16px;
+  font-family: var(--font);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+#demo__form-container {
+  color: white;
+}
+
+#demo__form-container p {
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+}
+
+#demo__form-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+#demo__form-container span {
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: flex-start;
+  align-content: center;
+}
+
+#demo__form-container span label {
+  padding-left: 0.5rem;
+  padding-top: 0.2rem;
 }
 
 /* Code page */
@@ -100,6 +148,7 @@ footer {
   width: 780px;
   font-size: 14px;
   line-height: 1.4;
+  border: 2px var(--lightGray) solid;
 }
 
 #code__file-tree {

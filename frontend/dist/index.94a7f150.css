@@ -1,13 +1,15 @@
 :root {
   --hover-transition: opacity .25s ease-in-out;
+  --lightGray: #c9d1d9;
+  --font: "Courier New", Courier, monospace;
 }
 
 body {
+  font-family: var(--font);
   color: #fff;
   background: #000;
   margin: 0;
   padding: 0;
-  font-family: Courier New, Courier, monospace;
 }
 
 body > header {
@@ -72,12 +74,57 @@ footer {
 }
 
 #page__demo {
+  flex-direction: column;
   justify-content: center;
   display: flex;
 }
 
 #demo__container {
+  border: 2px var(--lightGray) solid;
+  border-radius: 10px;
   width: 780px;
+  padding: 3px;
+}
+
+#demo__button-container {
+  justify-content: space-between;
+  width: 790px;
+  margin-top: 1rem;
+  display: flex;
+}
+
+#demo__button-container button {
+  font-size: 16px;
+  font-family: var(--font);
+  cursor: pointer;
+  width: 32%;
+  height: 3rem;
+  font-weight: 400;
+}
+
+#demo__form-container {
+  color: #fff;
+}
+
+#demo__form-container p {
+  margin: 1rem 0 .5rem;
+  font-weight: 600;
+}
+
+#demo__form-container form {
+  flex-direction: column;
+  display: flex;
+}
+
+#demo__form-container span {
+  place-content: center flex-start;
+  margin-bottom: .5rem;
+  display: flex;
+}
+
+#demo__form-container span label {
+  padding-top: .2rem;
+  padding-left: .5rem;
 }
 
 #code__display-container {
@@ -91,6 +138,7 @@ footer {
 }
 
 #code__file-display {
+  border: 2px var(--lightGray) solid;
   border-radius: 10px;
   width: 780px;
   font-size: 14px;

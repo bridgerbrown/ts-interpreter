@@ -13,7 +13,7 @@ export function initTerminal() {
     fontFamily: '"Cascadia Code", Menlo, monospace',
     theme: baseTheme,
     cursorBlink: true,
-    fontSize: 17,
+    fontSize: 16,
     letterSpacing: 2,
     lineHeight: 1.2,
     rows: 20,
@@ -34,6 +34,8 @@ export function initTerminal() {
       return;
     }
     term._initialized = true;
+
+    term.writeln(`Welcome to the Interpreter! \r\nClick inside to start typing, press Enter to submit.`)
 
     term.prompt = () => {
       term.write('\r\n>> ');
