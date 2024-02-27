@@ -4,6 +4,7 @@ import Code from './pages/Code.js';
 import statements from './services/statements.js';
 
 window.app = {}
+app.statements = statements;
 
 const router = {
   init: () => {
@@ -51,7 +52,6 @@ const router = {
 }
 
 app.router = router;
-app.statements = statements;
 
 window.addEventListener("DOMContentLoaded", () => {
   router.init();

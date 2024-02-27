@@ -1,7 +1,14 @@
-import { initTerminal, resetTerminal, runCommand } from "../services/initTerminal";
+import Terminal, { initTerminal, resetTerminal, runRandomCommand } from "../services/initTerminal";
 import { randomStmt, mathStmt, booleanStmt, ifStmt, letStmt, functionStmt, lenStmt, arrayStmt } from "../data/lines.js";
+import statements from '../services/statements.js';
 
 export default class Demo extends HTMLElement {
+  constructor() {
+    super();
+    this.isAppended = false;
+    this.terminal = new Terminal();
+  }
+
   connectedCallback() {
     this.render()
   }
@@ -39,10 +46,9 @@ export default class Demo extends HTMLElement {
       {
         value: "random",
         display: "Random",
-      }, 
+      }
     ]
     const form = document.querySelector("#demo__form");
-    form.innerHTML = "";
     types.forEach((type) => {
       const span = document.createElement("span");
       const i = document.createElement("input");
@@ -62,9 +68,9 @@ export default class Demo extends HTMLElement {
       l.innerText = type.display;
       l.title = "Statement type radio label " + type.value;
       l.alt = "Statement type radio label " + type.value;
+      
       span.appendChild(i);
       span.appendChild(l);
-
       form.appendChild(span);
       l.addEventListener("click", (event) => {
         app.statements.type = type.value;
@@ -77,34 +83,41 @@ export default class Demo extends HTMLElement {
   }
 
   randomStatement(type) {
-    let command = "";
+    let command;
+    const { runRandomCommand } = this.terminal;
     switch (type) {
       case ("let"):
-        this.generateStatement(letStmt); 
+        command = this.generateStatement(letStmt); 
+        runRandomCommand(command);
         break; 
       case ("function"):
-        this.generateStatement(functionStmt); 
+        command = this.generateStatement(functionStmt); 
+        runRandomCommand(command);
         break;
       case ("len"):
-        this.generateStatement(lenStmt); 
+        command = this.generateStatement(lenStmt); 
+        runRandomCommand(command);
         break;
       case ("array"):
-        this.generateStatement(arrayStmt); 
+        command = this.generateStatement(arrayStmt); 
+        runRandomCommand(command);
         break;
       case ("math"):
-        this.generateStatement(mathStmt); 
+        command = this.generateStatement(mathStmt); 
+        runRandomCommand(command);
         break;
       case ("boolean"):
-        this.generateStatement(booleanStmt); 
+        command = this.generateStatement(booleanStmt); 
+        runRandomCommand(command);
         break;
       case ("if"):
-        this.generateStatement(ifStmt); 
+        command = this.generateStatement(ifStmt); 
+        runRandomCommand(command);
         break;
       case ("random"):
         this.randomType(); 
         break;
     } 
-    runCommand(command); 
   }
 
   generateStatement(type) {
@@ -128,15 +141,18 @@ export default class Demo extends HTMLElement {
 
   render() {
     const template = document.getElementById("demo-page-template");
-    const content = template.content.cloneNode(true);
-    this.appendChild(content);    
 
-    initTerminal();
+    if (!this.isAppended) {
+      const content = template.content.cloneNode(true);
+      this.appendChild(content);
+      this.isAppended = true;
+    }
 
+    this.terminal.initTerminal();
     this.renderRadio();
 
     const resetBtn = document.querySelector("#demo__button-reset");
-    resetBtn.addEventListener("click", () => { resetTerminal() });
+    resetBtn.addEventListener("click", () => { this.terminal.resetTerminal() });
     const randomBtn = document.querySelector("#demo__button-random");
     randomBtn.addEventListener("click", () => { this.randomStatement(app.statements.type) });
   }

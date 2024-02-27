@@ -589,6 +589,7 @@ var _codeJsDefault = parcelHelpers.interopDefault(_codeJs);
 var _statementsJs = require("./services/statements.js");
 var _statementsJsDefault = parcelHelpers.interopDefault(_statementsJs);
 window.app = {};
+app.statements = (0, _statementsJsDefault.default);
 const router = {
     init: ()=>{
         document.querySelectorAll("a.navlink").forEach((link)=>{
@@ -631,7 +632,6 @@ const router = {
     }
 };
 app.router = router;
-app.statements = (0, _statementsJsDefault.default);
 window.addEventListener("DOMContentLoaded", ()=>{
     router.init();
 });
@@ -686,8 +686,16 @@ exports.export = function(dest, destName, get) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _initTerminal = require("../services/initTerminal");
+var _initTerminalDefault = parcelHelpers.interopDefault(_initTerminal);
 var _linesJs = require("../data/lines.js");
+var _statementsJs = require("../services/statements.js");
+var _statementsJsDefault = parcelHelpers.interopDefault(_statementsJs);
 class Demo extends HTMLElement {
+    constructor(){
+        super();
+        this.isAppended = false;
+        this.terminal = new (0, _initTerminalDefault.default)();
+    }
     connectedCallback() {
         this.render();
     }
@@ -727,7 +735,6 @@ class Demo extends HTMLElement {
             }
         ];
         const form = document.querySelector("#demo__form");
-        form.innerHTML = "";
         types.forEach((type)=>{
             const span = document.createElement("span");
             const i = document.createElement("input");
@@ -759,34 +766,41 @@ class Demo extends HTMLElement {
         });
     }
     randomStatement(type) {
-        let command = "";
+        let command;
+        const { runRandomCommand } = this.terminal;
         switch(type){
             case "let":
-                this.generateStatement((0, _linesJs.letStmt));
+                command = this.generateStatement((0, _linesJs.letStmt));
+                runRandomCommand(command);
                 break;
             case "function":
-                this.generateStatement((0, _linesJs.functionStmt));
+                command = this.generateStatement((0, _linesJs.functionStmt));
+                runRandomCommand(command);
                 break;
             case "len":
-                this.generateStatement((0, _linesJs.lenStmt));
+                command = this.generateStatement((0, _linesJs.lenStmt));
+                runRandomCommand(command);
                 break;
             case "array":
-                this.generateStatement((0, _linesJs.arrayStmt));
+                command = this.generateStatement((0, _linesJs.arrayStmt));
+                runRandomCommand(command);
                 break;
             case "math":
-                this.generateStatement((0, _linesJs.mathStmt));
+                command = this.generateStatement((0, _linesJs.mathStmt));
+                runRandomCommand(command);
                 break;
             case "boolean":
-                this.generateStatement((0, _linesJs.booleanStmt));
+                command = this.generateStatement((0, _linesJs.booleanStmt));
+                runRandomCommand(command);
                 break;
             case "if":
-                this.generateStatement((0, _linesJs.ifStmt));
+                command = this.generateStatement((0, _linesJs.ifStmt));
+                runRandomCommand(command);
                 break;
             case "random":
                 this.randomType();
                 break;
         }
-        (0, _initTerminal.runCommand)(command);
     }
     generateStatement(type) {
         const random = Math.floor(Math.random() * (type.length - 1));
@@ -803,13 +817,16 @@ class Demo extends HTMLElement {
     }
     render() {
         const template = document.getElementById("demo-page-template");
-        const content = template.content.cloneNode(true);
-        this.appendChild(content);
-        (0, _initTerminal.initTerminal)();
+        if (!this.isAppended) {
+            const content = template.content.cloneNode(true);
+            this.appendChild(content);
+            this.isAppended = true;
+        }
+        this.terminal.initTerminal();
         this.renderRadio();
         const resetBtn = document.querySelector("#demo__button-reset");
         resetBtn.addEventListener("click", ()=>{
-            (0, _initTerminal.resetTerminal)();
+            this.terminal.resetTerminal();
         });
         const randomBtn = document.querySelector("#demo__button-random");
         randomBtn.addEventListener("click", ()=>{
@@ -820,129 +837,138 @@ class Demo extends HTMLElement {
 exports.default = Demo;
 customElements.define("demo-page", Demo);
 
-},{"../services/initTerminal":"jvjI7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../data/lines.js":"bXdS2"}],"jvjI7":[function(require,module,exports) {
+},{"../services/initTerminal":"jvjI7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../data/lines.js":"bXdS2","../services/statements.js":"ijqUo"}],"jvjI7":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "initTerminal", ()=>initTerminal);
-parcelHelpers.export(exports, "runCommand", ()=>runCommand);
-parcelHelpers.export(exports, "resetTerminal", ()=>resetTerminal);
 var _replJs = require("../../../../interpreter/dist/repl/repl.js");
-let term;
-let socket;
-function initTerminal() {
-    socket = new WebSocket("ws://localhost:8000");
-    socket.onopen = function(event) {
-        console.log("WebSocket connection opened");
-    };
-    socket.onmessage = function(event) {
-        console.log("Message received from server: ", event.data);
-    };
-    term = new window.Terminal({
-        fontFamily: '"Cascadia Code", Menlo, monospace',
-        theme: baseTheme,
-        cursorBlink: true,
-        fontSize: 16,
-        letterSpacing: 2,
-        lineHeight: 1.2,
-        rows: 20,
-        cols: 70
-    });
-    term.open(document.getElementById("terminal"));
-    document.querySelector(".xterm").addEventListener("wheel", (e)=>{
-        if (term.buffer.active.baseY > 0) e.preventDefault();
-    });
-    var command = "";
-    function runTerminal() {
-        if (term._initialized) return;
-        term._initialized = true;
-        term.writeln(`Welcome to the Interpreter! \r\nClick inside to start typing, press Enter to submit.`);
-        term.prompt = ()=>{
-            term.write("\r\n>> ");
-        };
-        addDecoration(term);
-        prompt1(term);
-        term.onData((e)=>{
-            switch(e){
-                case "\x03":
-                    term.write("^C");
-                    prompt1(term);
-                    break;
-                case "\r":
-                    runCommand(command);
-                    command = "";
-                    break;
-                case "\x7f":
-                    // Do not delete the prompt
-                    if (term._core.buffer.x > 2) {
-                        term.write("\b \b");
-                        if (command.length > 0) command = command.substr(0, command.length - 1);
-                    }
-                    break;
-                default:
-                    if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E) || e >= "\xa0") {
-                        command += e;
-                        term.write(e);
-                    }
-            }
-        });
+class Terminal {
+    constructor(){
+        this.socket = new WebSocket("ws://localhost:8000");
+        this.term = null;
+        this.command = "";
     }
-    function prompt1(term) {
-        command = "";
+    initTerminal() {
+        const { socket } = this;
+        socket.onopen = function(event) {
+            console.log("WebSocket connection opened");
+        };
+        socket.onmessage = function(event) {
+            console.log("Message received from server: ", event.data);
+        };
+        this.term = new window.Terminal({
+            fontFamily: '"Cascadia Code", Menlo, monospace',
+            theme: this.baseTheme,
+            cursorBlink: true,
+            fontSize: 16,
+            letterSpacing: 2,
+            lineHeight: 1.2,
+            rows: 20,
+            cols: 70
+        });
+        this.term.open(document.getElementById("terminal"));
+        document.querySelector(".xterm").addEventListener("wheel", (e)=>{
+            if (this.term.buffer.active.baseY > 0) e.preventDefault();
+        });
+        const runTerminal = ()=>{
+            if (this.term._initialized) return;
+            this.term._initialized = true;
+            this.term.writeln(`Welcome to the Interpreter! \r\nClick inside to start typing, press Enter to submit.`);
+            this.term.prompt = ()=>{
+                this.term.write("\r\n>> ");
+            };
+            this.addDecoration(this.term);
+            this.prompt(this.term);
+            this.term.onData((e)=>{
+                switch(e){
+                    case "\x03":
+                        this.term.write("^C");
+                        this.prompt(this.term);
+                        break;
+                    case "\r":
+                        this.runCommand(this.command);
+                        this.command = "";
+                        break;
+                    case "\x7f":
+                        // Do not delete the prompt
+                        if (this.term._core.buffer.x > 2) {
+                            this.term.write("\b \b");
+                            if (this.command.length > 0) this.command = this.command.substr(0, this.command.length - 1);
+                        }
+                        break;
+                    default:
+                        if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E) || e >= "\xa0") {
+                            this.command += e;
+                            this.term.write(e);
+                        }
+                }
+            });
+        };
+        runTerminal();
+    }
+    prompt(term) {
+        this.command = "";
         term.write("\r\n>> ");
     }
-    runTerminal();
-}
-function runCommand(text) {
-    if (text.length > 0) {
-        socket.send(JSON.stringify(text));
-        socket.onmessage = (event)=>{
-            term.writeln("");
-            term.write(event.data);
-            prompt(term);
-        };
+    runCommand(text) {
+        const { socket, term } = this;
+        if (text.length > 0) {
+            socket.send(JSON.stringify(text));
+            socket.onmessage = (event)=>{
+                term.writeln("");
+                term.write(event.data);
+                this.prompt(term);
+            };
+        }
     }
-}
-function addDecoration(term) {
-    const marker = term.registerMarker(15);
-    const decoration = term.registerDecoration({
-        marker,
-        x: 44
-    });
-    decoration.onRender((element)=>{
-        element.classList.add("link-hint-decoration");
-        // must be inlined to override inlined width/height coming from xterm
-        element.style.height = "";
-        element.style.width = "";
-    });
-}
-function resetTerminal() {
-    if (term) {
-        term.dispose();
-        term = null;
+    runRandomCommand(text) {
+        const { term } = this;
+        term.write(text);
+        this.runCommand(text);
     }
-    initTerminal();
+    addDecoration(term) {
+        const marker = term.registerMarker(15);
+        const decoration = term.registerDecoration({
+            marker,
+            x: 44
+        });
+        decoration.onRender((element)=>{
+            element.classList.add("link-hint-decoration");
+            // must be inlined to override inlined width/height coming from xterm
+            element.style.height = "";
+            element.style.width = "";
+        });
+    }
+    resetTerminal() {
+        const { term } = this;
+        if (term) {
+            term.dispose();
+            this.term = null;
+        }
+        this.initTerminal();
+    }
+    baseTheme = {
+        foreground: "#FFFFFF",
+        background: "#0d1217",
+        selection: "#5DA5D533",
+        black: "#1E1E1D",
+        brightBlack: "#262625",
+        red: "#CE5C5C",
+        brightRed: "#FF7272",
+        green: "#5BCC5B",
+        brightGreen: "#72FF72",
+        yellow: "#CCCC5B",
+        brightYellow: "#FFFF72",
+        blue: "#5D5DD3",
+        brightBlue: "#7279FF",
+        magenta: "#BC5ED1",
+        brightMagenta: "#E572FF",
+        cyan: "#5DA5D5",
+        brightCyan: "#72F0FF",
+        white: "#F8F8F8",
+        brightWhite: "#FFFFFF"
+    };
 }
-var baseTheme = {
-    foreground: "#FFFFFF",
-    background: "#0d1217",
-    selection: "#5DA5D533",
-    black: "#1E1E1D",
-    brightBlack: "#262625",
-    red: "#CE5C5C",
-    brightRed: "#FF7272",
-    green: "#5BCC5B",
-    brightGreen: "#72FF72",
-    yellow: "#CCCC5B",
-    brightYellow: "#FFFF72",
-    blue: "#5D5DD3",
-    brightBlue: "#7279FF",
-    magenta: "#BC5ED1",
-    brightMagenta: "#E572FF",
-    cyan: "#5DA5D5",
-    brightCyan: "#72F0FF",
-    white: "#F8F8F8",
-    brightWhite: "#FFFFFF"
-};
+exports.default = Terminal;
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../../../interpreter/dist/repl/repl.js":"f09km"}],"f09km":[function(require,module,exports) {
 var process = require("20d4d5d713bfb4a3");
@@ -1000,30 +1026,16 @@ function startRepl() {
 }
 exports.startRepl = startRepl;
 function startInterpreter(line) {
-    try {
-        var env = new environment_1.Environment();
-        var lexer = new lexer_1.Lexer(line);
-        var parser = new parser_1.Parser(lexer);
-        var program = parser.parseProgram();
-        var evaluated = (0, evaluator_1.evaluate)(program, env);
-        if (evaluated !== null) return evaluated.inspect();
-        if (parser.errors.length !== 0) return parserErrors(parser.errors);
-    } catch (error) {
-        return error.toString();
-    }
+    var env = new environment_1.Environment();
+    var lexer = new lexer_1.Lexer(line);
+    var parser = new parser_1.Parser(lexer);
+    var program = parser.parseProgram();
+    if (parser.errors.length !== 0) printParserErrors(parser.errors);
+    var evaluated = (0, evaluator_1.evaluate)(program, env);
+    if (evaluated !== null) return evaluated.inspect();
     return "";
 }
 exports.startInterpreter = startInterpreter;
-function parserErrors(errors) {
-    var messages = [];
-    messages.push("Interpreter error:");
-    messages.push(" parser errors:");
-    for(var _i = 0, errors_2 = errors; _i < errors_2.length; _i++){
-        var message = errors_2[_i];
-        messages.push("	".concat(message));
-    }
-    return messages.join("\n");
-}
 var templateObject_1;
 
 },{"20d4d5d713bfb4a3":"d5jf4","a0e1b329d88d74e6":"aTnva","a92188718013e0a1":"jPgp6","1465c7beb54b0492":"kFCvq","15fca0449bfec411":"591KS","7eb12f65c204a92b":"jhUEF"}],"d5jf4":[function(require,module,exports) {
@@ -2465,10 +2477,7 @@ var Parser = /** @class */ function() {
         return block;
     };
     Parser.prototype.parseFunctionLiteral = function() {
-        if (!this.expectPeek(token_1.TokenType.LParen)) {
-            this.errors.push("Unexpected function syntax, right parenthesis should come after 'fn'");
-            return null;
-        }
+        if (!this.expectPeek(token_1.TokenType.LParen)) return null;
         var parameters = this.parseFunctionParameters();
         if (!this.expectPeek(token_1.TokenType.LBrace)) return null;
         var body = this.parseBlockStatement();
@@ -2486,10 +2495,8 @@ var Parser = /** @class */ function() {
         while(this.peekTokenIs(token_1.TokenType.Comma)){
             this.nextToken();
             this.nextToken();
-            if (this.currTokenIs(token_1.TokenType.Ident)) {
-                ident = new ast_1.Identifier(this.currToken);
-                identifiers.push(ident);
-            } else return null;
+            ident = new ast_1.Identifier(this.currToken);
+            identifiers.push(ident);
         }
         if (!this.expectPeek(token_1.TokenType.RParen)) return null;
         return identifiers;
@@ -2678,6 +2685,24 @@ const arrayStmt = [
     "let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];",
     "let myArray = [1, 2, 3]; myArray[0] * myArray[1] + myArray[2];"
 ];
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ijqUo":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+const statements = {
+    type: "random"
+};
+const pStatements = new Proxy(statements, {
+    set (target, property, value) {
+        target[property] = value;
+        if (property == "statement") window.dispatchEvent(new Event("statementchange"));
+        return true;
+    },
+    get (target, property) {
+        return target[property];
+    }
+});
+exports.default = pStatements;
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"besEt":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -54984,24 +55009,6 @@ module.exports = xquery;
 }
 module.exports = zephir;
 
-},{}],"ijqUo":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-const statements = {
-    type: "random"
-};
-const pStatements = new Proxy(statements, {
-    set (target, property, value) {
-        target[property] = value;
-        if (property == "statement") window.dispatchEvent(new Event("statementchange"));
-        return true;
-    },
-    get (target, property) {
-        return target[property];
-    }
-});
-exports.default = pStatements;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["lg2Ne","iSwqg"], "iSwqg", "parcelRequire10c2")
+},{}]},["lg2Ne","iSwqg"], "iSwqg", "parcelRequire10c2")
 
 //# sourceMappingURL=index.b07aff3f.js.map
