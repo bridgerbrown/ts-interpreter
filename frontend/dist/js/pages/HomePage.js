@@ -1,4 +1,4 @@
-export default class Home extends HTMLElement {
+export default class HomePage extends HTMLElement {
   connectedCallback() {
     this.render()
   }
@@ -9,4 +9,4 @@ export default class Home extends HTMLElement {
   }
 }
 
-customElements.define("home-page", Home);
+customElements.define("home-page", HomePage);

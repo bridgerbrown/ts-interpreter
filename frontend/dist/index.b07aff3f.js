@@ -580,16 +580,16 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 
 },{}],"iSwqg":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-var _homeJs = require("./pages/Home.js");
-var _homeJsDefault = parcelHelpers.interopDefault(_homeJs);
-var _demoJs = require("./pages/Demo.js");
-var _demoJsDefault = parcelHelpers.interopDefault(_demoJs);
-var _codeJs = require("./pages/Code.js");
-var _codeJsDefault = parcelHelpers.interopDefault(_codeJs);
-var _statementsJs = require("./services/statements.js");
-var _statementsJsDefault = parcelHelpers.interopDefault(_statementsJs);
+var _homePageJs = require("./pages/HomePage.js");
+var _homePageJsDefault = parcelHelpers.interopDefault(_homePageJs);
+var _testPageJs = require("./pages/TestPage.js");
+var _testPageJsDefault = parcelHelpers.interopDefault(_testPageJs);
+var _codePageJs = require("./pages/CodePage.js");
+var _codePageJsDefault = parcelHelpers.interopDefault(_codePageJs);
+var _expressiontypeJs = require("./services/expressiontype.js");
+var _expressiontypeJsDefault = parcelHelpers.interopDefault(_expressiontypeJs);
 window.app = {};
-app.statements = (0, _statementsJsDefault.default);
+app.expressiontype = (0, _expressiontypeJsDefault.default);
 const router = {
     init: ()=>{
         document.querySelectorAll("a.navlink").forEach((link)=>{
@@ -610,8 +610,8 @@ const router = {
         }, "", route);
         let pageElement = null;
         switch(route){
-            case "/demo":
-                pageElement = document.createElement("demo-page");
+            case "/test":
+                pageElement = document.createElement("test-page");
                 break;
             case "/code":
                 pageElement = document.createElement("code-page");
@@ -636,23 +636,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
     router.init();
 });
 
-},{"./pages/Home.js":"3sTrT","./pages/Demo.js":"4QqBc","./pages/Code.js":"besEt","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./services/statements.js":"ijqUo"}],"3sTrT":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-class Home extends HTMLElement {
-    connectedCallback() {
-        this.render();
-    }
-    render() {
-        const template = document.getElementById("home-page-template");
-        const content = template.content.cloneNode(true);
-        this.appendChild(content);
-    }
-}
-exports.default = Home;
-customElements.define("home-page", Home);
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./services/expressiontype.js":"43bbI","./pages/HomePage.js":"k8VSJ","./pages/TestPage.js":"ncvdJ","./pages/CodePage.js":"hVsCF"}],"gkKU3":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -682,25 +666,63 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"4QqBc":[function(require,module,exports) {
+},{}],"43bbI":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _initTerminal = require("../services/initTerminal");
-var _initTerminalDefault = parcelHelpers.interopDefault(_initTerminal);
-var _linesJs = require("../data/lines.js");
-var _statementsJs = require("../services/statements.js");
-var _statementsJsDefault = parcelHelpers.interopDefault(_statementsJs);
-class Demo extends HTMLElement {
+const expressiontype = {
+    type: "random"
+};
+const pExpressionType = new Proxy(expressiontype, {
+    set (target, property, value) {
+        target[property] = value;
+        if (property == "expression") window.dispatchEvent(new Event("expressiontypechange"));
+        return true;
+    },
+    get (target, property) {
+        return target[property];
+    }
+});
+exports.default = pExpressionType;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k8VSJ":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class HomePage extends HTMLElement {
+    connectedCallback() {
+        this.render();
+    }
+    render() {
+        const template = document.getElementById("home-page-template");
+        const content = template.content.cloneNode(true);
+        this.appendChild(content);
+    }
+}
+exports.default = HomePage;
+customElements.define("home-page", HomePage);
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ncvdJ":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _initTerminalJs = require("../services/initTerminal.js");
+var _initTerminalJsDefault = parcelHelpers.interopDefault(_initTerminalJs);
+var _expressionsJs = require("../data/expressions.js");
+var _expressiontypeJs = require("../services/expressiontype.js");
+var _expressiontypeJsDefault = parcelHelpers.interopDefault(_expressiontypeJs);
+class TestPage extends HTMLElement {
     constructor(){
         super();
         this.isAppended = false;
-        this.terminal = new (0, _initTerminalDefault.default)();
+        this.terminal = new (0, _initTerminalJsDefault.default)();
     }
     connectedCallback() {
         this.render();
     }
     renderRadio() {
         const types = [
+            {
+                value: "random",
+                display: "Random"
+            },
             {
                 value: "let",
                 display: "Let"
@@ -728,27 +750,23 @@ class Demo extends HTMLElement {
             {
                 value: "if",
                 display: "If/Else"
-            },
-            {
-                value: "random",
-                display: "Random"
             }
         ];
-        const form = document.querySelector("#demo__form");
+        const form = document.querySelector("#test__form");
         types.forEach((type)=>{
             const span = document.createElement("span");
             const i = document.createElement("input");
             i.type = "radio";
-            i.className = "demo__types-input";
+            i.className = "test__types-input";
             i.name = "types";
             i.value = type.value;
             i.id = type.value;
-            i.checked = app.statements.type === type.value;
+            i.checked = app.expressiontype.type === type.value;
             i.title = "Statement type radio input " + type.value;
             i.alt = "Statement type radio input " + type.value;
             const l = document.createElement("label");
             l.htmlFor = type.value;
-            l.className = "demo__types-label";
+            l.className = "test__types-label";
             l.id = `${type.value}-label`;
             l.innerText = type.display;
             l.title = "Statement type radio label " + type.value;
@@ -767,35 +785,35 @@ class Demo extends HTMLElement {
     }
     randomStatement(type) {
         let command;
-        const { runRandomCommand } = this.terminal;
+        const { terminal } = this;
         switch(type){
             case "let":
-                command = this.generateStatement((0, _linesJs.letStmt));
-                runRandomCommand(command);
+                command = this.generateStatement((0, _expressionsJs.letExp));
+                terminal.runRandomCommand(command);
                 break;
             case "function":
-                command = this.generateStatement((0, _linesJs.functionStmt));
-                runRandomCommand(command);
+                command = this.generateStatement((0, _expressionsJs.functionExp));
+                terminal.runRandomCommand(command);
                 break;
             case "len":
-                command = this.generateStatement((0, _linesJs.lenStmt));
-                runRandomCommand(command);
+                command = this.generateStatement((0, _expressionsJs.lenExp));
+                terminal.runRandomCommand(command);
                 break;
             case "array":
-                command = this.generateStatement((0, _linesJs.arrayStmt));
-                runRandomCommand(command);
+                command = this.generateStatement((0, _expressionsJs.arrayExp));
+                terminal.runRandomCommand(command);
                 break;
             case "math":
-                command = this.generateStatement((0, _linesJs.mathStmt));
-                runRandomCommand(command);
+                command = this.generateStatement((0, _expressionsJs.mathExp));
+                terminal.runRandomCommand(command);
                 break;
             case "boolean":
-                command = this.generateStatement((0, _linesJs.booleanStmt));
-                runRandomCommand(command);
+                command = this.generateStatement((0, _expressionsJs.booleanExp));
+                terminal.runRandomCommand(command);
                 break;
             case "if":
-                command = this.generateStatement((0, _linesJs.ifStmt));
-                runRandomCommand(command);
+                command = this.generateStatement((0, _expressionsJs.ifExp));
+                terminal.runRandomCommand(command);
                 break;
             case "random":
                 this.randomType();
@@ -811,12 +829,12 @@ class Demo extends HTMLElement {
         return split.join("");
     }
     randomType() {
-        const random = Math.floor(Math.random() * ((0, _linesJs.randomStmt).length - 1));
-        const selected = (0, _linesJs.randomStmt)[random];
+        const random = Math.floor(Math.random() * (randomStmt.length - 1));
+        const selected = randomStmt[random];
         this.randomStatement(selected);
     }
     render() {
-        const template = document.getElementById("demo-page-template");
+        const template = document.getElementById("test-page-template");
         if (!this.isAppended) {
             const content = template.content.cloneNode(true);
             this.appendChild(content);
@@ -824,20 +842,20 @@ class Demo extends HTMLElement {
         }
         this.terminal.initTerminal();
         this.renderRadio();
-        const resetBtn = document.querySelector("#demo__button-reset");
+        const resetBtn = document.querySelector("#test__button-reset");
         resetBtn.addEventListener("click", ()=>{
             this.terminal.resetTerminal();
         });
-        const randomBtn = document.querySelector("#demo__button-random");
+        const randomBtn = document.querySelector("#test__button-random");
         randomBtn.addEventListener("click", ()=>{
             this.randomStatement(app.statements.type);
         });
     }
 }
-exports.default = Demo;
-customElements.define("demo-page", Demo);
+exports.default = TestPage;
+customElements.define("test-page", TestPage);
 
-},{"../services/initTerminal":"jvjI7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../data/lines.js":"bXdS2","../services/statements.js":"ijqUo"}],"jvjI7":[function(require,module,exports) {
+},{"../services/initTerminal.js":"jvjI7","../data/expressions.js":"c5tMI","../services/expressiontype.js":"43bbI","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jvjI7":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _replJs = require("../../../../interpreter/dist/repl/repl.js");
@@ -856,10 +874,10 @@ class Terminal {
             console.log("Message received from server: ", event.data);
         };
         this.term = new window.Terminal({
-            fontFamily: '"Cascadia Code", Menlo, monospace',
+            fontFamily: "monospace",
             theme: this.baseTheme,
             cursorBlink: true,
-            fontSize: 16,
+            fontSize: 15,
             letterSpacing: 2,
             lineHeight: 1.2,
             rows: 20,
@@ -970,7 +988,7 @@ class Terminal {
 }
 exports.default = Terminal;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../../../interpreter/dist/repl/repl.js":"f09km"}],"f09km":[function(require,module,exports) {
+},{"../../../../interpreter/dist/repl/repl.js":"f09km","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"f09km":[function(require,module,exports) {
 var process = require("20d4d5d713bfb4a3");
 "use strict";
 var __makeTemplateObject = this && this.__makeTemplateObject || function(cooked, raw) {
@@ -1026,16 +1044,30 @@ function startRepl() {
 }
 exports.startRepl = startRepl;
 function startInterpreter(line) {
-    var env = new environment_1.Environment();
-    var lexer = new lexer_1.Lexer(line);
-    var parser = new parser_1.Parser(lexer);
-    var program = parser.parseProgram();
-    if (parser.errors.length !== 0) printParserErrors(parser.errors);
-    var evaluated = (0, evaluator_1.evaluate)(program, env);
-    if (evaluated !== null) return evaluated.inspect();
+    try {
+        var env = new environment_1.Environment();
+        var lexer = new lexer_1.Lexer(line);
+        var parser = new parser_1.Parser(lexer);
+        var program = parser.parseProgram();
+        var evaluated = (0, evaluator_1.evaluate)(program, env);
+        if (evaluated !== null) return evaluated.inspect();
+        if (parser.errors.length !== 0) return parserErrors(parser.errors);
+    } catch (error) {
+        return error.toString();
+    }
     return "";
 }
 exports.startInterpreter = startInterpreter;
+function parserErrors(errors) {
+    var messages = [];
+    messages.push("Interpreter error:");
+    messages.push(" parser errors:");
+    for(var _i = 0, errors_2 = errors; _i < errors_2.length; _i++){
+        var message = errors_2[_i];
+        messages.push("	".concat(message));
+    }
+    return messages.join("\n");
+}
 var templateObject_1;
 
 },{"20d4d5d713bfb4a3":"d5jf4","a0e1b329d88d74e6":"aTnva","a92188718013e0a1":"jPgp6","1465c7beb54b0492":"kFCvq","15fca0449bfec411":"591KS","7eb12f65c204a92b":"jhUEF"}],"d5jf4":[function(require,module,exports) {
@@ -2477,7 +2509,10 @@ var Parser = /** @class */ function() {
         return block;
     };
     Parser.prototype.parseFunctionLiteral = function() {
-        if (!this.expectPeek(token_1.TokenType.LParen)) return null;
+        if (!this.expectPeek(token_1.TokenType.LParen)) {
+            this.errors.push("Unexpected function syntax, right parenthesis should come after 'fn'");
+            return null;
+        }
         var parameters = this.parseFunctionParameters();
         if (!this.expectPeek(token_1.TokenType.LBrace)) return null;
         var body = this.parseBlockStatement();
@@ -2495,8 +2530,10 @@ var Parser = /** @class */ function() {
         while(this.peekTokenIs(token_1.TokenType.Comma)){
             this.nextToken();
             this.nextToken();
-            ident = new ast_1.Identifier(this.currToken);
-            identifiers.push(ident);
+            if (this.currTokenIs(token_1.TokenType.Ident)) {
+                ident = new ast_1.Identifier(this.currToken);
+                identifiers.push(ident);
+            } else return null;
         }
         if (!this.expectPeek(token_1.TokenType.RParen)) return null;
         return identifiers;
@@ -2615,18 +2652,18 @@ var precedences = new Map([
 },{"2b2b380b192b587b":"cS2Mv","9572ade43a49c3f9":"6ems1"}],"jhUEF":[function(require,module,exports) {
 "use strict";
 
-},{}],"bXdS2":[function(require,module,exports) {
+},{}],"c5tMI":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "randomStmt", ()=>randomStmt);
-parcelHelpers.export(exports, "mathStmt", ()=>mathStmt);
-parcelHelpers.export(exports, "booleanStmt", ()=>booleanStmt);
-parcelHelpers.export(exports, "ifStmt", ()=>ifStmt);
-parcelHelpers.export(exports, "letStmt", ()=>letStmt);
-parcelHelpers.export(exports, "functionStmt", ()=>functionStmt);
-parcelHelpers.export(exports, "lenStmt", ()=>lenStmt);
-parcelHelpers.export(exports, "arrayStmt", ()=>arrayStmt);
-const randomStmt = [
+parcelHelpers.export(exports, "randomExp", ()=>randomExp);
+parcelHelpers.export(exports, "mathExp", ()=>mathExp);
+parcelHelpers.export(exports, "booleanExp", ()=>booleanExp);
+parcelHelpers.export(exports, "ifExp", ()=>ifExp);
+parcelHelpers.export(exports, "letExp", ()=>letExp);
+parcelHelpers.export(exports, "functionExp", ()=>functionExp);
+parcelHelpers.export(exports, "lenExp", ()=>lenExp);
+parcelHelpers.export(exports, "arrayExp", ()=>arrayExp);
+const randomExp = [
     "let",
     "function",
     "len",
@@ -2635,7 +2672,7 @@ const randomStmt = [
     "boolean",
     "if"
 ];
-const mathStmt = [
+const mathExp = [
     "x + -x * x",
     "x + x * x / x",
     "-x / x - x",
@@ -2645,7 +2682,7 @@ const mathStmt = [
     "(x + x * x + x / x) * x + -x",
     "x * (x * x) + x"
 ];
-const booleanStmt = [
+const booleanExp = [
     "x < x",
     "x > x",
     "x != x",
@@ -2656,28 +2693,28 @@ const booleanStmt = [
     "(x > x) == true",
     "(x < x) == false"
 ];
-const ifStmt = [
+const ifExp = [
     "if (x < x) { 10 } else { x }",
     "if (x > x) { 10 } else { x }"
 ];
-const letStmt = [
+const letExp = [
     "let a = x * x; x;",
     "let a = x; let b = a; b;",
     "let a = x; let b = a; let c = a + b + 5; c;"
 ];
-const functionStmt = [
+const functionExp = [
     "let identity = fn(y) { y * 5; }; identity(x);",
     "let double = fn(y) { y * 2; }; double(x);",
     "let add = fn(y, z) { y + z; }; add(x, x);",
     "let add = fn(y, z) { y + z; }; add(5 + x, add(5, 5));"
 ];
-const lenStmt = [
+const lenExp = [
     'len("four")',
     'len("hello")',
     'len("interpreter")',
     'len("testing")'
 ];
-const arrayStmt = [
+const arrayExp = [
     "[1, 2, 3][0]",
     "[1, 2, 3][1]",
     "let myArray = [1, 2, 3]; myArray[2];",
@@ -2686,30 +2723,12 @@ const arrayStmt = [
     "let myArray = [1, 2, 3]; myArray[0] * myArray[1] + myArray[2];"
 ];
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ijqUo":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-const statements = {
-    type: "random"
-};
-const pStatements = new Proxy(statements, {
-    set (target, property, value) {
-        target[property] = value;
-        if (property == "statement") window.dispatchEvent(new Event("statementchange"));
-        return true;
-    },
-    get (target, property) {
-        return target[property];
-    }
-});
-exports.default = pStatements;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"besEt":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hVsCF":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _highlightJs = require("highlight.js");
 var _highlightJsDefault = parcelHelpers.interopDefault(_highlightJs);
-class Code extends HTMLElement {
+class CodePage extends HTMLElement {
     connectedCallback() {
         this.render();
     }
@@ -2739,8 +2758,8 @@ class Code extends HTMLElement {
         });
     }
 }
-exports.default = Code;
-customElements.define("code-page", Code);
+exports.default = CodePage;
+customElements.define("code-page", CodePage);
 
 },{"highlight.js":"8fSEq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8fSEq":[function(require,module,exports) {
 var hljs = require("827b710554f16a43");

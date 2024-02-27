@@ -1,10 +1,10 @@
-import Home from './pages/Home.js';
-import Demo from './pages/Demo.js';
-import Code from './pages/Code.js';
-import statements from './services/statements.js';
+import HomePage from './pages/HomePage.js';
+import TestPage from './pages/TestPage.js';
+import CodePage from './pages/CodePage.js';
+import expressiontype from './services/expressiontype.js';
 
 window.app = {}
-app.statements = statements;
+app.expressiontype = expressiontype;
 
 const router = {
   init: () => {
@@ -27,8 +27,8 @@ const router = {
 
     let pageElement = null;
     switch (route) {
-      case "/demo":
-        pageElement = document.createElement("demo-page");
+      case "/test":
+        pageElement = document.createElement("test-page");
         break;
       case "/code":
         pageElement = document.createElement("code-page");

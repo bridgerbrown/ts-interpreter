@@ -2,7 +2,7 @@ import Terminal from "../services/initTerminal.js";
 import { randomExp, mathExp, booleanExp, ifExp, letExp, functionExp, lenExp, arrayExp } from "../data/expressions.js";
 import expressions from '../services/expressiontype.js';
 
-export default class Demo extends HTMLElement {
+export default class TestPage extends HTMLElement {
   constructor() {
     super();
     this.isAppended = false;
@@ -48,22 +48,22 @@ export default class Demo extends HTMLElement {
         display: "If/Else",
       }
     ]
-    const form = document.querySelector("#demo__form");
+    const form = document.querySelector("#test__form");
     types.forEach((type) => {
       const span = document.createElement("span");
       const i = document.createElement("input");
       i.type = "radio";
-      i.className = "demo__types-input";
+      i.className = "test__types-input";
       i.name = "types";
       i.value = type.value;
       i.id = type.value;
-      i.checked = app.statements.type === type.value;
+      i.checked = app.expressiontype.type === type.value;
       i.title = "Statement type radio input " + type.value;
       i.alt = "Statement type radio input " + type.value;
 
       const l = document.createElement("label");
       l.htmlFor = type.value;
-      l.className = "demo__types-label";
+      l.className = "test__types-label";
       l.id = `${type.value}-label`;
       l.innerText = type.display;
       l.title = "Statement type radio label " + type.value;
@@ -141,7 +141,7 @@ export default class Demo extends HTMLElement {
   }
 
   render() {
-    const template = document.getElementById("demo-page-template");
+    const template = document.getElementById("test-page-template");
 
     if (!this.isAppended) {
       const content = template.content.cloneNode(true);
@@ -152,11 +152,11 @@ export default class Demo extends HTMLElement {
     this.terminal.initTerminal();
     this.renderRadio();
 
-    const resetBtn = document.querySelector("#demo__button-reset");
+    const resetBtn = document.querySelector("#test__button-reset");
     resetBtn.addEventListener("click", () => { this.terminal.resetTerminal() });
-    const randomBtn = document.querySelector("#demo__button-random");
+    const randomBtn = document.querySelector("#test__button-random");
     randomBtn.addEventListener("click", () => { this.randomStatement(app.statements.type) });
   }
 }
 
-customElements.define("demo-page", Demo);
+customElements.define("test-page", TestPage);

@@ -1,14 +1,66 @@
 :root {
   --hover-transition: opacity 0.25s ease-in-out;
   --lightGray: #c9d1d9;
-  --font: 'Courier New', Courier, monospace;
+  --font: JetBrainsMono;
+  --darkpurple: #1f1f27;
+  --darkerpurple: #849cd3;;
+  --green: #9fb974;
+  --darkgreen: #f2a56e;
+  --lightblue: #8ab3c8;
+  --lightyellow: #dbd7bd;
+  --pink: #c78398;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  font-weight: 300; 
+  font-style: normal;
+  src: url('/static/public/fonts/JetBrainsMono-Light.woff2') format('woff2'),
+       url('/static/public/fonts/JetBrainsMono-Light.ttf') format('ttf');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/static/public/fonts/JetBrainsMono-Regular.woff2') format('woff2'),
+       url('/static/public/fonts/JetBrainsMono-Regular.ttf') format('ttf');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  font-weight: 500; 
+  font-style: normal;
+  src: url('/static/public/fonts/JetBrainsMono-Medium.woff2') format('woff2'),
+       url('/static/public/fonts/JetBrainsMono-Medium.ttf') format('ttf');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  font-weight: 600; 
+  font-style: normal;
+  src: url('/static/public/fonts/JetBrainsMono-SemiBold.woff2') format('woff2'),
+       url('/static/public/fonts/JetBrainsMono-SemiBold.ttf') format('ttf');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  font-weight: 700; 
+  font-style: normal;
+  src: url('/static/public/fonts/JetBrainsMono-Bold.woff2') format('woff2'),
+       url('/static/public/fonts/JetBrainsMono-Bold.ttf') format('ttf');
+  font-display: swap;
 }
 
 body {
   padding: 0;
   margin: 0;
   font-family: var(--font);
-  background: lightgray;
+  background-color: var(--darkpurple);
   color: black;
 }
 
@@ -32,6 +84,14 @@ body>main {
   min-height: 100%;
 }
 
+h2 {
+  color: var(--green);
+}
+
+p {
+  color: var(--lightyellow);
+}
+
 /* Nav & Footer */
 header {
   width: 100vw;
@@ -39,24 +99,26 @@ header {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: black;
 }
 
 header h1 {
   margin: 3rem 0 3rem 0;
+  font-weight: 700;
+  color: var(--darkgreen);
 }
 
 nav a {
-  color: black;
-  opacity: 0.8;
+  color: var(--lightblue);
   text-decoration: none;
   padding: 0.5rem;
-  margin: 0 0.5rem
+  margin: 0 0.8rem
 }
 
 nav a:hover {
-  opacity: 1;
-  transition: var(--hover-transition);
+  color: var(--darkerpurple);
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 footer {
@@ -75,10 +137,10 @@ footer {
 }
 
 #home__container,
-#demo__container,
+#test__container,
 #code__container,
 #dev__container {
-  max-width: 1000px;
+  max-width: 900px;
 }
 
 /* Home page */
@@ -94,75 +156,83 @@ footer {
   line-height: 1.5;
 }
 
-/* Demo page */
-#page__demo {
+/* Test page */
+#page__test {
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
 }
 
-#demo__container {
+#test__container {
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
 }
 
-#demo__terminal-section {
+#test__terminal-section {
   width: 790px;
   margin-bottom: 2rem;
 }
 
-#demo__terminal-container {
+#test__terminal-container {
   border: 10px #0d1217 solid;
   border-radius: 5px;
 }
 
-#demo__button-container {
+#test__button-container {
   margin-top: 1rem;
   width: 790px;
   display: flex;
   justify-content: space-between;
 }
 
-#demo__button-container button {
-  width: 32%;
+#test__button-container button {
+  width: 49%;
   height: 3rem;
   font-size: 16px;
   font-family: var(--font);
   font-weight: 400;
   cursor: pointer;
+  background-color: var(--lightblue);
+  color: var(--darkpurple);
+  border: none;
+  border-radius: 3px;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
-#demo__form-container {
-  color: black;
+#test__button-container button:hover {
+  background-color: var(--darkerpurple);
 }
 
-#demo__form-container p {
+#test__form-container p {
   font-weight: 600;
   margin: 1rem 0 0.5rem 0;
 }
 
-#demo__form-container form {
+#test__form-container form {
   display: flex;
   flex-direction: column;
 }
 
-#demo__form-container span {
+#test__form-container span {
   margin-bottom: 0.5rem;
   display: flex;
   justify-content: flex-start;
   align-content: center;
 }
 
-#demo__form-container span label {
+#test__form-container span label {
   padding-left: 0.5rem;
   padding-top: 0.2rem;
 }
 
-.demo__types-label {
+.test__types-label {
   cursor: pointer;
+  color: var(--lightyellow);
 }
 
 /* Code page */
@@ -181,14 +251,13 @@ footer {
   width: 780px;
   font-size: 14px;
   line-height: 1.4;
-  border: 2px var(--lightGray) solid;
 }
 
 #code__file-tree {
   margin-top: 3.2rem;
   margin-right: 1.5rem;
   list-style: none;
-  line-height: 1.4;
+  line-height: 1.5;
   font-size: 16px;
 }
 
@@ -202,13 +271,15 @@ footer {
 
 .ft__files,
 #ft__main-file {
-  color: #c9d1d9;
+  color: black;
 }
 
 .ft__files li:hover,
 #ft__main-file:hover {
-  color: #d2a8ff;
-  transition: var(--hover-transition);
+  color: rgb(96 165 250);
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
   cursor: pointer;
 }
 

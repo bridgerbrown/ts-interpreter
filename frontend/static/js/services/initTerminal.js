@@ -17,10 +17,10 @@ class Terminal {
     };
 
     this.term = new window.Terminal({
-      fontFamily: '"Cascadia Code", Menlo, monospace',
+      fontFamily: 'monospace',
       theme: this.baseTheme,
       cursorBlink: true,
-      fontSize: 16,
+      fontSize: 15,
       letterSpacing: 2,
       lineHeight: 1.2,
       rows: 20,

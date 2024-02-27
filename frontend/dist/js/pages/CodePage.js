@@ -1,6 +1,6 @@
 import hljs from 'highlight.js';
 
-export default class Code extends HTMLElement {
+export default class CodePage extends HTMLElement {
   connectedCallback() {
     this.render()
   }
@@ -41,4 +41,4 @@ export default class Code extends HTMLElement {
   }
 }
 
-customElements.define("code-page", Code);
+customElements.define("code-page", CodePage);
