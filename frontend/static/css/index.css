@@ -8,8 +8,14 @@ body {
   padding: 0;
   margin: 0;
   font-family: var(--font);
-  background: black;
-  color: white;
+  background: lightgray;
+  color: black;
+}
+
+#site__container {
+  width: 100%;
+  top: 0;
+  left: 0;
 }
 
 body>header {
@@ -18,9 +24,12 @@ body>header {
 }
 
 body>main {
-  margin: auto;
   margin-top: 40px;
-  max-width: 66vw;
+}
+
+.page {
+  width: 100%;
+  min-height: 100%;
 }
 
 /* Nav & Footer */
@@ -30,7 +39,7 @@ header {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: black;
 }
 
 header h1 {
@@ -38,7 +47,7 @@ header h1 {
 }
 
 nav a {
-  color: white;
+  color: black;
   opacity: 0.8;
   text-decoration: none;
   padding: 0.5rem;
@@ -50,11 +59,6 @@ nav a:hover {
   transition: var(--hover-transition);
 }
 
-.page {
-  min-height: 100%;
-  width: 100%;
-}
-
 footer {
   display: flex;
   justify-content: center;
@@ -62,14 +66,28 @@ footer {
   margin: 8rem auto 2rem auto;
 }
 
-/* Home page */
-#page__home {
+.page {
   overflow: hidden;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
+#home__container,
+#demo__container,
+#code__container,
+#dev__container {
+  max-width: 1000px;
+}
+
+/* Home page */
 #home__container section {
   margin-bottom: 5rem;
+}
+
+#home__container h2 {
+  text-align: center;
 }
 
 #home__container p {
@@ -81,13 +99,24 @@ footer {
   display: flex;
   justify-content: center;
   flex-direction: column;
+  align-items: center;
 }
 
 #demo__container {
-  width: 780px;
-  border: 2px var(--lightGray) solid;
-  padding: 3px;
-  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+#demo__terminal-section {
+  width: 790px;
+  margin-bottom: 2rem;
+}
+
+#demo__terminal-container {
+  border: 10px #0d1217 solid;
+  border-radius: 5px;
 }
 
 #demo__button-container {
@@ -107,7 +136,7 @@ footer {
 }
 
 #demo__form-container {
-  color: white;
+  color: black;
 }
 
 #demo__form-container p {
@@ -132,6 +161,10 @@ footer {
   padding-top: 0.2rem;
 }
 
+.demo__types-label {
+  cursor: pointer;
+}
+
 /* Code page */
 #code__display-container {
   display: flex;
@@ -144,7 +177,7 @@ footer {
 }
 
 #code__file-display {
-  border-radius: 10px;
+  border-radius: 5px;
   width: 780px;
   font-size: 14px;
   line-height: 1.4;

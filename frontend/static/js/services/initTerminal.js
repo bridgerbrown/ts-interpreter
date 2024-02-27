@@ -1,7 +1,10 @@
 import { startInterpreter } from "../../../../interpreter/dist/repl/repl.js";
 
+let term;
+let socket;
+
 export function initTerminal() {
-  const socket = new WebSocket("ws://localhost:8000");
+  socket = new WebSocket("ws://localhost:8000");
   socket.onopen = function (event) {
     console.log("WebSocket connection opened");
   };
@@ -9,7 +12,7 @@ export function initTerminal() {
     console.log("Message received from server: ", event.data);
   };
 
-  var term = new window.Terminal({
+  term = new window.Terminal({
     fontFamily: '"Cascadia Code", Menlo, monospace',
     theme: baseTheme,
     cursorBlink: true,
@@ -51,7 +54,7 @@ export function initTerminal() {
           prompt(term);
           break;
         case '\r': // Enter
-          runCommand(term, command);
+          runCommand(command);
           command = '';
           break;
         case '\u007F': // Backspace (DEL)
@@ -77,20 +80,19 @@ export function initTerminal() {
     term.write('\r\n>> ');
   }
 
-  function runCommand(term, text) {
-    const command = text.trim().split(' ')[0];
-    if (command.length > 0) {
-      socket.send(JSON.stringify(text));
-      socket.onmessage = (event) => {
-        term.writeln('');
-        term.write(event.data);
-        prompt(term)
-      }
-    }
-  }
-
   runTerminal();
 };
+
+export function runCommand(text) {
+  if (text.length > 0) {
+    socket.send(JSON.stringify(text));
+    socket.onmessage = (event) => {
+      term.writeln('');
+      term.write(event.data);
+      prompt(term);
+    }
+  }
+}
 
 function addDecoration(term) {
   const marker = term.registerMarker(15);
@@ -101,6 +103,14 @@ function addDecoration(term) {
     element.style.height = '';
     element.style.width = '';
   });
+}
+
+export function resetTerminal() {
+  if (term) {
+    term.dispose();
+    term = null;
+  }
+  initTerminal();
 }
 
 var baseTheme = {

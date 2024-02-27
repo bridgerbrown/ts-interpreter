@@ -1,6 +1,7 @@
 import Home from './pages/Home.js';
 import Demo from './pages/Demo.js';
 import Code from './pages/Code.js';
+import statements from './services/statements.js';
 
 window.app = {}
 
@@ -50,6 +51,7 @@ const router = {
 }
 
 app.router = router;
+app.statements = statements;
 
 window.addEventListener("DOMContentLoaded", () => {
   router.init();

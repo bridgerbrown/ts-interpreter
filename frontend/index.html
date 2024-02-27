@@ -44,53 +44,56 @@
     <main class="page" id="page__home">
       <div id="home__container">
         <section>
-          <h1>
+          <h2>
+            Welcome!
+          </h2>
+          <p>
+            My name is Bridger Brown, and I am a software engineer. This website was built to display my programming language interpreter that I built from scratch using TypeScript and Jest. Here you can learn about what an interpreter is, how it works, test it out in an in-browser terminal, check out the code files, and learn how I made all of this.
+          </p>
+        </section>
+
+        <section>
+          <h2>
             What is an interpreter?
-          </h1>
+          </h2>
           <p>
-            When we write code, there is a crucial component in our programming language that allows our code to be properly read, analyzed, translated, and finally executed. In order for our code to actually be used by computers, the instructions need to be transformed into some form of low-level code that the computers hardware can understand and execute (ie. ‘machine code’ which is just binary 0’s and 1’s.) Many popular programming languages are considered 'high-level', as they are more abstracted from low level code to be easier to understand and program in. For example, is '0010110' or 'let value = 1’ easier to understand?  
-            <br/>
-            <br/>
-            Amongst these high-level languages, there are different methods used for this translation process, but the two most common ones are through an interpreter or a compiler. The main difference between these two is that interpreters execute and translate code line-by-line, whereas compilers translate the entire file of code before executing its instructions. Examples of interpreted languages are JavaScript, Python, Ruby, or PHP, and examples of compiled languages are C, C++, Java, or Rust. Why use one over the other? Well I wont get into the differences too much here, but it just depends on what is most appropriate for the project. Interpreted languages tend to be easier and faster to develop, whereas compiled will have better raw performance. JavaScript is interpreted and makes up nearly all of the web whereas compiled languages are used for more intensive programs like operating systems, server-side applications, or video game engines.
+            When we write code, there is a crucial component in our programming language that allows our code to be properly read, analyzed, translated, and finally executed. There are different methods used for this translation process, but the two most common ones are through an interpreter or a compiler. The main difference between these two is that interpreters execute and translate code line-by-line, whereas compilers translate the entire file of code before executing its instructions. Examples of interpreted languages are JavaScript, Python, Ruby, or PHP, and examples of compiled languages are C, C++, Java, or Rust. Why use one over the other? Well I wont get into the differences too much here, but it just depends on what is most appropriate for the project. Interpreted languages tend to be easier and faster to develop, whereas compiled will have better raw performance. JavaScript is interpreted and makes up nearly all of the web whereas compiled languages are used for more intensive programs like operating systems, server-side applications, or video game engines.
           </p>
         </section>
 
         <section>
-          <h1>
+          <h2>
             How does it work?
-          </h1>
+          </h2>
           <p>
-            An interpreter is broken down into different stages and components which will also make this whole process easier to understand. Let’s start with an example line of code:
+            An interpreter is broken down into different components, each responsible for a stage of the interpretation process.
             <br/>
             <br/>
-            The first step is the 'lexer. Our program needs to ‘tokenize’ each character of our text, defining them under a name depending on the character. For example, ‘=‘ will be tokenized as ‘EQUALS’ and all number characters will be categorized under the ‘INT’ integer token. The lexers job is to run through our line of code one character at a time, defining these groups of characters to their appropriate tokens.
+            The first step is the 'lexer’. Our program needs to ‘tokenize’ each character of our text, defining them under a name depending on the character. For example, ‘=‘ will be tokenized as ‘EQUALS’ and all numberic characters will be categorized under the ‘INT’ integer token. The lexers job is to run through our line of code one character at a time, categorizing characters into their appropriate token groups.
             <br/>
             <br/>
-            Once we have our tokens, we need to represent them into a kind of hierarchical structure to actually give these tokens meaning. Thats where our 'parser' comes in! A parser creates a syntactic structure by defining tokens with an 'abstract syntax tree' (AST). Our code will be represented by classes such as 'Identifier', 'Expression', 'IntegerLiteral', or the parenting class of these for our example, 'LetStatement. Take a look at how we would want to represent our example in an AST below:
+            Once we've identified the tokens, we need to represent them into a kind of hierarchical structure to actually give these tokens semantic meaning. Thats where our 'parser' comes in. A parser creates a syntactic structure by defining tokens within an 'abstract syntax tree' (AST). Our tokens will be grouped into different classes, such as 'Identifier', 'Expression', 'IntegerLiteral', or 'LetStatement'. Take a look at how we would want to represent the AST of a let statement visually below:
             <br/>
             <br/>
-            Finally, we have our 'evaluator' which will take our defined structure, identify what expressions we have, and execute its proper functionality. For example, if we have:
-            <br/>
-            <br/>
-            Our evaluator will already know from parsing that we have multiple expressions here, but there is a certain order of evaluation that needs to happen:
+            Finally, we have our 'evaluator’ which will take our structured AST, identify what expressions we have, and execute their matching functionalities. In order to do this, we will implement an object-oriented system to represent the values of our AST items and implement an ‘environment’ to manage scoping, allowing independent evaluation within inner scopes, like function bodies. When all of the evaluation is done, the output is returned and we’ve finished interpreting!
           </p>
         </section>
 
         <section>
-          <h1>
+          <h2>
             What can it interpret?
-          </h1>
+          </h2>
           <p>
-            Building a full-fledged interpreter would obviously be a huge task! So for this project, I’ve defined enough for the fundamentals of any programming language with evaluation of functions, if statements, let statements, math expressions, console logs, and even arrays with access by indices! After all, the purpose of this project was to challenge myself by learning about the overall process, components, and complexities of an interpreter, rather than to provide as much functionality as possible.
+            Building a full-fledged interpreter would obviously be a huge task! So for this project, I’ve defined enough for the fundamentals of any programming language with evaluation of functions, if statements, let statements, math expressions, console logs, and even built-in functions for arrays like ‘len’, ‘push’, or accessing with indices! After all, the purpose of this project was to challenge myself by learning about the overall process, components, and complexities of an interpreter, rather than to provide as much functionality as possible.
           </p>
         </section>
 
         <section>
-          <h1>
+          <h2>
             How do I test it out?
-          </h1>
+          </h2>
           <p>
-            You can test out the interpreter in the terminal page here, where you can submit lines of code to be analyzed. There is a basic language syntax to follow, or you can try generating random lines to be analyzed.
+            You can test out the interpreter in the terminal page here, where you can submit lines of code to be analyzed. There is a tutorial outlining the basic language syntax to follow, or you can try generating random lines to be analyzed.
           </p>
         </section>
 
@@ -100,56 +103,37 @@
 
   <template id="demo-page-template">
     <main class="page" id="page__demo">
-      <section>
-        <div id="demo__container">
-          <div id="terminal"></div>
-        </div>
-        <div id="demo__button-container">
-          <button>Random Statement</button>
-          <button>Enter</button>
-          <button>Reset</button>
-        </div>
-        <div id="demo__form-container">
+      <div id="demo__container">
+        <section id="demo__terminal-section">
+          <div id="demo__terminal-container">
+            <div id="terminal"></div>
+          </div>
+          <div id="demo__button-container">
+            <button id="demo__button-random">Random Statement</button>
+            <button id="demo__button-reset">Reset</button>
+          </div>
+          <div id="demo__form-container">
+            <p>
+              Select statement type:
+            </p>
+            <div id="demo__form">
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>
+            Tutorial 
+          </h2>
           <p>
-            Select statement type:
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
           </p>
-          <form>
-            <span>
-              <input type="radio" for="one"/>
-              <label for="one">Math (+, -, *, /)</label>
-            </span>
-            <span>
-              <input type="radio" for="one"/>
-              <label for="one">Function</label>
-            </span>
-            <span>
-              <input type="radio" for="one"/>
-              <label for="one">Test</label>
-            </span>
-            <span>
-              <input type="radio" for="one"/>
-              <label for="one">Test</label>
-            </span>
-            <span>
-              <input type="radio" for="one"/>
-              <label for="one">Random</label>
-            </span>
-          </form>
-        </div>
-      </section>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
+          </p>
+        </section>
 
-      <section>
-        <h2>
-          Tutorial 
-        </h2>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
-        </p>
-      </section>
-
+      </div>
     </main>
   </template>
 
