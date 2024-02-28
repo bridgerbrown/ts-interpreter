@@ -103,7 +103,8 @@ p {
 }
 
 #home__container h3,
-#dev__container h3 {
+#dev__container h3,
+#test__container h3 {
   color: var(--lightblue);
   font-weight: 400;
   margin-top: 1.5rem;
@@ -170,7 +171,7 @@ footer p {
   margin: 0 3rem;
 }
 
-.home__code-block {
+.code-block {
   width: 900px;
   background-color: #16161d;
   display: flex;
@@ -197,9 +198,15 @@ h4 {
 .code-pink {
   color: var(--pink);
 }
-
 .code-indent {
   padding-left: 2rem;
+}
+.code-comment {
+  color: #72716a;
+}
+
+.home__examples {
+  margin-bottom: 1rem;
 }
 
 /* Test page */

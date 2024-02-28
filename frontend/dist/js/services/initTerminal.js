@@ -40,7 +40,7 @@ class Terminal {
       }
       this.term._initialized = true;
 
-      this.term.writeln(`Welcome to the Interpreter! \r\nClick inside to start typing, press Enter to submit.`)
+      this.term.writeln(`Welcome to the Interpreter! \r\nClick inside to start typing! Press Enter to submit and Ctrl + C for a new line.`)
 
       this.term.prompt = () => {
         this.term.write('\r\n>> ');

@@ -76,7 +76,7 @@
           <p>
             Once we've identified the tokens, we need to represent them into a kind of hierarchical structure to actually give these tokens semantic meaning. Thats where our 'parser' comes in. A parser creates a syntactic structure by defining tokens within an 'abstract syntax tree' (AST). Take a look at this example:
           </p>
-          <div class="home__code-block">
+          <div class="code-block">
             <h4>
               <span class="code-purple">let </span><span class="code-lightyellow">a </span><span class="code-green">= </span><span class="code-pink">1</span><span class="code-purple">;</span>
             </h4>
@@ -84,7 +84,7 @@
           <p>
             This let statement is made up of an identifier ('let'), another identifier for its name ('a'), and an expression for its value ('1'). All of these then make up the statement 'LetStatement'. Why is the '1' an expression? Because everything to the right of the equals needs to be evaluated like an expression. The value of our let statement could be a math expression or even a function. This is why our AST becomes so important-- creating this relationship between our tokens allows for the proper evaluation.  
           </p>
-          <div class="home__code-block">
+          <div class="code-block">
             <h4>
               <span class="code-green">
                 LetStatement {
@@ -114,6 +114,30 @@
             <br>
             When all of the evaluator has completed its step by step evaluation process, the output is returned and we’ve finished our interpreter process!
           </p>
+
+
+          <h3>Examples</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; let math = (1 + 2 * 2) / 5; return math; </span><span class="code-comment">// input</span>
+              <br>
+              <span class="code-lightyellow">1 </span><span class="code-comment">// output</span>
+            </h4>
+          </div>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; if (1 &lt; 2) { return true } else { return false }; </span><span class="code-comment">// input</span>
+              <br>
+              <span class="code-lightyellow">true </span><span class="code-comment">// output</span>
+            </h4>
+          </div>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; let a = 5; let b = 2; let multiply = fn(x, y) { x * y }; multiply(a, b); </span><span class="code-comment">// input</span>
+              <br>
+              <span class="code-lightyellow">10 </span><span class="code-comment">// output</span>
+            </h4>
+          </div>
         </section>
 
         <section>
@@ -158,16 +182,110 @@
           </div>
         </section>
 
-        <section>
+        <section id="test__examples">
           <h2>
             Tutorial 
           </h2>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
+            Welcome to the testing terminal! Type code to be interpreted, press Enter, then see the output or… an error! Why would we see an error? Well there’s specific language syntax to follow that this interpreter can recognize, just like any programming language. If you don’t want to go learning the syntax and typing away yourself, just hit the ‘Random Expression’ button with your expression type selected, and the terminal will be sent a random expression with randomely generated parameters. 
+            <br>
+            <br>
+            Here is what are examples of the functionality in this interpreter and the syntax to follow:
           </p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt magna vel arcu tempus, a varius felis mollis. Nullam eu dui pharetra, faucibus dui a, gravida enim. Proin ut tristique diam. Aenean nec fringilla augue. Sed vitae interdum est. Nunc quis arcu ut lacus venenatis tempor vel faucibus diam. Nunc quis sem lobortis quam ornare placerat. Sed varius tortor efficitur, finibus ante et, porttitor magna. Maecenas sit amet turpis fermentum, commodo enim vitae, porttitor magna. Nam porttitor est et eros pulvinar eleifend. Pellentesque semper orci eget massa ultrices, a rutrum purus ornare. Quisque bibendum ipsum elit, eu egestas mauris dapibus vel. Donec leo nisi, eleifend sit amet auctor non, mattis et nunc.
-          </p>
+
+          <h3>Primitives</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">“text” </span><span class="code-comment">// strings</span>
+              <br>
+              <span class="code-lightyellow">3 </span><span class="code-comment">// numbers</span>
+              <br>
+              <span class="code-lightyellow">true </span><span class="code-comment">// booleans</span>
+              <br>
+              <span class="code-lightyellow">null </span><span class="code-comment">// null (intentional absence of value)</span>
+            </h4>
+          </div>
+
+          <h3>Let statements</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; let example = “hello!”; </span><span class="code-comment">// hello</span>
+              <br>
+              <span class="code-lightyellow">&gt;&gt; let math = 3 * 3; </span><span class="code-comment">// 9</span>
+            </h4>
+          </div>
+
+          <h3>Functions</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; let divide = fn(a, b) { a / b }; divide(4, 2); </span><span class="code-comment">// 2</span>
+            </h4>
+          </div>
+
+          <h3>Built-in 'len' length function</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; len("amazing"); </span><span class="code-comment">// 7</span>
+              <br>
+              <span class="code-lightyellow">&gt;&gt; let arr = [0, 1, 2]; len(arr); </span><span class="code-comment">// 3</span>
+            </h4>
+          </div>
+
+          <h3>Arrays &amp; built-in 'push' function</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; let arr = ["this", "is", "cool"]; arr[2]; </span><span class="code-comment">// cool</span>
+              <br>
+              <span class="code-lightyellow">&gt;&gt; let arr2 = [0]; let pushed = push(arr2, 5); pushed[1]; </span><span class="code-comment">// 5</span>
+            </h4>
+          </div>
+
+          <h3>Math operations</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; 1 + 1; </span><span class="code-comment">// 2</span>
+              <br>
+              <span class="code-lightyellow">&gt;&gt; 2 * 2; </span><span class="code-comment">// 4</span>
+              <br>
+              <span class="code-lightyellow">&gt;&gt; 3 / 3; </span><span class="code-comment">// 1</span>
+              <br>
+              <span class="code-lightyellow">&gt;&gt; 4 - 1 * 3 / 3 + 1; </span><span class="code-comment">// 4</span>
+            </h4>
+          </div>
+
+          <h3>Booleans</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; 12 &gt; 1; </span><span class="code-comment">// true</span>
+              <br>
+              <span class="code-lightyellow">&gt;&gt; true == false </span><span class="code-comment">// false</span>
+            </h4>
+          </div>
+
+          <h3>If/Else statements</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; let a = 1; if (a == 1) { true }; </span><span class="code-comment">// true</span>
+              <br>
+              <span class="code-lightyellow">&gt;&gt; if (1 &lt; 2) { true; } else { false; }; </span><span class="code-comment">// true</span>
+            </h4>
+          </div>
+
+          <h3>Return statements</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; let give = fn(x) { return x; } give(1); </span><span class="code-comment">// 1</span>
+              <br>
+              <span class="code-lightyellow">&gt;&gt; let a = 1; return a; </span><span class="code-comment">// 1</span>
+            </h4>
+          </div>
+
+          <h3>Built-in 'prnt' console log function</h3>
+          <div class="code-block home__examples">
+            <h4>
+              <span class="code-lightyellow">&gt;&gt; prnt("hello universe") </span><span class="code-comment">// hello universe</span>
+            </h4>
+          </div>
         </section>
 
       </div>
@@ -259,13 +377,13 @@
             Website
           </h3>
           <p>
-            The frontend of this website was built using vanilla JavaScript for a singe page application, HLJS for the code highlighting in the code preview page, Xterm.js for the in-browser custom terminal, Parcel for the build, and of course HTML/CSS. 
+            The frontend of this website was built using vanilla JavaScript for a singe page application, <a href="https://highlightjs.org/" target="_blank" rel="noopener noreferrer" class="link">highlight.js</a> for the code highlighting in the code preview page, <a href="https://xtermjs.org/" target="_blank" rel="noopener noreferrer" class="link">Xterm.js</a> for the in-browser custom terminal, Parcel for the build, and of course HTML/CSS for the sites structure and styling. 
             <br>
             <br>
             In order to keep the interpreter functionality separate, I implemented a simple WebSocket backend using Node.js and Express. This server allows seamless communication with the terminal with the benefit of protecting the frontend if the user manages to figure out how to crash the interpreter.
             <br>
             <br>
-            This websites design uses the beautiful Kanagawa coding colorscheme and the JetBrains mono font, both of which I use in my code editor, Neovim. I figured I would share with you my favorite IDE design-- after all this is what I was staring at all day while building this interpreter!
+            This websites design uses the beautiful <a href="https://github.com/rebelot/kanagawa.nvim" target="_blank" rel="noopener noreferrer" class="link">Kanagawa coding colorscheme</a> and the <a href="https://www.jetbrains.com/lp/mono/" target="_blank" rel="noopener noreferrer" class="link">JetBrains mono font</a>, both of which I use in my code editor, Neovim. I figured I would share with you my favorite IDE design-- after all this is what I was staring at all day while building this project!
           </p>
        </section>
       </div>

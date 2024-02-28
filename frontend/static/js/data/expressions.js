@@ -51,9 +51,9 @@ export const functionExp = [
 
 export const lenExp = [
   'len("four")',
-  'len("hello")',
   'len("interpreter")',
-  'len("testing")'
+  'let arr = [1, 2, 3, 4, 5]; len(arr);',
+  'let arr = [1 + 1, 2 * 2, 3 / 3]; len(arr);'
 ]
 
 export const arrayExp = [

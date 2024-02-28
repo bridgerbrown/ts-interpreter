@@ -95,7 +95,7 @@ p {
   text-align: center;
 }
 
-#home__container h3, #dev__container h3 {
+#home__container h3, #dev__container h3, #test__container h3 {
   color: var(--lightblue);
   margin-top: 1.5rem;
   font-weight: 400;
@@ -160,7 +160,7 @@ footer p {
   margin: 0 3rem;
 }
 
-.home__code-block {
+.code-block {
   color: #fff;
   background-color: #16161d;
   border-radius: 10px;
@@ -193,6 +193,14 @@ h4 {
 
 .code-indent {
   padding-left: 2rem;
+}
+
+.code-comment {
+  color: #72716a;
+}
+
+.home__examples {
+  margin-bottom: 1rem;
 }
 
 #page__test, #test__container {

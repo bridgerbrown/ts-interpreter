@@ -892,7 +892,7 @@ class Terminal {
         const runTerminal = ()=>{
             if (this.term._initialized) return;
             this.term._initialized = true;
-            this.term.writeln(`Welcome to the Interpreter! \r\nClick inside to start typing, press Enter to submit.`);
+            this.term.writeln(`Welcome to the Interpreter! \r\nClick inside to start typing! Press Enter to submit and Ctrl + C for a new line.`);
             this.term.prompt = ()=>{
                 this.term.write("\r\n>> ");
             };
@@ -2712,9 +2712,9 @@ const functionExp = [
 ];
 const lenExp = [
     'len("four")',
-    'len("hello")',
     'len("interpreter")',
-    'len("testing")'
+    "let arr = [1, 2, 3, 4, 5]; len(arr);",
+    "let arr = [1 + 1, 2 * 2, 3 / 3]; len(arr);"
 ];
 const arrayExp = [
     "[1, 2, 3][0]",
