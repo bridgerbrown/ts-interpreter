@@ -140,10 +140,64 @@ footer {
 
 #home__container h2 {
   text-align: center;
+  filter: drop-shadow(0 10px 8px #0000000a) drop-shadow(0 3px 2px #0003);
 }
 
 #home__container p {
   line-height: 1.5;
+}
+
+#home__devicon-container {
+  justify-content: center;
+  width: 900px;
+  margin-top: 5rem;
+  display: flex;
+}
+
+#home__devicon-container img {
+  width: 65px;
+  margin: 0 3rem;
+}
+
+#home__container h3 {
+  color: var(--lightblue);
+  margin-top: 1.5rem;
+  font-weight: 400;
+}
+
+.home__code-block {
+  color: #fff;
+  background-color: #16161d;
+  border-radius: 10px;
+  justify-content: flex-start;
+  align-items: center;
+  width: 900px;
+  padding-left: 2rem;
+  display: flex;
+}
+
+h4 {
+  font-weight: 300;
+}
+
+.code-purple {
+  color: var(--darkerpurple);
+}
+
+.code-lightyellow {
+  color: var(--lightyellow);
+}
+
+.code-green {
+  color: var(--green);
+}
+
+.code-pink {
+  color: var(--pink);
+}
+
+.code-indent {
+  padding-left: 2rem;
 }
 
 #page__test, #test__container {
@@ -154,7 +208,7 @@ footer {
 }
 
 #test__terminal-section {
-  width: 790px;
+  width: 900px;
   margin-bottom: 2rem;
 }
 
@@ -165,7 +219,7 @@ footer {
 
 #test__button-container {
   justify-content: space-between;
-  width: 790px;
+  width: 900px;
   margin-top: 1rem;
   display: flex;
 }
@@ -188,6 +242,11 @@ footer {
 
 #test__button-container button:hover {
   background-color: var(--darkerpurple);
+}
+
+#test__button-container button:active {
+  filter: drop-shadow(0 10px 8px #0000000a) drop-shadow(0 4px 3px #0000001a);
+  color: #fff;
 }
 
 #test__form-container p {
@@ -242,19 +301,20 @@ footer {
 }
 
 #code__file-tree ul {
-  padding-inline-start: 30px;
+  padding-inline-start: 27px;
 }
 
 .ft__dir {
+  color: var(--darkerpurple);
   font-weight: bold;
 }
 
 .ft__files, #ft__main-file {
-  color: #000;
+  color: var(--lightyellow);
 }
 
 .ft__files li:hover, #ft__main-file:hover {
-  color: #60a5fa;
+  color: var(--green);
   cursor: pointer;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-duration: .15s;

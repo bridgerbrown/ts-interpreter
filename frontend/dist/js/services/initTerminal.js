@@ -24,7 +24,7 @@ class Terminal {
       letterSpacing: 2,
       lineHeight: 1.2,
       rows: 20,
-      cols: 70
+      cols: 87
     });
     this.term.open(document.getElementById('terminal'));
 

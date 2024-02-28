@@ -150,10 +150,61 @@ footer {
 
 #home__container h2 {
   text-align: center;
+  filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 3px 2px rgb(0 0 0 / 0.2));
 }
 
 #home__container p {
   line-height: 1.5;
+}
+
+#home__devicon-container {
+  display: flex;
+  justify-content: center;
+  width: 900px;
+  margin-top: 5rem;
+}
+
+#home__devicon-container img {
+  width: 65px;
+  margin: 0 3rem;
+}
+
+#home__container h3 {
+  color: var(--lightblue);
+  font-weight: 400;
+  margin-top: 1.5rem;
+}
+
+.home__code-block {
+  width: 900px;
+  background-color: #16161d;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 2rem;
+  color: white;
+  border-radius: 10px;
+}
+
+h4 {
+  font-weight: 300;
+}
+
+.code-purple {
+  color: var(--darkerpurple);
+}
+.code-lightyellow {
+  color: var(--lightyellow);
+}
+.code-green {
+  color: var(--green);
+}
+.code-pink {
+  color: var(--pink);
+}
+
+.code-indent {
+  padding-left: 2rem;
 }
 
 /* Test page */
@@ -172,7 +223,7 @@ footer {
 }
 
 #test__terminal-section {
-  width: 790px;
+  width: 900px;
   margin-bottom: 2rem;
 }
 
@@ -183,7 +234,7 @@ footer {
 
 #test__button-container {
   margin-top: 1rem;
-  width: 790px;
+  width: 900px;
   display: flex;
   justify-content: space-between;
 }
@@ -206,6 +257,12 @@ footer {
 
 #test__button-container button:hover {
   background-color: var(--darkerpurple);
+}
+
+
+#test__button-container button:active {
+  filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  color: white;
 }
 
 #test__form-container p {
@@ -262,21 +319,22 @@ footer {
 }
 
 #code__file-tree ul {
-  padding-inline-start: 30px;
+  padding-inline-start: 27px;
 }
 
 .ft__dir {
   font-weight: bold;
+  color: var(--darkerpurple);
 }
 
 .ft__files,
 #ft__main-file {
-  color: black;
+  color: var(--lightyellow);
 }
 
 .ft__files li:hover,
 #ft__main-file:hover {
-  color: rgb(96 165 250);
+  color: var(--green);
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;

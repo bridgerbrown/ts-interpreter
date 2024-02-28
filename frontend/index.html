@@ -48,7 +48,7 @@
             Welcome!
           </h2>
           <p>
-            My name is Bridger Brown, and I am a software engineer. This website was built to display my programming language interpreter that I built from scratch using TypeScript and Jest. Here you can learn about what an interpreter is, how it works, test it out in an in-browser terminal, check out the code files, and learn how all of this was made.
+            My name is Bridger Brown, and I am a software engineer. This website was built to display my programming language interpreter that I built from scratch using TypeScript and Jest. Here you can learn about what an interpreter is, how it works, test it out in an in-browser terminal, check out the code files, and learn about how all of this was made.
           </p>
         </section>
 
@@ -57,8 +57,16 @@
             What is an interpreter?
           </h2>
           <p>
-            When we write code, there is a crucial component in our programming language that allows our code to be properly read, analyzed, translated, and finally executed. There are different methods used for this translation process, but the two most common ones are through an interpreter or a compiler. The main difference between these two is that interpreters execute and translate code line-by-line, whereas compilers translate the entire file of code before executing its instructions. Examples of interpreted languages are JavaScript, Python, Ruby, or PHP, and examples of compiled languages are C, C++, Java, or Rust. Why use one over the other? Well I wont get into the differences too much here, but it just depends on what is most appropriate for the project. Interpreted languages tend to be easier and faster to develop, whereas compiled will have better raw performance. JavaScript is interpreted and makes up nearly all of the web whereas compiled languages are used for more intensive programs like operating systems, server-side applications, or video game engines.
+            When we write code, there is a crucial component in our programming language that allows our code to be properly read, analyzed, translated, and finally executed. There are different methods used for this translation process, but the two most common ones are through an interpreter or a compiler. 
+            <br/>
+            <br/>
+            The main difference between them being that interpreters execute and translate code line-by-line, whereas compilers translate the entire file of code before executing its instructions. Examples of interpreted languages are JavaScript, Python, Ruby, or PHP, and examples of compiled languages are C, C++, Java, or Rust. Why use one over the other? Well I wont get into the differences too much here, but it just comes down to what is most appropriate for the task. Interpreted languages tend to be easier and faster to develop, whereas compiled will have better raw performance. JavaScript is interpreted and makes up nearly all of the web whereas C is compiled and is used for more intensive programs like operating systems, server-side applications, or video game engines.
           </p>
+          <div id="home__devicon-container">
+            <img src="/static/public/devicons/javascript-original.svg" alt="JavaScript language icon" title="JavaScript language icon">
+            <img src="/static/public/devicons/python-original.svg" alt="Python language icon" title="Python language icon">
+            <img src="/static/public/devicons/php-plain.svg" alt="PHP language icon" title="PHP language icon">
+          </div>
         </section>
 
         <section>
@@ -66,16 +74,55 @@
             How does it work?
           </h2>
           <p>
-            An interpreter is broken down into different components, each responsible for a stage of the interpretation process.
+            An interpreter is broken down into different distinct components, each responsible for a stage of the interpretation process.
+          </p>
+
+          <h3>Lexer</h3>
+          <p>
+            The first step is the 'lexer’. Our program needs to ‘tokenize’ each character of our text, defining them under a name depending on the character. For example, ‘=‘ will be tokenized as ‘EQUALS’ and all numeric characters will be categorized under the ‘INT’ integer token. The lexers job is to run through our line of code one character at a time, categorizing characters into their appropriate token groups. This also means finding identifiers like 'fn' for functions, 'true'/'false' for booleans, etc.
+          </p>
+
+          <h3>Parser</h3>
+          <p>
+            Once we've identified the tokens, we need to represent them into a kind of hierarchical structure to actually give these tokens semantic meaning. Thats where our 'parser' comes in. A parser creates a syntactic structure by defining tokens within an 'abstract syntax tree' (AST). Take a look at this example:
+          </p>
+          <div class="home__code-block">
+            <h4>
+              <span class="code-purple">let </span><span class="code-lightyellow">a </span><span class="code-green">= </span><span class="code-pink">1</span><span class="code-purple">;</span>
+            </h4>
+          </div>
+          <p>
+            This let statement is made up of an identifier ('let'), another identifier for its name ('a'), and an expression for its value ('1'). All of these then make up the statement 'LetStatement'. Why is the '1' an expression? Because everything to the right of the equals needs to be evaluated like an expression. The value of our let statement could be a math expression or even a function. This is why our AST becomes so important-- creating this relationship between our tokens allows for the proper evaluation.  
+          </p>
+          <div class="home__code-block">
+            <h4>
+              <span class="code-green">
+                LetStatement {
+                <br/>
+                  <span class="code-indent">name: Identifier { value: 'a', token: { type: 'IDENT', literal: 'a' } },</span>
+                <br/>
+                  <span class="code-indent">value: IntegerLiteral { token: { type: 'INT', literal: '1' }, value: 1 }</span>
+                <br/>
+                }
+              </span>
+            </h4>
+          </div>
+
+          <h3>Evaluator</h3>
+          <p>
+            Now that we've identified, organized, and put relation to our input comes the actual evaluation! In the evaluator, we will take our structured AST, identify the precedence of our expressions to evaluate them in the right order, and execute the matching functionalities. The actual logic of the evaluation is pretty straightforward, you're just identifying what type of evaluation needs to happen and when, but there's some other essential steps here.
             <br/>
             <br/>
-            The first step is the 'lexer’. Our program needs to ‘tokenize’ each character of our text, defining them under a name depending on the character. For example, ‘=‘ will be tokenized as ‘EQUALS’ and all numberic characters will be categorized under the ‘INT’ integer token. The lexers job is to run through our line of code one character at a time, categorizing characters into their appropriate token groups.
+            In order to represent the values of our AST items along the way, we implement an object-oriented system which will also allow us to track their types, ie. a boolean value (true/false) or a string value ("hello"). This ensures not only that the evaluator executes the proper evaluations on the expected data types but keeps our interpreter as organized as possible and help prevent unwanted runtime errors. 
             <br/>
             <br/>
-            Once we've identified the tokens, we need to represent them into a kind of hierarchical structure to actually give these tokens semantic meaning. Thats where our 'parser' comes in. A parser creates a syntactic structure by defining tokens within an 'abstract syntax tree' (AST). Our tokens will be grouped into different classes, such as 'Identifier', 'Expression', 'IntegerLiteral', or 'LetStatement'. Take a look at how we would want to represent the AST of a let statement visually below:
+            Next, we will need to implement an ‘environment’ to manage scoping, tracking what we've evaluated and allowing independent evaluation within inner scopes, like function bodies. We can't have functions without scopes!
             <br/>
             <br/>
-            Finally, we have our 'evaluator’ which will take our structured AST, identify what expressions we have, and execute their matching functionalities. In order to do this, we will implement an object-oriented system to represent the values of our AST items and implement an ‘environment’ to manage scoping, allowing independent evaluation within inner scopes, like function bodies. When all of the evaluation is done, the output is returned and we’ve finished interpreting!
+            Finally, this is where we can extend our interpreter with built-in functions we would normally see in our favorite programming languages, so I added the built-in functions 'len' for accessing the length of an element, 'push' for pushing items to arrays, and even 'prnt' for console logging!
+            <br/>
+            <br/>
+            When all of the evaluator has completed its step by step evaluation process, the output is returned and we’ve finished our interpreter process!
           </p>
         </section>
 
@@ -84,7 +131,7 @@
             What can it interpret?
           </h2>
           <p>
-            Building a full-fledged interpreter would obviously be a huge task! So for this project, I’ve defined enough for the fundamentals of any programming language with evaluation of functions, if statements, let statements, math expressions, console logs, and even built-in functions for arrays like ‘len’, ‘push’, or accessing with indices! After all, the purpose of this project was to challenge myself by learning about the overall process, components, and complexities of an interpreter, rather than to provide as much functionality as possible.
+            Building a full-fledged interpretering programming language would obviously be a huge task! So for this project, I’ve defined enough for the fundamentals of any programming language with evaluation of functions, if statements, let statements, return statements, arrays, booleans, and mathematic expressions. After all, the purpose of this project was to challenge myself by learning about the overall process, components, and complexities of an interpreter, rather than to provide as much functionality as possible.
           </p>
         </section>
 
