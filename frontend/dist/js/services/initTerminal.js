@@ -125,8 +125,8 @@ class Terminal {
   }
 
   baseTheme = {
-    foreground: '#FFFFFF',
-    background: '#0d1217',
+    foreground: '#dbd7bd',
+    background: '#16161d',
     selection: '#5DA5D533',
     black: '#1E1E1D',
     brightBlack: '#262625',

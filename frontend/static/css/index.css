@@ -13,15 +13,6 @@
 
 @font-face {
   font-family: 'JetBrainsMono';
-  font-weight: 300; 
-  font-style: normal;
-  src: url('/static/public/fonts/JetBrainsMono-Light.woff2') format('woff2'),
-       url('/static/public/fonts/JetBrainsMono-Light.ttf') format('ttf');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'JetBrainsMono';
   font-weight: 400;
   font-style: normal;
   src: url('/static/public/fonts/JetBrainsMono-Regular.woff2') format('woff2'),
@@ -35,15 +26,6 @@
   font-style: normal;
   src: url('/static/public/fonts/JetBrainsMono-Medium.woff2') format('woff2'),
        url('/static/public/fonts/JetBrainsMono-Medium.ttf') format('ttf');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'JetBrainsMono';
-  font-weight: 600; 
-  font-style: normal;
-  src: url('/static/public/fonts/JetBrainsMono-SemiBold.woff2') format('woff2'),
-       url('/static/public/fonts/JetBrainsMono-SemiBold.ttf') format('ttf');
   font-display: swap;
 }
 
@@ -92,6 +74,41 @@ p {
   color: var(--lightyellow);
 }
 
+.link {
+  color: var(--lightblue);
+}
+
+.link:hover {
+  color: var(--darkerpurple);
+}
+
+.page {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#home__container,
+#test__container,
+#code__container,
+#dev__container {
+  max-width: 900px;
+}
+
+#home__container h2,
+#dev__container h2 {
+  text-align: center;
+}
+
+#home__container h3,
+#dev__container h3 {
+  color: var(--lightblue);
+  font-weight: 400;
+  margin-top: 1.5rem;
+}
+
 /* Nav & Footer */
 header {
   width: 100vw;
@@ -128,29 +145,13 @@ footer {
   margin: 8rem auto 2rem auto;
 }
 
-.page {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-#home__container,
-#test__container,
-#code__container,
-#dev__container {
-  max-width: 900px;
+footer p {
+  color: var(--darkgreen);
 }
 
 /* Home page */
 #home__container section {
   margin-bottom: 5rem;
-}
-
-#home__container h2 {
-  text-align: center;
-  filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 3px 2px rgb(0 0 0 / 0.2));
 }
 
 #home__container p {
@@ -169,12 +170,6 @@ footer {
   margin: 0 3rem;
 }
 
-#home__container h3 {
-  color: var(--lightblue);
-  font-weight: 400;
-  margin-top: 1.5rem;
-}
-
 .home__code-block {
   width: 900px;
   background-color: #16161d;
@@ -187,7 +182,7 @@ footer {
 }
 
 h4 {
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .code-purple {
@@ -228,7 +223,7 @@ h4 {
 }
 
 #test__terminal-container {
-  border: 10px #0d1217 solid;
+  border: 10px #16161d solid;
   border-radius: 5px;
 }
 
@@ -266,7 +261,7 @@ h4 {
 }
 
 #test__form-container p {
-  font-weight: 600;
+  font-weight: 500;
   margin: 1rem 0 0.5rem 0;
 }
 
@@ -341,3 +336,116 @@ h4 {
   cursor: pointer;
 }
 
+#code__github {
+  margin-left: 2.5rem;
+}
+
+/* Dev page */
+#dev__container img {
+  width: 65px;
+  margin: 0 3rem;
+}
+
+.dev__img-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+#dev__header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#dev__header h2 {
+  margin-bottom: 0.5rem;
+}
+
+/* HLJS custom theme */
+:root {
+  --selection: #253248;
+  --background: #16161d;
+  --text: var(--darkgreen);
+  --string: var(--darkgreen);
+  --number: var(--pink);
+  --title: #8ab3c8;
+  --variable: #d57077;
+  --built_in: #82a6a0;
+  --keyword: #8ab3c8;
+  --function: #849bd5;
+  --params: var(--lightblue);
+  --comment: #72716a;
+  --attr: var(--lightyellow);
+  --class: #83a7a0;
+}
+
+pre code {
+  display: block;
+  overflow-x: auto;
+  padding: 10px;
+  background: var(--background);
+  -webkit-text-size-adjust: none;
+}
+
+pre code *::selection,
+.hljs::selection {
+  background: var(--selection) !important;
+}
+
+.hljs {
+  color: var(--text);
+}
+
+.hljs-string {
+  color: var(--string);
+}
+
+.hljs-number {
+  color: var(--number) !important;
+}
+
+.hljs-title {
+  color: var(--title) !important;
+}
+
+.hljs-built_in {
+  color: var(--built_in) !important;
+}
+
+.hljs-keyword {
+  color: var(--keyword) !important;
+}
+
+.hljs-function > .hljs-keyword {
+  color: var(--function) !important;
+  font-style: italic;
+}
+
+.hljs-params {
+  color: var(--params);
+}
+
+.hljs-comment {
+  color: var(--comment);
+}
+
+.hljs-variable {
+  color: var(--comment);
+}
+
+.function_ {
+  color: var(--function) !important;
+}
+
+.hljs-attr {
+  color: var(--attr) !important;
+}
+
+.class_ {
+  color: var(--class) !important;
+}

@@ -11,7 +11,6 @@
   <title>TS Interpreter</title>
   <link rel="stylesheet" href="/index.94a7f150.css" type="text/css">
   <script src="/index.b07aff3f.js" defer=""></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css">
   <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
 </head>
@@ -39,7 +38,7 @@
             Welcome!
           </h2>
           <p>
-            My name is Bridger Brown, and I am a software engineer. This website was built to display my programming language interpreter that I built from scratch using TypeScript and Jest. Here you can learn about what an interpreter is, how it works, test it out in an in-browser terminal, check out the code files, and learn about how all of this was made.
+            My name is <a href="https://www.bridgerbrown.dev/" target="_blank" rel="noopener noreferrer" class="link">Bridger Brown</a>, and I am a software engineer. This website was built to display my programming language interpreter that I built from scratch using TypeScript and Jest. Here you can learn about what an interpreter is, how it works, test it out in an in-browser terminal, check out the code files, and learn about how all of this was made.
           </p>
         </section>
 
@@ -131,7 +130,7 @@
             How do I test it out?
           </h2>
           <p>
-            You can test out the interpreter in the terminal page here, where you can submit lines of code to be analyzed. There is a tutorial outlining the basic language syntax to follow, or you can try generating random lines to be analyzed.
+            You can test out the interpreter in the terminal page <a href="/test" class="link">here</a>, where you can submit lines of code to be analyzed. There is a tutorial outlining the basic language syntax to follow, or you can try generating random lines to be analyzed.
           </p>
         </section>
 
@@ -216,6 +215,9 @@
             </ul>
             <li class="ft__files" id="ft__main-file" data-ft-filepath="main.ts">main.ts</li>            
           </ul>
+          <a id="code__github" href="https://github.com/bridgerbrown/ts-interpreter" target="_blank" rel="noopener noreferrer" class="link">
+            Github
+          </a>
         </div>
         <div id="code__file-display-container">
           <p>/lexer/lexer.ts</p>
@@ -226,17 +228,46 @@
     </main>
   </template>
 
-  <template>
-    <main class="page page__how">
-      <div id="how__container">
-      </div>
-    </main>
-  </template>
-
-
-  <template>
+  <template id="dev-page-template">
     <main class="page page__dev">
       <div id="dev__container">
+       <section>
+          <div id="dev__header">
+            <h2>
+              How was this built? 
+            </h2>
+            <a href="https://github.com/bridgerbrown/ts-interpreter" target="_blank" rel="noopener noreferrer" class="link">
+              Github 
+            </a>
+          </div>
+          <h3>
+            Interpreter
+          </h3>
+          <p>
+            Building this interpreter was definitely one of the most complicated personal coding projects I’ve done, but that made it all the more satisfying to conquer! It was built using TypeScript with Jest to test each component.
+            <br>
+            <br>
+            I’d like to give a huge thanks to the book <a href="https://interpreterbook.com/" target="_blank" rel="noopener noreferrer" class="link">“Writing an Interpreter in GO” by Thorsten Ball</a>, which is how I learned to do all of this. Thorsten’s code was all in the GO programming language, so I had to adapt it to TypeScript by learning GO along the way. I recommend this kind of project to any programmer looking for a challenge and to open their mind into the behind the scenes of how programming languages work.
+          </p>
+
+          <div class="dev__img-container">
+            <img src="/typescript-original.9ff1d1e2.svg" alt="TypeScript language icon" title="TypeScript language icon">
+            <img src="/jest-plain.c1cb1487.svg" alt="Jest testing framework icon" title="Jest testing framework icon">
+          </div>
+
+          <h3>
+            Website
+          </h3>
+          <p>
+            The frontend of this website was built using vanilla JavaScript for a singe page application, HLJS for the code highlighting in the code preview page, Xterm.js for the in-browser custom terminal, Parcel for the build, and of course HTML/CSS. 
+            <br>
+            <br>
+            In order to keep the interpreter functionality separate, I implemented a simple WebSocket backend using Node.js and Express. This server allows seamless communication with the terminal with the benefit of protecting the frontend if the user manages to figure out how to crash the interpreter.
+            <br>
+            <br>
+            This websites design uses the beautiful Kanagawa coding colorscheme and the JetBrains mono font, both of which I use in my code editor, Neovim. I figured I would share with you my favorite IDE design-- after all this is what I was staring at all day while building this interpreter!
+          </p>
+       </section>
       </div>
     </main>
   </template>

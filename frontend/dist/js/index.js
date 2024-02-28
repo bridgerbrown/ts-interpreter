@@ -1,6 +1,7 @@
 import HomePage from './pages/HomePage.js';
 import TestPage from './pages/TestPage.js';
 import CodePage from './pages/CodePage.js';
+import DevPage from './pages/DevPage.js';
 import expressiontype from './services/expressiontype.js';
 
 window.app = {}
@@ -34,7 +35,7 @@ const router = {
         pageElement = document.createElement("code-page");
         break;
       case "/development":
-        pageElement = document.createElement("development-page");
+        pageElement = document.createElement("dev-page");
         break;
       case "/":
         pageElement = document.createElement("home-page");
