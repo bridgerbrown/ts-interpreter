@@ -111,6 +111,7 @@ header {
 
 header h1 {
   color: var(--darkgreen);
+  filter: drop-shadow(0 8px 6px #0000000a) drop-shadow(0 3px 2px #0000004d);
   margin: 3rem 0;
   font-weight: 700;
 }
