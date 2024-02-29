@@ -283,7 +283,7 @@ h4 {
   display: flex;
 }
 
-#code__file-heading p {
+#code__menu-button p {
   font-size: 16px;
   font-style: italic;
 }
@@ -328,7 +328,7 @@ h4 {
   margin-left: 2.5rem;
 }
 
-#code__file-heading img {
+#code__menu-button img {
   width: 10px;
   display: none;
 }
@@ -342,6 +342,7 @@ h4 {
 }
 
 #code__menu-back {
+  cursor: pointer;
   display: none;
 }
 
@@ -508,7 +509,7 @@ pre code ::selection, .hljs::selection {
     display: flex;
   }
 
-  #code__file-heading {
+  #code__menu-button {
     cursor: pointer;
     border: 2px var(--lightyellow) solid;
     border-radius: 3px;
@@ -519,19 +520,19 @@ pre code ::selection, .hljs::selection {
     display: flex;
   }
 
-  #code__file-heading:hover {
+  #code__menu-button:hover {
     border-color: var(--lightblue);
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
     transition-duration: .15s;
     transition-timing-function: cubic-bezier(.4, 0, .2, 1);
   }
 
-  #code__file-heading p {
+  #code__menu-button p {
     margin: 0;
     padding: 0;
   }
 
-  #code__file-heading img {
+  #code__menu-button img {
     display: inherit;
     width: 15px;
     margin-left: 1rem;
@@ -564,6 +565,10 @@ pre code ::selection, .hljs::selection {
     position: absolute;
     top: 0;
     left: .5rem;
+  }
+
+  #code__file-name {
+    display: none;
   }
 }
 

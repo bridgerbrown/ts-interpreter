@@ -37,7 +37,22 @@ export default class CodePage extends HTMLElement {
     filesLi.forEach((li) => {
       li.addEventListener("click", () => this.fetchCodeFile(li.dataset.ftFilepath))
     });
-
+     
+    const menu = document.querySelector('#code__file-tree-container');
+    const fileMenuBtn = document.querySelector('#code__menu-button');
+    fileMenuBtn.addEventListener("click", () => {
+      menu.style.display === "none" ? menu.style.display = "inherit" : menu.style.display = "none";
+    });
+    const backBtn = document.querySelector('#code__menu-back');
+    backBtn.addEventListener("click", () => {
+      menu.style.display = "none"; 
+    });
+    const fileItem = document.querySelectorAll(".ft__files li");
+    fileItem.forEach((item) => {
+      item.addEventListener("click", () => {
+        menu.style.display = "none";
+      })
+    })
   }
 }
 
