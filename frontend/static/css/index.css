@@ -258,8 +258,7 @@ h4 {
 }
 
 #test__button-container button:hover {
-  background-color: var(--darkerpurple);
-}
+  background-color: var(--darkerpurple); }
 
 
 #test__button-container button:active {
@@ -303,6 +302,10 @@ h4 {
 #code__menu-button p {
   font-size: 16px;
   font-style: italic;
+}
+
+#code__menu-button {
+  display: none;
 }
 
 #code__file-display {
@@ -537,7 +540,7 @@ pre code *::selection,
   }
 
   #code__file-tree-container {
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -547,21 +550,22 @@ pre code *::selection,
     display: flex;
     font-weight: 400;
     cursor: pointer;
-    border: 2px var(--lightyellow) solid;
     width: min-content;
     height: min-content;
     padding: 0.75rem 1.25rem;
+    background-color: var(--lightblue);
     border-radius: 3px;
   }
   
   #code__menu-button:hover {
-    border-color: var(--lightblue);
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
+    background-color: var(--darkerpurple);
   }
 
   #code__menu-button p {
+    color: var(--darkpurple);
     padding: 0;
     margin: 0;
   }
@@ -584,11 +588,11 @@ pre code *::selection,
   
   #code__file-tree {
     margin-left: 0.4rem;
-    font-size: 20px;
+    font-size: 18px;
   }
 
   #code__file-tree-container h4 {
-    font-size: 24px;
+    font-size: 22px;
     margin-left: 0;
   }
 
@@ -603,6 +607,20 @@ pre code *::selection,
 
   #code__file-name {
     display: none;
+  }
+
+  #code__menu-button {
+    display: flex;
+  }
+
+  #code__github {
+    font-size: 18px;
+  }
+
+  #code__file-display-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -652,5 +670,13 @@ pre code *::selection,
 @media (min-width: 1025px) and (max-width: 1280px) {
   #code__file-display {
     width: 650px;
+  }
+}
+
+/* md < */ 
+@media (min-width: 769px) {
+  #code__file-tree-container {
+    display: flex !important;
+    flex-direction: column;
   }
 }

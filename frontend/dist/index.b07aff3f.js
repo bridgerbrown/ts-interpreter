@@ -2789,7 +2789,7 @@ class CodePage extends HTMLElement {
         const menu = document.querySelector("#code__file-tree-container");
         const fileMenuBtn = document.querySelector("#code__menu-button");
         fileMenuBtn.addEventListener("click", ()=>{
-            menu.style.display === "none" ? menu.style.display = "inherit" : menu.style.display = "none";
+            menu.style.display = "flex";
         });
         const backBtn = document.querySelector("#code__menu-back");
         backBtn.addEventListener("click", ()=>{
