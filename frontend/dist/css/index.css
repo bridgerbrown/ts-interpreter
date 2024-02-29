@@ -3,7 +3,7 @@
   --lightGray: #c9d1d9;
   --font: JetBrainsMono;
   --darkpurple: #1f1f27;
-  --darkerpurple: #849cd3;;
+  --darkerpurple: #849cd3;
   --green: #9fb974;
   --darkgreen: #f2a56e;
   --lightblue: #8ab3c8;
@@ -300,7 +300,7 @@ h4 {
   justify-content: center;
 }
 
-#code__display-container p {
+#code__file-heading p {
   font-size: 16px;
   font-style: italic;
 }
@@ -313,7 +313,7 @@ h4 {
 }
 
 #code__file-tree {
-  margin-top: 3.2rem;
+  margin-top: 0rem;
   margin-right: 1.5rem;
   list-style: none;
   line-height: 1.5;
@@ -347,13 +347,30 @@ h4 {
   margin-left: 2.5rem;
 }
 
+#code__file-heading img {
+  width: 10px;
+  display: none;
+}
+
+#code__file-tree-container h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
+  margin-left: 36px;
+  margin-bottom: 1rem;
+}
+
+#code__menu-back {
+  display: none;
+}
+
 /* Dev page */
 #dev__container img {
   width: 65px;
   margin: 0 3rem;
 }
 
-.dev__img-container {
+#dev__img-container {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -455,4 +472,180 @@ pre code *::selection,
 
 .class_ {
   color: var(--class) !important;
+}
+
+/* < xs */
+@media (max-width: 450px) {
+  #home__devicon-container img,
+  #dev__img-container img {
+    width: 50px;
+    margin: 0 1.5rem;
+  }
+
+  .code-block {
+    width: 94%;
+    padding-left: 1rem;
+    padding-right: 0.5rem;
+  }
+
+  header h1 {
+    font-size: 30px;
+    text-align: center;
+  }
+
+  nav a {
+    margin: 0 0.2rem;
+  }
+}
+
+/* < sm */
+@media (max-width: 640px) {
+  .code-block {
+    font-size: 15px;
+  }
+
+  p {
+    font-size: 15px;
+  }
+
+  h2 {
+    font-size: 22px;
+  } 
+
+  h3 {
+    font-size: 17px;
+  } 
+
+  #test__button-container button {
+    font-size: 14px;
+  }
+}
+
+/* < md */
+@media (max-width: 768px) {
+  #test__form span {
+    margin-bottom: 0.8rem;
+  }
+
+  #code__display-container {
+    flex-direction: column;
+  }
+
+  #code__file-display {
+    width: 90vw;
+  }
+
+  #code__file-tree-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  #code__file-heading {
+    display: flex;
+    font-weight: 400;
+    cursor: pointer;
+    border: 2px var(--lightyellow) solid;
+    width: min-content;
+    height: min-content;
+    padding: 0.75rem 1.25rem;
+    border-radius: 3px;
+  }
+  
+  #code__file-heading:hover {
+    border-color: var(--lightblue);
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  #code__file-heading p {
+    padding: 0;
+    margin: 0;
+  }
+
+  #code__file-heading img {
+    display: inherit;
+    width: 15px;
+    margin-left: 1rem;
+  }
+
+  #code__file-tree-container {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(22, 22, 29, 0.95);
+  }
+  
+  #code__file-tree {
+    margin-left: 0.4rem;
+    font-size: 20px;
+  }
+
+  #code__file-tree-container h4 {
+    font-size: 24px;
+    margin-left: 0;
+  }
+
+  #code__menu-back {
+    display: inherit;
+    position: absolute;
+    left: 0.5rem;
+    top: 0rem;
+    opacity: 0.8;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* < lg */
+@media (max-width: 1024px) {
+  #home__container,
+  #test__container,
+  #code__container,
+  #dev__container,
+  #home__devicon-container,
+  #test__terminal-section,
+  #test__button-container {
+    width: 90vw;
+  }
+}
+
+/* xs - sm */
+@media (min-width: 451px) and (max-width: 640px) {
+  .code-block {
+    width: 94%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* sm - md */
+@media (min-width: 641px) and (max-width: 768px) {
+  .code-block {
+    width: 94%;
+    padding-right: 1rem;
+  }
+}
+
+/* md - lg */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .code-block {
+    width: 98%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  #code__file-display {
+    width: 500px;
+  }
+}
+
+/* lg - xl */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  #code__file-display {
+    width: 650px;
+  }
 }

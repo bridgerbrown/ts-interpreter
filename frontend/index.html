@@ -305,6 +305,8 @@
     <main class="page page__code">
       <div id="code__display-container">
         <div id="code__file-tree-container">
+          <p id="code__menu-back">Back</p>
+          <h4>File Structure</h4>
           <ul id="code__file-tree">
             <li class="ft__dir">ast</li>            
             <ul class="ft__files">
@@ -347,7 +349,10 @@
           </a>
         </div>
         <div id="code__file-display-container">
-          <p>/lexer/lexer.ts</p>
+          <div id="code__file-heading">
+            <p>/lexer/lexer.ts</p>
+            <img src="/static/public/bars.svg" alt="caret icon, file menu">
+          </div>
           <pre><code id="code__file-display" class="language-typescript">
         </div>
         </code></pre>
@@ -377,7 +382,7 @@
             I’d like to give a huge thanks to the book <a href="https://interpreterbook.com/" target="_blank" rel="noopener noreferrer" class="link">“Writing an Interpreter in GO” by Thorsten Ball</a>, which is how I learned to do all of this. Thorsten’s code was all in the GO programming language, so I had to adapt it to TypeScript by learning GO along the way. I recommend this kind of project to any programmer looking for a challenge and to open their mind into the behind the scenes of how programming languages work.
           </p>
 
-          <div class="dev__img-container">
+          <div id="dev__img-container">
             <img src="/static/public/devicons/typescript-original.svg" alt="TypeScript language icon" title="TypeScript language icon">
             <img src="/static/public/devicons/jest-plain.svg" alt="Jest testing framework icon" title="Jest testing framework icon">
           </div>

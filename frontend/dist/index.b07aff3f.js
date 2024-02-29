@@ -868,13 +868,41 @@ class Terminal {
         this.command = "";
     }
     initTerminal() {
-        const { socket } = this;
-        socket.onopen = function(event) {
-            console.log("WebSocket connection opened");
+        const deviceWidth = window.innerWidth;
+        const mdDevice = deviceWidth <= 1000 && deviceWidth >= 768;
+        const smDevice = deviceWidth <= 767 && deviceWidth >= 670;
+        const xsDevice = deviceWidth <= 766 && deviceWidth >= 501;
+        const mobileDevice = deviceWidth <= 500;
+        let termCols;
+        switch(true){
+            case mdDevice:
+                termCols = 70;
+                break;
+            case smDevice:
+                termCols = 57;
+                break;
+            case xsDevice:
+                termCols = 47;
+                break;
+            case mobileDevice:
+                termCols = 30;
+                break;
+            default:
+                termCols = 87;
+                break;
+        }
+        const debounce = (f, delay)=>{
+            let id;
+            return function(...args) {
+                clearTimeout(id);
+                id = setTimeout(()=>{
+                    f.apply(this, args);
+                }, delay);
+            };
         };
-        socket.onmessage = function(event) {
-            console.log("Message received from server: ", event.data);
-        };
+        window.addEventListener("resize", debounce((event)=>{
+            this.resetTerminal();
+        }, 500));
         this.term = new window.Terminal({
             fontFamily: "monospace",
             theme: this.baseTheme,
@@ -883,7 +911,7 @@ class Terminal {
             letterSpacing: 2,
             lineHeight: 1.2,
             rows: 20,
-            cols: 87
+            cols: termCols
         });
         this.term.open(document.getElementById("terminal"));
         document.querySelector(".xterm").addEventListener("wheel", (e)=>{
