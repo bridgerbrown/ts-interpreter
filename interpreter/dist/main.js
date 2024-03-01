@@ -1,4 +1,5 @@
 "use strict";
+// import { startRepl } from "./repl/repl";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -37,14 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.main = void 0;
-var repl_1 = require("./repl/repl");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             try {
                 console.log("Hello! This is the Monkey programming language!");
                 console.log("Feel free to type in commands!");
-                (0, repl_1.startRepl)();
+                // startRepl();
             }
             catch (err) {
                 console.error(err);

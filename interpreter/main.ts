@@ -1,10 +1,10 @@
-import { startRepl } from "./repl/repl";
+// import { startRepl } from "./repl/repl";
 
 export async function main() {
   try {
     console.log("Hello! This is the Monkey programming language!");
     console.log("Feel free to type in commands!");
-    startRepl();
+    // startRepl();
   } catch (err) {
     console.error(err);
     process.exit(1);

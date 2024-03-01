@@ -28,6 +28,7 @@ const monkeyFaceAscii = String.raw`
           '----'
 `;
 
+/*
 export function startRepl(): void {
   const env = new Environment();
   const rl = readline.createInterface({
@@ -56,6 +57,7 @@ export function startRepl(): void {
     process.exit(0);
   });
 }
+*/
 
 export function startInterpreter(line: string): string {
   try {
