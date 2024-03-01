@@ -3,7 +3,6 @@ import TestPage from './pages/TestPage.js';
 import CodePage from './pages/CodePage.js';
 import DevPage from './pages/DevPage.js';
 import expressiontype from './services/expressiontype.js';
-import { animate } from 'motion';
 
 window.app = {}
 app.expressiontype = expressiontype;

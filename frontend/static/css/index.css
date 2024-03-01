@@ -124,6 +124,7 @@ header h1 {
   font-weight: 700;
   color: var(--darkgreen);
   filter: drop-shadow(0 8px 6px rgb(0 0 0 / 0.04)) drop-shadow(0 3px 2px rgb(0 0 0 / 0.3));
+  cursor: pointer;
 }
 
 nav a {
