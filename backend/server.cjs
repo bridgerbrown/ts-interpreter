@@ -2,9 +2,9 @@ const WebSocket = require("ws");
 const express = require("express");
 const { createServer } = require("http");
 const { evaluate } = require("./interpreter-dist/evaluator/evaluator.js");
-const { Environment } = "./interpreter-dist/object/environment.js";
-const { Lexer } = "./interpreter-dist/lexer/lexer.js";
-const { Parser } = "./interpreter-dist/parser/parser.js";
+const { Environment } = require("./interpreter-dist/object/environment.js");
+const { Lexer } = require("./interpreter-dist/lexer/lexer.js");
+const { Parser } = require("./interpreter-dist/parser/parser.js");
 
 const serverPort = process.env.PORT || 443;
 const app = express();
