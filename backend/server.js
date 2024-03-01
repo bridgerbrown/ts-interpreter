@@ -1,23 +1,12 @@
-const WebSocket = require("ws");
-const express = require("express");
+import WebSocket from "ws";
+import express from "express";
+import { createServer } from "http";
+import { Environment } from "../interpreter/dist/object/environment.js";
+import { Lexer } from "../interpreter/dist/lexer/lexer.js";
+import { Parser } from "../interpreter/dist/parser/parser.js";
+
 const app = express();
-const { createServer } = require("http");
 const serverPort = process.env.PORT || 10000;
-
-let Environment;
-import("../interpreter/dist/object/environment.js").then(module => {
-  Environment = module.Environment;
-});
-
-let Lexer;
-import("../interpreter/dist/lexer/lexer.js").then(module => {
-  Lexer = module.Lexer;
-});
-
-let Parser;
-import("../interpreter/dist/parser/parser.js").then(module => {
-  Parser = module.Parser;
-});
 
 app.all('*', (req, res) => {
   res.redirect('/404');
