@@ -88,5 +88,3 @@ function parserErrors(errors) {
   }
   return messages.join('\r\n');
 }
-});
-
