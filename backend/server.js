@@ -1,9 +1,10 @@
-import WebSocket from "ws";
-import express from "express";
-import { createServer } from "http";
-import { Environment } from "./interpreter-dist/object/environment.js";
-import { Lexer } from "./interpreter-dist/lexer/lexer.js";
-import { Parser } from "./interpreter-dist/parser/parser.js";
+const WebSocket = require("ws");
+const express = require("express");
+const { createServer } = require("http");
+const { evaluate } = require("./interpreter-dist/evaluator/evaluator.js");
+const { Environment } = "./interpreter-dist/object/environment.js";
+const { Lexer } = "./interpreter-dist/lexer/lexer.js";
+const { Parser } = "./interpreter-dist/parser/parser.js";
 
 const app = express();
 const serverPort = process.env.PORT || 10000;
