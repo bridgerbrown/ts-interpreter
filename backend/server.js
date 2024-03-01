@@ -7,12 +7,22 @@ Promise.all([
   import("../interpreter/dist/object/environment.js"),
   import("../interpreter/dist/lexer/lexer.js"),
   import("../interpreter/dist/parser/parser.js"),
-  import("../interpreter/dist/evaluator/evaluator.js")
-]).then(([envModule, lexerModule, parserModule, evaluatorModule]) => {
-  const { Environment } = envModule;
-  const { Lexer } = lexerModule;
-  const { Parser } = parserModule;
-  const { evaluate } = evaluatorModule;
+  import("../interpreter/dist/parser/parser.test.js"),
+  import("../interpreter/dist/evaluator/evaluator.js"),
+  import("../interpreter/dist/evaluator/evaluator.test.js"),
+  import("../interpreter/dist/token/token.js"),
+  import("../interpreter/dist/token/token.test.js"),
+  import("../interpreter/dist/ast/ast.js"),
+  import("../interpreter/dist/ast/ast.test.js"),
+  import("../interpreter/dist/evaluator/builtins.js"),
+  import("../interpreter/dist/object/object.js"),
+  import("../interpreter/dist/repl/repl.js"),
+]).then(([envM, lexerM, parserM, parserTestM, evaluatorM, evaluatorTestM, tokenM,
+  tokenTestM, astM, astTestM, builtinsM, objectM, replM ]) => {
+  const { Environment } = envM;
+  const { Lexer } = lexerM;
+  const { Parser } = parserM;
+  const { evaluate } = evaluatorM;
 
 const serverPort = process.env.PORT || 10000;
 
