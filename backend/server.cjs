@@ -6,17 +6,13 @@ const { Environment } = "./interpreter-dist/object/environment.js";
 const { Lexer } = "./interpreter-dist/lexer/lexer.js";
 const { Parser } = "./interpreter-dist/parser/parser.js";
 
+const serverPort = process.env.PORT || 443;
 const app = express();
-const serverPort = process.env.PORT || 10000;
 
-app.all('*', (req, res) => {
-  res.redirect('/404');
-})
+app.use(express.static("public"));
 
 const server = createServer(app);
-server.listen(serverPort, () => console.log(`Listening on ${serverPort}`));
-
-const wss = new WebSocket.Server({ port: 8000 });
+const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
   console.log("Client connection received");
@@ -47,6 +43,12 @@ wss.on('error', (error) => {
 app.get("/", (req, res) => {
   res.send("Server is live...");
 });
+
+app.all('*', (req, res) => {
+  res.redirect('/404');
+})
+
+server.listen(serverPort, () => console.log(`Listening on ${serverPort}`));
 
 function interpreter(input, env) {
   return new Promise((resolve, reject) => {
