@@ -2,7 +2,7 @@ import { startInterpreter } from "../../../../interpreter/dist/repl/repl.js";
 
 class Terminal {
   constructor() {
-    this.socket = new WebSocket("ws://localhost:8000");
+    this.socket = new WebSocket("ws://ts-interpreter.onrender.com:10000/");
     this.term = null;
     this.command = '';
   }

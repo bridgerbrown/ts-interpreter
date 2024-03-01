@@ -15,7 +15,6 @@ app.all('*', (req, res) => {
 
 const server = createServer(app);
 server.listen(serverPort, () => console.log(`Listening on ${serverPort}`));
-module.exports = server;
 
 const wss = new WebSocket.Server({ port: 8000 });
 
@@ -89,3 +88,5 @@ function parserErrors(errors) {
   }
   return messages.join('\r\n');
 }
+
+module.exports = server;
