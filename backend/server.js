@@ -2,11 +2,17 @@ const WebSocket = require("ws");
 const express = require("express");
 const app = express();
 const { createServer } = require("http");
-const { Environment } = require("../interpreter/dist/object/environment.js");
-const { Lexer } = require("../interpreter/dist/lexer/lexer.js");
-const { Parser } = require("../interpreter/dist/parser/parser.js");
-const { evaluate } = require("../interpreter/dist/evaluator/evaluator.js");
-const { spawn } = require('child_process');
+
+Promise.all([
+  import("../interpreter/dist/object/environment.js"),
+  import("../interpreter/dist/lexer/lexer.js"),
+  import("../interpreter/dist/parser/parser.js"),
+  import("../interpreter/dist/evaluator/evaluator.js")
+]).then(([envModule, lexerModule, parserModule, evaluatorModule]) => {
+  const { Environment } = envModule;
+  const { Lexer } = lexerModule;
+  const { Parser } = parserModule;
+  const { evaluate } = evaluatorModule;
 
 const serverPort = process.env.PORT || 10000;
 
@@ -90,3 +96,5 @@ function parserErrors(errors) {
   }
   return messages.join('\r\n');
 }
+});
+
