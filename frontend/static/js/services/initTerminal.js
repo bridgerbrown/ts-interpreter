@@ -1,6 +1,6 @@
 class Terminal {
   constructor() {
-    this.socket = new WebSocket("wss://ts-interpreter.onrender.com:10000/");
+    this.socket = new WebSocket("wss://ts-interpreter.onrender.com");
     this.term = null;
     this.command = '';
   }
