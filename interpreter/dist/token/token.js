@@ -1,4 +1,7 @@
-export var TokenType;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.lookupIdentifier = exports.keywords = exports.TokenType = void 0;
+var TokenType;
 (function (TokenType) {
     TokenType["Illegal"] = "ILLEGAL";
     TokenType["Eof"] = "EOF";
@@ -31,9 +34,9 @@ export var TokenType;
     TokenType["If"] = "IF";
     TokenType["Else"] = "ELSE";
     TokenType["Return"] = "RETURN";
-})(TokenType || (TokenType = {}));
+})(TokenType || (exports.TokenType = TokenType = {}));
 ;
-export const keywords = new Map([
+exports.keywords = new Map([
     ["fn", TokenType.Function],
     ["let", TokenType.Let],
     ["true", TokenType.True],
@@ -42,10 +45,11 @@ export const keywords = new Map([
     ["else", TokenType.Else],
     ["return", TokenType.Return],
 ]);
-export const lookupIdentifier = (literal) => {
-    const type = keywords.get(literal);
+const lookupIdentifier = (literal) => {
+    const type = exports.keywords.get(literal);
     if (type) {
         return { type, literal };
     }
     return { type: TokenType.Ident, literal };
 };
+exports.lookupIdentifier = lookupIdentifier;

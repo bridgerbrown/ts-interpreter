@@ -1,26 +1,29 @@
-import { ArrayLiteral, BlockStatement, Boolean, CallExpression, ExpressionStatement, FunctionLiteral, Identifier, IfExpression, IndexExpression, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement, StringLiteral } from "../ast/ast";
-import { ArrayVal, BooleanVal, BuiltIn, ErrorVal, FunctionVal, IntegerVal, NullVal, ReturnVal, StringVal } from "../object/object";
-import { Environment } from "../object/environment";
-import { builtins } from "./builtins";
-export function evaluate(node, env) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.newError = exports.primitives = exports.evaluate = void 0;
+const ast_1 = require("../ast/ast");
+const object_1 = require("../object/object");
+const environment_1 = require("../object/environment");
+const builtins_1 = require("./builtins");
+function evaluate(node, env) {
     let right;
     let left;
     let val;
     switch (true) {
-        case node instanceof Program:
+        case node instanceof ast_1.Program:
             return evalProgram(node.statements, env);
-        case node instanceof ExpressionStatement:
+        case node instanceof ast_1.ExpressionStatement:
             return evaluate(node.expression, env);
-        case node instanceof IntegerLiteral:
-            return new IntegerVal(node.value);
-        case node instanceof Boolean:
+        case node instanceof ast_1.IntegerLiteral:
+            return new object_1.IntegerVal(node.value);
+        case node instanceof ast_1.Boolean:
             return nativeBoolToBooleanObject(node.value);
-        case node instanceof PrefixExpression:
+        case node instanceof ast_1.PrefixExpression:
             right = evaluate(node.right, env);
             if (isError(right))
                 return right;
             return evalPrefixExpression(node.operator, right);
-        case node instanceof InfixExpression:
+        case node instanceof ast_1.InfixExpression:
             left = evaluate(node.left, env);
             if (isError(left))
                 return left;
@@ -28,28 +31,28 @@ export function evaluate(node, env) {
             if (isError(right))
                 return right;
             return evalInfixExpression(node.operator, left, right);
-        case node instanceof BlockStatement:
+        case node instanceof ast_1.BlockStatement:
             return evalBlockStatement(node, env);
-        case node instanceof IfExpression:
+        case node instanceof ast_1.IfExpression:
             return evalIfExpression(node, env);
-        case node instanceof ReturnStatement:
+        case node instanceof ast_1.ReturnStatement:
             val = evaluate(node.returnValue, env);
             if (isError(val))
                 return val;
-            return new ReturnVal(val);
-        case node instanceof LetStatement:
+            return new object_1.ReturnVal(val);
+        case node instanceof ast_1.LetStatement:
             val = evaluate(node.value, env);
             if (isError(val))
                 return val;
             env.set(node.name.value, val);
             return val;
-        case node instanceof Identifier:
+        case node instanceof ast_1.Identifier:
             return evalIdentifier(node, env);
-        case node instanceof FunctionLiteral:
+        case node instanceof ast_1.FunctionLiteral:
             const params = node.parameters;
             const body = node.body;
-            return new FunctionVal(params, body, env);
-        case node instanceof CallExpression:
+            return new object_1.FunctionVal(params, body, env);
+        case node instanceof ast_1.CallExpression:
             const fn = evaluate(node.fn, env);
             if (isError(fn))
                 return fn;
@@ -57,14 +60,14 @@ export function evaluate(node, env) {
             if (args.length == 1 && isError(args[0]))
                 return args[0];
             return applyFunction(fn, args);
-        case node instanceof StringLiteral:
-            return new StringVal(node.value);
-        case node instanceof ArrayLiteral:
+        case node instanceof ast_1.StringLiteral:
+            return new object_1.StringVal(node.value);
+        case node instanceof ast_1.ArrayLiteral:
             const elements = evalExpressions(node.elements, env);
             if (elements.length === 1 && isError(elements[0]))
                 return elements[0];
-            return new ArrayVal(elements);
-        case node instanceof IndexExpression:
+            return new object_1.ArrayVal(elements);
+        case node instanceof ast_1.IndexExpression:
             left = evaluate(node.left, env);
             if (isError(left))
                 return left;
@@ -73,31 +76,32 @@ export function evaluate(node, env) {
                 return index;
             return evalIndexExpression(left, index);
         default:
-            return primitives.NULL;
+            return exports.primitives.NULL;
     }
 }
+exports.evaluate = evaluate;
 function evalProgram(statements, env) {
     let result = null;
     for (const statement of statements) {
         result = evaluate(statement, env);
         switch (true) {
-            case (result instanceof ReturnVal):
+            case (result instanceof object_1.ReturnVal):
                 return result.value;
-            case (result instanceof ErrorVal):
+            case (result instanceof object_1.ErrorVal):
                 return result;
         }
     }
     return result;
 }
-export const primitives = {
-    "NULL": new NullVal(),
-    "TRUE": new BooleanVal(true),
-    "FALSE": new BooleanVal(false)
+exports.primitives = {
+    "NULL": new object_1.NullVal(),
+    "TRUE": new object_1.BooleanVal(true),
+    "FALSE": new object_1.BooleanVal(false)
 };
 function nativeBoolToBooleanObject(input) {
     if (input)
-        return primitives.TRUE;
-    return primitives.FALSE;
+        return exports.primitives.TRUE;
+    return exports.primitives.FALSE;
 }
 function evalPrefixExpression(operator, right) {
     switch (operator) {
@@ -106,11 +110,11 @@ function evalPrefixExpression(operator, right) {
         case "-":
             return evalMinusPrefixOperatorExpression(right);
         default:
-            return newError("unknown operator:", operator, right?.type());
+            return newError("unknown operator:", operator, right === null || right === void 0 ? void 0 : right.type());
     }
 }
 function evalExclOperatorExpression(right) {
-    const { TRUE, FALSE, NULL } = primitives;
+    const { TRUE, FALSE, NULL } = exports.primitives;
     switch (right) {
         case TRUE:
             return FALSE;
@@ -123,39 +127,39 @@ function evalExclOperatorExpression(right) {
     }
 }
 function evalMinusPrefixOperatorExpression(right) {
-    if (right?.type() !== "INTEGER" /* Objects.Integer_Obj */) {
-        return newError("unknown operator: ", right?.type());
+    if ((right === null || right === void 0 ? void 0 : right.type()) !== "INTEGER" /* Objects.Integer_Obj */) {
+        return newError("unknown operator: ", right === null || right === void 0 ? void 0 : right.type());
     }
-    return new IntegerVal(-right.value);
+    return new object_1.IntegerVal(-right.value);
 }
 function evalInfixExpression(operator, left, right) {
     switch (true) {
-        case (left.type() === "INTEGER" /* Objects.Integer_Obj */ && right?.type() === "INTEGER" /* Objects.Integer_Obj */):
+        case (left.type() === "INTEGER" /* Objects.Integer_Obj */ && (right === null || right === void 0 ? void 0 : right.type()) === "INTEGER" /* Objects.Integer_Obj */):
             return evalIntegerInfixExpression(operator, left, right);
         case (operator == "=="):
             return nativeBoolToBooleanObject(left == right);
         case (operator == "!="):
             return nativeBoolToBooleanObject(left != right);
-        case (left.type() != right?.type()):
-            return newError("type mismatch:", left.type(), operator, right?.type());
-        case (left.type() === "STRING" /* Objects.String_Obj */ && right?.type() === "STRING" /* Objects.String_Obj */):
+        case (left.type() != (right === null || right === void 0 ? void 0 : right.type())):
+            return newError("type mismatch:", left.type(), operator, right === null || right === void 0 ? void 0 : right.type());
+        case (left.type() === "STRING" /* Objects.String_Obj */ && (right === null || right === void 0 ? void 0 : right.type()) === "STRING" /* Objects.String_Obj */):
             return evalStringInfixExpression(operator, left, right);
         default:
-            return newError("unknown operator:", left.type(), operator, right?.type());
+            return newError("unknown operator:", left.type(), operator, right === null || right === void 0 ? void 0 : right.type());
     }
 }
 function evalIntegerInfixExpression(operator, left, right) {
-    const leftVal = new IntegerVal(left.value).value;
-    const rightVal = new IntegerVal(right.value).value;
+    const leftVal = new object_1.IntegerVal(left.value).value;
+    const rightVal = new object_1.IntegerVal(right.value).value;
     switch (operator) {
         case "+":
-            return new IntegerVal(leftVal + rightVal);
+            return new object_1.IntegerVal(leftVal + rightVal);
         case "-":
-            return new IntegerVal(leftVal - rightVal);
+            return new object_1.IntegerVal(leftVal - rightVal);
         case "*":
-            return new IntegerVal(leftVal * rightVal);
+            return new object_1.IntegerVal(leftVal * rightVal);
         case "/":
-            return new IntegerVal(leftVal / rightVal);
+            return new object_1.IntegerVal(leftVal / rightVal);
         case "<":
             return nativeBoolToBooleanObject(leftVal < rightVal);
         case ">":
@@ -165,25 +169,25 @@ function evalIntegerInfixExpression(operator, left, right) {
         case "!=":
             return nativeBoolToBooleanObject(leftVal != rightVal);
         default:
-            return newError("unknown operator: ", left.type(), operator, right?.type());
+            return newError("unknown operator: ", left.type(), operator, right === null || right === void 0 ? void 0 : right.type());
     }
 }
 function evalIfExpression(ie, env) {
-    const condition = evaluate(ie?.condition, env);
+    const condition = evaluate(ie === null || ie === void 0 ? void 0 : ie.condition, env);
     if (isError(condition))
         return condition;
     if (isTruthy(condition)) {
-        return evaluate(ie?.consequence, env);
+        return evaluate(ie === null || ie === void 0 ? void 0 : ie.consequence, env);
     }
-    else if (ie?.alternative != null) {
+    else if ((ie === null || ie === void 0 ? void 0 : ie.alternative) != null) {
         return evaluate(ie.alternative, env);
     }
     else {
-        return primitives.NULL;
+        return exports.primitives.NULL;
     }
 }
 function isTruthy(obj) {
-    const { NULL, TRUE, FALSE } = primitives;
+    const { NULL, TRUE, FALSE } = exports.primitives;
     switch (obj) {
         case NULL:
             return false;
@@ -210,12 +214,13 @@ function evalBlockStatement(block, env) {
     }
     return result;
 }
-export function newError(format, ...a) {
+function newError(format, ...a) {
     const error = format.replace(/{(\d+)}/g, (match, number) => {
         return typeof a[number] !== 'undefined' ? a[number] : match;
     });
-    return new ErrorVal(error);
+    return new object_1.ErrorVal(error);
 }
+exports.newError = newError;
 function isError(obj) {
     if (obj !== null) {
         return obj.type() == "ERROR" /* Objects.Error_Obj */;
@@ -226,7 +231,7 @@ function evalIdentifier(node, env) {
     const val = env.get(node.value);
     if (val)
         return val;
-    const builtin = builtins[node.value];
+    const builtin = builtins_1.builtins[node.value];
     if (builtin)
         return builtin;
     return newError("identifier not found: " + node.value);
@@ -245,20 +250,20 @@ function evalExpressions(exps, env) {
 }
 function applyFunction(fn, args) {
     switch (true) {
-        case (fn instanceof FunctionVal):
+        case (fn instanceof object_1.FunctionVal):
             const extendedEnv = extendFunctionEnv(fn, args);
             const evaluated = evaluate(fn.body, extendedEnv);
             return unwrapReturnValue(evaluated);
-        case (fn instanceof BuiltIn):
+        case (fn instanceof object_1.BuiltIn):
             return fn.fn(...args);
         default:
-            return newError(`not a function: ${fn?.type()}`);
+            return newError(`not a function: ${fn === null || fn === void 0 ? void 0 : fn.type()}`);
     }
 }
 function extendFunctionEnv(fn, args) {
-    let env = new Environment();
-    if (fn?.parameters) {
-        env = new Environment(fn.env);
+    let env = new environment_1.Environment();
+    if (fn === null || fn === void 0 ? void 0 : fn.parameters) {
+        env = new environment_1.Environment(fn.env);
         for (let i = 0; i < fn.parameters.length; i++) {
             const param = fn.parameters[i];
             env.set(param.value, args[i]);
@@ -267,24 +272,24 @@ function extendFunctionEnv(fn, args) {
     return env;
 }
 function unwrapReturnValue(obj) {
-    if (obj instanceof ReturnVal)
+    if (obj instanceof object_1.ReturnVal)
         return obj.value;
     return obj;
 }
 function evalStringInfixExpression(operator, left, right) {
     if (operator !== "+") {
-        return newError(`unknown operator: ${left.type()} ${operator} ${right?.type()}`);
+        return newError(`unknown operator: ${left.type()} ${operator} ${right === null || right === void 0 ? void 0 : right.type()}`);
     }
     const leftVal = left.value;
     const rightVal = right.value;
-    return new StringVal(leftVal + rightVal);
+    return new object_1.StringVal(leftVal + rightVal);
 }
 function evalIndexExpression(left, index) {
     switch (true) {
         case (left && index && left.type() === "ARRAY" /* Objects.Array_Obj */ && index.type() === "INTEGER" /* Objects.Integer_Obj */):
             return evalArrayIndexExpression(left, index);
         default:
-            return newError(`index operator not supported: ${left?.type()}`);
+            return newError(`index operator not supported: ${left === null || left === void 0 ? void 0 : left.type()}`);
     }
 }
 function evalArrayIndexExpression(array, index) {
@@ -292,6 +297,6 @@ function evalArrayIndexExpression(array, index) {
     const idx = index.value;
     const max = arrayObject.elements.length - 1;
     if (idx < 0 || idx > max)
-        return primitives.NULL;
+        return exports.primitives.NULL;
     return arrayObject.elements[idx];
 }

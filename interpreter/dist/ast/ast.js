@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.IndexExpression = exports.ArrayLiteral = exports.StringLiteral = exports.CallExpression = exports.FunctionLiteral = exports.BlockStatement = exports.IfExpression = exports.Boolean = exports.InfixExpression = exports.PrefixExpression = exports.ExpressionStatement = exports.IntegerLiteral = exports.Identifier = exports.ReturnStatement = exports.LetStatement = exports.Program = void 0;
 class Program {
     constructor() {
         this.statements = [];
@@ -19,6 +22,7 @@ class Program {
         return out;
     }
 }
+exports.Program = Program;
 class LetStatement {
     constructor(token, name, value) {
         this.token = token;
@@ -28,10 +32,12 @@ class LetStatement {
     statementNode() { }
     tokenLiteral() { return this.token.literal; }
     string() {
-        let out = `let ${this.name?.value} = ${this.value?.string()};`;
+        var _a, _b;
+        let out = `let ${(_a = this.name) === null || _a === void 0 ? void 0 : _a.value} = ${(_b = this.value) === null || _b === void 0 ? void 0 : _b.string()};`;
         return out;
     }
 }
+exports.LetStatement = LetStatement;
 class ReturnStatement {
     constructor(token, value) {
         this.token = token;
@@ -49,6 +55,7 @@ class ReturnStatement {
         return out;
     }
 }
+exports.ReturnStatement = ReturnStatement;
 class Identifier {
     constructor(token) {
         this.value = "";
@@ -59,6 +66,7 @@ class Identifier {
     tokenLiteral() { return this.token.literal; }
     string() { return this.value.toString(); }
 }
+exports.Identifier = Identifier;
 class IntegerLiteral {
     constructor(token, value) {
         this.token = token;
@@ -75,6 +83,7 @@ class IntegerLiteral {
         }
     }
 }
+exports.IntegerLiteral = IntegerLiteral;
 class ExpressionStatement {
     constructor(token, expression) {
         this.token = token;
@@ -89,6 +98,7 @@ class ExpressionStatement {
         return "";
     }
 }
+exports.ExpressionStatement = ExpressionStatement;
 class PrefixExpression {
     constructor(token, operator, right) {
         this.token = token;
@@ -98,9 +108,11 @@ class PrefixExpression {
     expressionNode() { }
     tokenLiteral() { return this.token.literal; }
     string() {
-        return `(${this.operator}${this.right?.string()})`;
+        var _a;
+        return `(${this.operator}${(_a = this.right) === null || _a === void 0 ? void 0 : _a.string()})`;
     }
 }
+exports.PrefixExpression = PrefixExpression;
 class InfixExpression {
     constructor(token, operator, left, right) {
         this.token = token;
@@ -111,9 +123,11 @@ class InfixExpression {
     expressionNode() { }
     tokenLiteral() { return this.token.literal; }
     string() {
-        return `(${this.left.string()} ${this.operator} ${this.right?.string()})`;
+        var _a;
+        return `(${this.left.string()} ${this.operator} ${(_a = this.right) === null || _a === void 0 ? void 0 : _a.string()})`;
     }
 }
+exports.InfixExpression = InfixExpression;
 class Boolean {
     constructor(token, value) {
         this.token = token;
@@ -123,6 +137,7 @@ class Boolean {
     tokenLiteral() { return this.token.literal; }
     string() { return this.token.literal; }
 }
+exports.Boolean = Boolean;
 class IfExpression {
     constructor(token, condition, consequence, alternative) {
         this.token = token;
@@ -133,13 +148,15 @@ class IfExpression {
     expressionNode() { }
     tokenLiteral() { return this.token.literal; }
     string() {
-        let expression = "if" + this.condition?.string() + " " + this.consequence?.string();
+        var _a, _b, _c;
+        let expression = "if" + ((_a = this.condition) === null || _a === void 0 ? void 0 : _a.string()) + " " + ((_b = this.consequence) === null || _b === void 0 ? void 0 : _b.string());
         if (this.alternative !== null) {
-            expression += "else " + this.alternative?.string();
+            expression += "else " + ((_c = this.alternative) === null || _c === void 0 ? void 0 : _c.string());
         }
         return expression;
     }
 }
+exports.IfExpression = IfExpression;
 class BlockStatement {
     constructor(token, statements) {
         this.token = token;
@@ -155,6 +172,7 @@ class BlockStatement {
         return statements;
     }
 }
+exports.BlockStatement = BlockStatement;
 class FunctionLiteral {
     constructor(token, parameters, body) {
         this.token = token;
@@ -178,6 +196,7 @@ class FunctionLiteral {
         return str;
     }
 }
+exports.FunctionLiteral = FunctionLiteral;
 class CallExpression {
     constructor(token, fn, args) {
         this.token = token;
@@ -190,13 +209,14 @@ class CallExpression {
         let args = [];
         if (this.args) {
             for (let arg of this.args) {
-                args.push(arg?.string());
+                args.push(arg === null || arg === void 0 ? void 0 : arg.string());
             }
             return this.fn.string() + "(" + this.args.join(", ") + ")";
         }
         return "";
     }
 }
+exports.CallExpression = CallExpression;
 class StringLiteral {
     constructor(token, value) {
         this.token = token;
@@ -206,6 +226,7 @@ class StringLiteral {
     tokenLiteral() { return this.token.literal; }
     string() { return this.token.literal; }
 }
+exports.StringLiteral = StringLiteral;
 class ArrayLiteral {
     constructor(token, elements) {
         this.token = token;
@@ -224,6 +245,7 @@ class ArrayLiteral {
         return "[]";
     }
 }
+exports.ArrayLiteral = ArrayLiteral;
 class IndexExpression {
     constructor(token, left, index) {
         this.token = token;
@@ -233,7 +255,8 @@ class IndexExpression {
     expressionNode() { }
     tokenLiteral() { return this.token.literal; }
     string() {
-        return "(" + this.left.string() + "[" + this.index?.string() + "]";
+        var _a;
+        return "(" + this.left.string() + "[" + ((_a = this.index) === null || _a === void 0 ? void 0 : _a.string()) + "]";
     }
 }
-export { Program, LetStatement, ReturnStatement, Identifier, IntegerLiteral, ExpressionStatement, PrefixExpression, InfixExpression, Boolean, IfExpression, BlockStatement, FunctionLiteral, CallExpression, StringLiteral, ArrayLiteral, IndexExpression };
+exports.IndexExpression = IndexExpression;

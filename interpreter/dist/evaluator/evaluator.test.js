@@ -1,14 +1,16 @@
-import { Lexer } from "../lexer/lexer";
-import { ArrayVal, BooleanVal, FunctionVal, IntegerVal, StringVal } from "../object/object";
-import { Environment } from "../object/environment";
-import { Parser } from "../parser/parser";
-import { evaluate } from "./evaluator";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const lexer_1 = require("../lexer/lexer");
+const object_1 = require("../object/object");
+const environment_1 = require("../object/environment");
+const parser_1 = require("../parser/parser");
+const evaluator_1 = require("./evaluator");
 function testEval(input) {
-    const lexer = new Lexer(input);
-    const parser = new Parser(lexer);
+    const lexer = new lexer_1.Lexer(input);
+    const parser = new parser_1.Parser(lexer);
     const program = parser.parseProgram();
-    const env = new Environment();
-    return evaluate(program, env);
+    const env = new environment_1.Environment();
+    return (0, evaluator_1.evaluate)(program, env);
 }
 describe("Evaluate integer expression", () => {
     const tests = [
@@ -35,7 +37,7 @@ describe("Evaluate integer expression", () => {
     tests.forEach((test) => {
         it(`should evaluate ${test.input} to ${test.expected}`, () => {
             const evaluated = testEval(test.input);
-            expect(evaluated).toBeInstanceOf(IntegerVal);
+            expect(evaluated).toBeInstanceOf(object_1.IntegerVal);
             testIntegerObject(evaluated, test.expected);
         });
     });
@@ -68,7 +70,7 @@ describe("Evaluate boolean expression", () => {
     tests.forEach((test) => {
         it(`should evaluate ${test.input} to ${test.expected}`, () => {
             const evaluated = testEval(test.input);
-            expect(evaluated).toBeInstanceOf(BooleanVal);
+            expect(evaluated).toBeInstanceOf(object_1.BooleanVal);
             testBooleanObject(evaluated, test.expected);
         });
     });
@@ -88,7 +90,7 @@ describe("Evaluate exclamation operator", () => {
     tests.forEach((test) => {
         it(`should evaluate ${test.input} to ${test.expected}`, () => {
             const evaluated = testEval(test.input);
-            expect(evaluated).toBeInstanceOf(BooleanVal);
+            expect(evaluated).toBeInstanceOf(object_1.BooleanVal);
             testBooleanObject(evaluated, test.expected);
         });
     });
@@ -205,21 +207,23 @@ describe("Evaluate let statements", () => {
     tests.forEach((test) => {
         it(`should evaluate ${test.input} to ${test.expected}`, () => {
             const evaluated = testEval(test.input);
-            expect(evaluated).toBeInstanceOf(IntegerVal);
+            expect(evaluated).toBeInstanceOf(object_1.IntegerVal);
             testIntegerObject(evaluated, test.expected);
         });
     });
 });
 describe("Evaluate function object", () => {
+    var _a;
     const input = "fn(x) { x + 2 ; };";
     const evaluated = testEval(input);
-    expect(evaluated).toBeInstanceOf(FunctionVal);
+    expect(evaluated).toBeInstanceOf(object_1.FunctionVal);
     const fn = evaluated;
-    expect(fn.parameters?.length).toBe(1);
+    expect((_a = fn.parameters) === null || _a === void 0 ? void 0 : _a.length).toBe(1);
     expect(fn.parameters[0].string()).toBe("x");
     const expected = "(x + 2)";
     it(`should evaluate ${input} to ${expected}`, () => {
-        expect(fn.body?.string()).toBe(expected);
+        var _a;
+        expect((_a = fn.body) === null || _a === void 0 ? void 0 : _a.string()).toBe(expected);
     });
 });
 describe("Evaluate function application", () => {
@@ -254,7 +258,7 @@ describe("Evaluate string literals", () => {
     const input = `"Hello World!"`;
     const evaluated = testEval(input);
     it(`should evaluate ${input} to string literal`, () => {
-        expect(evaluated).toBeInstanceOf(StringVal);
+        expect(evaluated).toBeInstanceOf(object_1.StringVal);
         const str = evaluated;
         expect(str.value).toBe("Hello World!");
     });
@@ -264,7 +268,7 @@ describe("Evaluate string concatenation", () => {
     const evaluated = testEval(input);
     const expected = "Hello World!";
     it(`should evaluate ${input} to ${expected}`, () => {
-        expect(evaluated).toBeInstanceOf(StringVal);
+        expect(evaluated).toBeInstanceOf(object_1.StringVal);
         const str = evaluated;
         expect(str.value).toBe(expected);
     });
@@ -297,7 +301,7 @@ describe("Evaluate built-in functions", () => {
     const input = "[1, 2 * 2, 3 + 3]";
     const evaluated = testEval(input);
     it("should evaluate array integer objects", () => {
-        expect(evaluated).toBeInstanceOf(ArrayVal);
+        expect(evaluated).toBeInstanceOf(object_1.ArrayVal);
         const array = evaluated;
         testIntegerObject(array.elements[0], 1);
         testIntegerObject(array.elements[1], 4);

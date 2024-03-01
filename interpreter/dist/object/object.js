@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ArrayVal = exports.BuiltIn = exports.StringVal = exports.FunctionVal = exports.ErrorVal = exports.ReturnVal = exports.NullVal = exports.BooleanVal = exports.IntegerVal = void 0;
 class IntegerVal {
     constructor(value) {
         this.value = value;
@@ -5,6 +8,7 @@ class IntegerVal {
     type() { return "INTEGER" /* Objects.Integer_Obj */; }
     inspect() { return this.value.toString(); }
 }
+exports.IntegerVal = IntegerVal;
 class BooleanVal {
     constructor(value) {
         this.value = value;
@@ -12,10 +16,12 @@ class BooleanVal {
     type() { return "BOOLEAN" /* Objects.Boolean_Obj */; }
     inspect() { return this.value.toString(); }
 }
+exports.BooleanVal = BooleanVal;
 class NullVal {
     type() { return "NULL" /* Objects.Null_Obj */; }
     inspect() { return "null"; }
 }
+exports.NullVal = NullVal;
 class ReturnVal {
     constructor(value) {
         this.value = value;
@@ -28,6 +34,7 @@ class ReturnVal {
         return "";
     }
 }
+exports.ReturnVal = ReturnVal;
 class ErrorVal {
     constructor(message) {
         this.message = message;
@@ -35,6 +42,7 @@ class ErrorVal {
     type() { return "ERROR" /* Objects.Error_Obj */; }
     inspect() { return "ERROR: " + this.message; }
 }
+exports.ErrorVal = ErrorVal;
 class FunctionVal {
     constructor(parameters, body, env) {
         this.parameters = parameters;
@@ -51,6 +59,7 @@ class FunctionVal {
         return `fn(${strs.join(", ")}) {\n${this.body}\n}`;
     }
 }
+exports.FunctionVal = FunctionVal;
 class StringVal {
     constructor(value) {
         this.value = value;
@@ -58,6 +67,7 @@ class StringVal {
     type() { return "STRING" /* Objects.String_Obj */; }
     inspect() { return this.value; }
 }
+exports.StringVal = StringVal;
 class BuiltIn {
     constructor(fn) {
         this.fn = fn;
@@ -65,6 +75,7 @@ class BuiltIn {
     type() { return "BUILTIN" /* Objects.BuiltIn_Obj */; }
     inspect() { return "builtin function"; }
 }
+exports.BuiltIn = BuiltIn;
 class ArrayVal {
     constructor(elements) {
         this.elements = [];
@@ -74,9 +85,9 @@ class ArrayVal {
     inspect() {
         const elements = [];
         for (let e of this.elements) {
-            elements.push(e?.inspect());
+            elements.push(e === null || e === void 0 ? void 0 : e.inspect());
         }
         return "[" + elements.join(", ") + "]";
     }
 }
-export { IntegerVal, BooleanVal, NullVal, ReturnVal, ErrorVal, FunctionVal, StringVal, BuiltIn, ArrayVal };
+exports.ArrayVal = ArrayVal;

@@ -1,7 +1,10 @@
-import { evaluate } from "../evaluator/evaluator";
-import { Lexer } from "../lexer/lexer";
-import { Environment } from "../object/environment";
-import { Parser } from "../parser/parser";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.startInterpreter = void 0;
+const evaluator_1 = require("../evaluator/evaluator");
+const lexer_1 = require("../lexer/lexer");
+const environment_1 = require("../object/environment");
+const parser_1 = require("../parser/parser");
 const prompt = '>> ';
 function printParserErrors(errors) {
     console.log(monkeyFaceAscii);
@@ -54,13 +57,13 @@ export function startRepl(): void {
   });
 }
 */
-export function startInterpreter(line) {
+function startInterpreter(line) {
     try {
-        const env = new Environment();
-        const lexer = new Lexer(line);
-        const parser = new Parser(lexer);
+        const env = new environment_1.Environment();
+        const lexer = new lexer_1.Lexer(line);
+        const parser = new parser_1.Parser(lexer);
         const program = parser.parseProgram();
-        const evaluated = evaluate(program, env);
+        const evaluated = (0, evaluator_1.evaluate)(program, env);
         if (evaluated !== null) {
             return evaluated.inspect();
         }
@@ -73,6 +76,7 @@ export function startInterpreter(line) {
     }
     return "";
 }
+exports.startInterpreter = startInterpreter;
 function parserErrors(errors) {
     const messages = [];
     messages.push("Interpreter error:");
