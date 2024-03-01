@@ -40,6 +40,10 @@ wss.on('connection', (ws) => {
   });
 })
 
+wss.on('error', (error) => {
+  console.error('WebSocket server error:', error);
+});
+
 app.get("/", (req, res) => {
   res.send("Server is live...");
 });

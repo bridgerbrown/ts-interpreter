@@ -7,7 +7,7 @@ export default class CodePage extends HTMLElement {
 
   async fetchCodeFile(name) {
     try {
-      const response = await fetch(`../../../../interpreter/${name}`);
+      const response = await fetch(`../../interpreter/${name}`);
       if (!response.ok) {
         throw new Error("Failed to fetch file");
       }
