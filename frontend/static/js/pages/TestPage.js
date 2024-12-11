@@ -57,9 +57,12 @@ export default class TestPage extends HTMLElement {
       i.name = "types";
       i.value = type.value;
       i.id = type.value;
-      i.checked = app.expressiontype.type === type.value;
       i.title = "Statement type radio input " + type.value;
       i.alt = "Statement type radio input " + type.value;
+
+      if (app.expressiontype && app.expressiontype.type === type.value) {
+        i.checked = true;
+      }
 
       const l = document.createElement("label");
       l.htmlFor = type.value;
@@ -77,7 +80,6 @@ export default class TestPage extends HTMLElement {
       });
       i.addEventListener("click", (event) => {
         app.statementType = type.value;
-        console.log(type.value);
       });
     });
   }
