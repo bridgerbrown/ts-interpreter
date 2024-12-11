@@ -6,6 +6,7 @@ import expressiontype from './services/expressiontype.js';
 
 window.app = {}
 app.expressiontype = expressiontype;
+app.statementType = '';
 
 const router = {
   init: () => {

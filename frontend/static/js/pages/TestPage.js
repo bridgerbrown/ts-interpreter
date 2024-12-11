@@ -73,10 +73,10 @@ export default class TestPage extends HTMLElement {
       span.appendChild(l);
       form.appendChild(span);
       l.addEventListener("click", (event) => {
-        app.statements.type = type.value;
+        app.statementType = type.value;
       });
       i.addEventListener("click", (event) => {
-        app.statements.type = type.value;
+        app.statementType = type.value;
         console.log(type.value);
       });
     });
@@ -155,7 +155,7 @@ export default class TestPage extends HTMLElement {
     const resetBtn = document.querySelector("#test__button-reset");
     resetBtn.addEventListener("click", () => { this.terminal.resetTerminal() });
     const randomBtn = document.querySelector("#test__button-random");
-    randomBtn.addEventListener("click", () => { this.randomStatement(app.statements.type) });
+    randomBtn.addEventListener("click", () => { this.randomStatement(app.statementType) });
   }
 }
 
