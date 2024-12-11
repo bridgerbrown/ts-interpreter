@@ -135,8 +135,8 @@ export default class TestPage extends HTMLElement {
   }
 
   randomType() {
-    const random = Math.floor(Math.random() * (randomStmt.length - 1));
-    const selected = randomStmt[random];
+    const random = Math.floor(Math.random() * (randomExp.length - 1));
+    const selected = randomExp[random];
     this.randomStatement(selected);
   }
 
